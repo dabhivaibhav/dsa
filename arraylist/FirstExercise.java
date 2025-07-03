@@ -23,6 +23,7 @@ public class FirstExercise {
             }
 
         }
+        list.remove(3);
         Collections.sort(list);
         System.out.println("Unique Sorted List: " + list);
     }

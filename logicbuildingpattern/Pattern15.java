@@ -19,10 +19,10 @@ public class Pattern15 {
         int num = 1;
         for (int i = 1; i <= n; i++) {
             for (int j = 1; j <= i; j++) {
-                if (num > 9) {
-                    num = 0;
-                }
-                System.out.print(num + " ");
+//                if (num > 9) {
+//                    num = 0;
+//                }
+                System.out.print(num%10 + " ");
                 num++;
             }
             System.out.println();
