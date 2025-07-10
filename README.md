@@ -1,5 +1,5 @@
 
-# 🚀 DSA Repository by Vaibhav Dabhade
+# 🚀 DSA Repository by Vaibhav Dabhi
 
 Welcome to my **Data Structures and Algorithms (DSA)** repository!
 
