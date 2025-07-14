@@ -127,7 +127,7 @@ System.out.println(set);
 ### 4. `SortedSet` (Interface)
 
 - Child of `Set`.
-- Maintains **sorted order** and **duplicates** are allowed.
+- Maintains **sorted order** and **duplicates** are not allowed.
 
 ---
 
