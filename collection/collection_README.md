@@ -61,7 +61,7 @@ This table summarizes whether common Java collection classes implement `Serializ
 | `ArrayList`                  | ✅ Yes       | ✅ Yes    | —                            |
 | `LinkedList`                 | ✅ Yes       | ✅ Yes    | —                            |
 | `HashSet`                    | ✅ Yes       | ✅ Yes    | —                            |
-| `TreeSet`                    | ✅ Yes       | ✅ Yes    | —                            |
+| `TreeSet`                    | ✅ Yes       | ✅ Yes    | Only if elements (and comparator) are serializable. It supports serialization, but element compatibility matters. |
 | `CopyOnWriteArrayList`       | ✅ Yes       | ❌ No     | Clone would be confusing/inefficient in concurrent use. |
 | `CopyOnWriteArraySet`        | ✅ Yes       | ❌ No     | Same as above — cloning a concurrent structure is unsafe. |
 | `PriorityQueue`              | ✅ Yes       | ❌ No     | Not Cloneable by default — priority logic not easily copyable. |
@@ -69,7 +69,7 @@ This table summarizes whether common Java collection classes implement `Serializ
 | `ConcurrentLinkedQueue`      | ✅ Yes       | ❌ No     | Cloning not safe or meaningful for concurrent queues. |
 | `LinkedBlockingQueue`        | ✅ Yes       | ❌ No     | Cloning would violate thread-safety or queue semantics. |
 | `HashMap`                    | ✅ Yes       | ✅ Yes    | —                            |
-| `TreeMap`                    | ✅ Yes       | ✅ Yes    | —                            |
+| `TreeMap`                    | ✅ Yes       | ✅ Yes    |  only when all of its keys, values, and custom comparator (if any) are also serializable. |
 | `ConcurrentHashMap`          | ✅ Yes       | ❌ No     | Cloning a concurrent map is unsafe and complex. |
 
 ---
