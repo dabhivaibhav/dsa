@@ -42,6 +42,21 @@ To implement a custom LinkedList, it's important to understand that it is made u
         - `head` (points to the first node)
         - `tail` (points to the last node)
         - `size` (tracks the number of nodes)
+        
+- In a **Doubly Linked List**, each node maintains references to both the next and previous nodes. This allows traversal in both directions.
+- The `MyDoubleLinkedList` class includes:
+  - A `Node` class with `data`, `next`, and `previous`
+  - A class-level `head` and `tail` to track both ends
+  - Methods like `insertFirst()` and `insertLast()` handle insertions at both ends
+  - `showList()` prints from head to tail, while `showListReverse()` prints from tail to head
+
+- In a **Circular Linked List**, the last node (tail) links back to the first node (head), forming a loop.
+- The `MyCircularLinkedList` class includes:
+  - A `Node` class with `data` and `next`
+  - A `head` and `tail` pointer to maintain endpoints
+  - `insert()` method appends a new node and rewires `tail.next` to `head`
+  - `deleteByValue()` searches for a node with a specific value and removes it while maintaining the circular structure
+  - `showList()` uses a `do-while` loop to display all nodes starting from `head`
 
 ### 💡 How I Approach Implementing an Operation
 
