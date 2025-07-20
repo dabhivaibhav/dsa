@@ -1,6 +1,15 @@
 
 # 📚 LinkedList in Java
 
+## 💡 How I Approach Implementing an Operation
+
+Whenever I start building or debugging an operation:
+1. I **draw the current state** of the LinkedList — showing head, tail, and all the nodes.
+2. I **label references clearly** and imagine how they should change after the operation.
+3. I focus not on *how* to write the code immediately, but on *what references or logic* are needed.
+
+> This habit of visualizing the structure first helps me understand pointer movements clearly and avoids confusion.
+
 ## 🔍 What is the Underlying Data Structure?
 
 - The underlying data structure of `LinkedList` is a **Doubly Linked List**.
@@ -57,15 +66,7 @@ To implement a custom LinkedList, it's important to understand that it is made u
   - `insert()` method appends a new node and rewires `tail.next` to `head`
   - `deleteByValue()` searches for a node with a specific value and removes it while maintaining the circular structure
   - `showList()` uses a `do-while` loop to display all nodes starting from `head`
-
-### 💡 How I Approach Implementing an Operation
-
-Whenever I start building or debugging an operation:
-1. I **draw the current state** of the LinkedList — showing head, tail, and all the nodes.
-2. I **label references clearly** and imagine how they should change after the operation.
-3. I focus not on *how* to write the code immediately, but on *what references or logic* are needed.
-
-> This habit of visualizing the structure first helps me understand pointer movements clearly and avoids confusion.
+    
 ---
 ## 🌟 Characteristics of LinkedList
 
