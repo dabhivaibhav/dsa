@@ -28,6 +28,7 @@ public class MyLinkedList {
         return size;
     }
 
+    //insert a node in order
     public void insert(int val) {
         Node node = new Node(val);
 
@@ -41,6 +42,7 @@ public class MyLinkedList {
         size += 1;
     }
 
+    //insert a node at the beginning of the LinkedList
     public void insertFirst(int val) {
         Node node = new Node(val);
         node.next = head;
@@ -51,6 +53,7 @@ public class MyLinkedList {
         size++;
     }
 
+    //insert a node at the end of the LinkedList
     public void insertLast(int val) {
         Node node = new Node(val);
         if (tail == null) {
@@ -63,6 +66,7 @@ public class MyLinkedList {
         size++;
     }
 
+    //Insert a node at a specific index in the LinkedList
     public void insertAt(int index, int val) {
         if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException("Invalid index: " + index);
@@ -87,6 +91,7 @@ public class MyLinkedList {
         size++;
     }
 
+    //Remove a node from the beginning of the LinkedList
     public void deleteFirst() {
         if (head == null) {
             System.out.println("The list is empty");
@@ -101,6 +106,7 @@ public class MyLinkedList {
         }
     }
 
+    //Helper function to delete the last node in the Linkedlist
     public void deleteLastNode() {
         if (head == null || head.next == null) {
             deleteFirst();
@@ -117,6 +123,7 @@ public class MyLinkedList {
         size--;
     }
 
+    //Remove a node from the end of the LinkedList
     public void deleteLast() {
         if (tail == null) {
             System.out.println("The list is empty");
@@ -131,6 +138,7 @@ public class MyLinkedList {
         deleteLastNode(); // size handled inside
     }
 
+    //Remove a node at the specific index from the LinkedList
     public void deleteAt(int index) {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException("Invalid index: " + index);
@@ -155,12 +163,14 @@ public class MyLinkedList {
         size--;
     }
 
+    //reset the LinkedList
     public void clear() {
         head = null;
         tail = null;
         size = 0;
     }
 
+    //displays the data of the LinkedList
     public void showList() {
         Node node = head;
         while (node != null) {

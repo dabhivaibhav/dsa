@@ -27,6 +27,31 @@ Avoid `LinkedList` if:
 
 ---
 
+## 🛠️ My Implementation Understanding
+
+To implement a custom LinkedList, it's important to understand that it is made up of `Node` objects connected through references. Unlike arrays, LinkedLists don't use indexing. The first node is called the **head**, and the last node is referred to as the **tail**. Each `Node` contains two things:
+- The **data**
+- A **reference** (or pointer) to the next node (and to the previous node in doubly or circular versions)
+
+### 🧱 Structure of Custom Implementation
+
+- In a **Singly Linked List**, each node has `data` and a `next` reference.
+- In the `MyLinkedList` class, I defined:
+    - A `Node` class with `data` and `next`
+    - A `MyLinkedList` class with:
+        - `head` (points to the first node)
+        - `tail` (points to the last node)
+        - `size` (tracks the number of nodes)
+
+### 💡 How I Approach Implementing an Operation
+
+Whenever I start building or debugging an operation:
+1. I **draw the current state** of the LinkedList — showing head, tail, and all the nodes.
+2. I **label references clearly** and imagine how they should change after the operation.
+3. I focus not on *how* to write the code immediately, but on *what references or logic* are needed.
+
+> This habit of visualizing the structure first helps me understand pointer movements clearly and avoids confusion.
+---
 ## 🌟 Characteristics of LinkedList
 
 | Feature                          | Support        |

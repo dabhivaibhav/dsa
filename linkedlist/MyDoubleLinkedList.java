@@ -28,6 +28,7 @@ public class MyDoubleLinkedList {
         this.size = 0;
     }
 
+    //insert a node at the beginning of LinkedList
     public void insertFirst(int val) {
         Node node = new Node(val);
         node.next = head;
@@ -43,6 +44,7 @@ public class MyDoubleLinkedList {
         size++;
     }
 
+    //insert a node at the end of LinkedList
     public void insertLast(int val) {
         Node node = new Node(val);
         if (tail == null) {
@@ -55,6 +57,7 @@ public class MyDoubleLinkedList {
         tail = node;
     }
 
+    //displays data of LinkedList
     public void showList() {
         Node node = head;
         while (node != null) {
@@ -64,6 +67,7 @@ public class MyDoubleLinkedList {
         System.out.println();
     }
 
+    //displays data of LinkedList in reverse order
     public void showListReverse() {
         Node node = tail;
         while (node != null) {

@@ -24,6 +24,7 @@ public class MyCircularLinkedList {
         this.size = 0;
     }
 
+    //inserts element in order
     public void insert(int val) {
         Node node = new Node(val);
         if (head == null) {
@@ -37,6 +38,7 @@ public class MyCircularLinkedList {
         size++;
     }
 
+    //delete a node by value
     public void deleteByValue(int val) {
         if (head == null) {
             System.out.println("The list is empty");
@@ -65,6 +67,7 @@ public class MyCircularLinkedList {
         }
     }
 
+    //displays data of node
     public void showList() {
         Node node = head;
         if (head != null) {
