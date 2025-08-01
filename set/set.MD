@@ -25,8 +25,8 @@ The **`Set`** collection in Java represents a group of **unique elements**—dup
 
 ### 1. `HashSet<E> set = new HashSet<>();`
 - **Description**: Creates an empty `HashSet` with:
-    - **Default initial capacity** = 16
-    - **Default load factor** = 0.75
+  - **Default initial capacity** = 16
+  - **Default load factor** = 0.75
 - Automatically resizes when the number of elements exceeds `capacity * loadFactor`.
 
 ```java
@@ -58,8 +58,8 @@ Set<Integer> set = new HashSet<>(50); // Ideal for storing up to 50 elements
 
 ### 4. `HashSet<E> set = new HashSet<>(int initialCapacity, float loadFactor);`
 - **Description**: Full control over internal capacity and load threshold.
-    - **initialCapacity**: Initial number of buckets.
-    - **loadFactor**: Determines when to rehash (`capacity * loadFactor`).
+  - **initialCapacity**: Initial number of buckets.
+  - **loadFactor**: Determines when to rehash (`capacity * loadFactor`).
 
 ```java
 Set<String> set = new HashSet<>(32, 0.5f); // Resize when 16 elements are reached
@@ -206,8 +206,8 @@ System.out.println(linkedSet); // Output: [one, two, three]
 ### 🔹 Use Cases:
 - When you want a `Set` that guarantees **both uniqueness and insertion order**.
 - Examples:
-    - Caching recent search queries
-    - Maintaining the order of selected UI elements
+  - Caching recent search queries
+  - Maintaining the order of selected UI elements
 
 ---
 ## 🔸 Internal Working of LinkedHashSet
@@ -303,6 +303,19 @@ for (String s : set) {
 | Lookup performance     | ⚡ Fast — O(1) average |
 | Iteration order        | ✅ Insertion order preserved |
 | Memory overhead        | Slightly more than `HashSet` due to links |
+
+---
+
+## 📊 Comparison: HashSet vs LinkedHashSet vs TreeSet
+
+| Feature                     | HashSet              | LinkedHashSet              | TreeSet                      |
+|----------------------------|----------------------|----------------------------|------------------------------|
+| **Underlying Data Structure** | HashTable             | HashTable + LinkedList      | Balanced Tree (Red-Black Tree) |
+| **Insertion Order**         | Not Preserved         | Preserved                   | Not Preserved (Sorted Order) |
+| **Sorting Order**           | Not Applicable        | Not Applicable              | Applicable (Natural or Custom) |
+| **Heterogeneous Objects**   | Allowed               | Allowed                     | ❌ Not Allowed (unless using Comparator) |
+| **Duplicate Objects**       | Not Allowed           | Not Allowed                 | Not Allowed                   |
+| **Null Acceptance**         | Allowed only once     | Allowed only once           | Allowed only as first element if TreeSet is empty, otherwise ❌ `NullPointerException` |
 
 ---
 
