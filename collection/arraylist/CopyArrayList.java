@@ -1,8 +1,8 @@
-package arraylist;
+package collection.arraylist;
 
 import java.util.ArrayList;
 
-/*Write a program to copy all the elements from a arraylist*/
+/*Write a program to copy all the elements from a collection.arraylist*/
 public class CopyArrayList  {
 
     public static void main(String[] args) {

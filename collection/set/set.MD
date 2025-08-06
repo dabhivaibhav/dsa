@@ -23,46 +23,46 @@ The **`Set`** collection in Java represents a group of **unique elements**—dup
 
 ## 🔸 HashSet Constructors
 
-### 1. `HashSet<E> set = new HashSet<>();`
+### 1. `HashSet<E> collection.set = new HashSet<>();`
 - **Description**: Creates an empty `HashSet` with:
   - **Default initial capacity** = 16
   - **Default load factor** = 0.75
 - Automatically resizes when the number of elements exceeds `capacity * loadFactor`.
 
 ```java
-Set<String> set = new HashSet<>();
+Set<String> collection.set = new HashSet<>();
 ```
 
 ---
 
-### 2. `HashSet<E> set = new HashSet<>(Collection<? extends E> c);`
+### 2. `HashSet<E> collection.set = new HashSet<>(Collection<? extends E> c);`
 - **Description**: Creates a `HashSet` containing all elements from another collection.
 - Automatically removes duplicates.
 
 ```java
 List<String> list = List.of("apple", "banana", "apple");
-Set<String> set = new HashSet<>(list); // set: [apple, banana]
+Set<String> collection.set = new HashSet<>(list); // collection.set: [apple, banana]
 ```
 
 ---
 
-### 3. `HashSet<E> set = new HashSet<>(int initialCapacity);`
+### 3. `HashSet<E> collection.set = new HashSet<>(int initialCapacity);`
 - **Description**: Creates a `HashSet` with a specified initial capacity.
 - Use when you know the expected number of elements to minimize resizing.
 
 ```java
-Set<Integer> set = new HashSet<>(50); // Ideal for storing up to 50 elements
+Set<Integer> collection.set = new HashSet<>(50); // Ideal for storing up to 50 elements
 ```
 
 ---
 
-### 4. `HashSet<E> set = new HashSet<>(int initialCapacity, float loadFactor);`
+### 4. `HashSet<E> collection.set = new HashSet<>(int initialCapacity, float loadFactor);`
 - **Description**: Full control over internal capacity and load threshold.
   - **initialCapacity**: Initial number of buckets.
   - **loadFactor**: Determines when to rehash (`capacity * loadFactor`).
 
 ```java
-Set<String> set = new HashSet<>(32, 0.5f); // Resize when 16 elements are reached
+Set<String> collection.set = new HashSet<>(32, 0.5f); // Resize when 16 elements are reached
 ```
 ---
 
@@ -78,7 +78,7 @@ private static final Object PRESENT = new Object();
 So when you do:
 
 ```java
-set.add("apple");
+collection.set.add("apple");
 ```
 
 It internally does:
@@ -102,13 +102,13 @@ map.put("apple", PRESENT);
 |------------------------|------------------|----------------|-----------------|
 | `add(E e)`             | O(1)             | O(n)           | Adds element if not already present. |
 | `remove(Object o)`     | O(1)             | O(n)           | Removes specified element if it exists. |
-| `contains(Object o)`   | O(1)             | O(n)           | Checks if an element exists in the set. |
+| `contains(Object o)`   | O(1)             | O(n)           | Checks if an element exists in the collection.set. |
 | `size()`               | O(1)             | O(1)           | Returns the number of elements. |
-| `isEmpty()`            | O(1)             | O(1)           | Checks if the set is empty. |
-| `clear()`              | O(n)             | O(n)           | Removes all elements from the set. |
-| `iterator()`           | O(n)             | O(n)           | Returns an iterator over the set. |
-| `clone()`              | O(n)             | O(n)           | Returns a shallow copy of the set. |
-| `toArray()`            | O(n)             | O(n)           | Converts set elements into an array. |
+| `isEmpty()`            | O(1)             | O(1)           | Checks if the collection.set is empty. |
+| `clear()`              | O(n)             | O(n)           | Removes all elements from the collection.set. |
+| `iterator()`           | O(n)             | O(n)           | Returns an iterator over the collection.set. |
+| `clone()`              | O(n)             | O(n)           | Returns a shallow copy of the collection.set. |
+| `toArray()`            | O(n)             | O(n)           | Converts collection.set elements into an array. |
 
 ---
 ## 🔸 What is a Hash Bucket and Same Hash Bucket?
@@ -156,10 +156,10 @@ class Item {
 ```
 
 ```java
-Set<Item> set = new HashSet<>();
-set.add(new Item("Apple"));
-set.add(new Item("Banana"));
-set.add(new Item("Cherry"));
+Set<Item> collection.set = new HashSet<>();
+collection.set.add(new Item("Apple"));
+collection.set.add(new Item("Banana"));
+collection.set.add(new Item("Cherry"));
 ```
 
 Even though these objects have different values, they all land in the **same bucket**, because their `hashCode()` is the same. They are then stored in a linked list within that bucket.
@@ -231,10 +231,10 @@ private static final Object PRESENT = new Object();
 When you add elements:
 
 ```java
-Set<String> set = new LinkedHashSet<>();
-set.add("apple");
-set.add("banana");
-set.add("cherry");
+Set<String> collection.set = new LinkedHashSet<>();
+collection.set.add("apple");
+collection.set.add("banana");
+collection.set.add("cherry");
 ```
 
 Internally:
@@ -270,7 +270,7 @@ When you remove an element:
 The **iterator** of a `LinkedHashSet` returns elements in the **exact order** they were inserted, unlike `HashSet` which may appear random.
 
 ```java
-for (String s : set) {
+for (String s : collection.set) {
     System.out.println(s); // apple, banana, cherry
 }
 ```
@@ -282,12 +282,12 @@ for (String s : set) {
 |------------------------|------------------|----------------|-----------------|
 | `add(E e)`             | O(1)             | O(n)           | Adds element if not already present; maintains insertion order. |
 | `remove(Object o)`     | O(1)             | O(n)           | Removes specified element if it exists. |
-| `contains(Object o)`   | O(1)             | O(n)           | Checks if an element exists in the set. |
+| `contains(Object o)`   | O(1)             | O(n)           | Checks if an element exists in the collection.set. |
 | `size()`               | O(1)             | O(1)           | Returns the number of elements. |
-| `isEmpty()`            | O(1)             | O(1)           | Checks if the set is empty. |
-| `clear()`              | O(n)             | O(n)           | Removes all elements from the set. |
+| `isEmpty()`            | O(1)             | O(1)           | Checks if the collection.set is empty. |
+| `clear()`              | O(n)             | O(n)           | Removes all elements from the collection.set. |
 | `iterator()`           | O(n)             | O(n)           | Returns an iterator in insertion order. |
-| `toArray()`            | O(n)             | O(n)           | Converts set elements into an array. |
+| `toArray()`            | O(n)             | O(n)           | Converts collection.set elements into an array. |
 
 > Note: Like `HashSet`, the performance of `LinkedHashSet` depends on the quality of the hash function and the distribution of elements. It adds a slight overhead to maintain the linked list for ordering.
 

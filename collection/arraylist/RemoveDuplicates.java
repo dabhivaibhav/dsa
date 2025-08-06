@@ -1,4 +1,4 @@
-package arraylist;
+package collection.arraylist;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -6,7 +6,7 @@ import java.util.Scanner;
 public class RemoveDuplicates {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        System.out.print("Enter the number of elements in the arraylist: ");
+        System.out.print("Enter the number of elements in the collection.arraylist: ");
         int size = sc.nextInt();
         ArrayList<Integer> list = new ArrayList<Integer>(size);
 

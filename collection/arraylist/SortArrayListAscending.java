@@ -1,12 +1,12 @@
-package arraylist;
+package collection.arraylist;
 
 import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * Write a program to sort an arraylist in ascending order.
+ * Write a program to sort an collection.arraylist in ascending order.
  *
- * For now I have used 2 for loops to check 1 element with each next elements in arraylist
+ * For now I have used 2 for loops to check 1 element with each next elements in collection.arraylist
  * which takes O(n^2) time complexity in all cases and O(1) in space complexity.
  */
 public class SortArrayListAscending {

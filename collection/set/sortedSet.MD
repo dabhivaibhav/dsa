@@ -29,8 +29,8 @@ Use a **`SortedSet`** when you need to maintain a **collection of unique element
 
 | Method | Description |
 |--------|-------------|
-| `first()` | Returns the **smallest element** in the set. |
-| `last()` | Returns the **largest element** in the set. |
+| `first()` | Returns the **smallest element** in the collection.set. |
+| `last()` | Returns the **largest element** in the collection.set. |
 | `headSet(E toElement)` | Returns a view of elements **strictly less than** `toElement`. |
 | `tailSet(E fromElement)` | Returns a view of elements **greater than or equal to** `fromElement`. |
 | `subSet(E fromElement, E toElement)` | Returns elements **between `fromElement` (inclusive)** and **`toElement` (exclusive)**. |
@@ -48,8 +48,8 @@ Although `SortedSet` is an interface and doesn’t have constructors itself, its
 
 | **Method Signature**                          | **Description**                                                              | **Supported In** |
 |-----------------------------------------------|------------------------------------------------------------------------------|------------------|
-| `Object first()`                               | Returns the lowest element in the set                                        | `SortedSet`, `TreeSet`, `NavigableSet` |
-| `Object last()`                                | Returns the highest element in the set                                       | `SortedSet`, `TreeSet`, `NavigableSet` |
+| `Object first()`                               | Returns the lowest element in the collection.set                                        | `SortedSet`, `TreeSet`, `NavigableSet` |
+| `Object last()`                                | Returns the highest element in the collection.set                                       | `SortedSet`, `TreeSet`, `NavigableSet` |
 | `SortedSet headSet(Object toElement)`          | Returns a view of elements less than `toElement`                             | `SortedSet`, `TreeSet` |
 | `SortedSet tailSet(Object fromElement)`        | Returns a view of elements from `fromElement` (inclusive) to end             | `SortedSet`, `TreeSet` |
 | `SortedSet subSet(Object from, Object to)`     | Returns a view from `from` (inclusive) to `to` (exclusive)                   | `SortedSet`, `TreeSet` |
@@ -73,7 +73,7 @@ Although `SortedSet` is an interface and doesn’t have constructors itself, its
 | `subSet(E from, E to)`       | O(log n + k)     | O(log n + k)   | Returns view between two given values. |
 | `comparator()`               | O(1)             | O(1)           | Returns the comparator used or null. |
 
-> `n` is the number of elements in the set, and `k` is the number of elements returned in the view for range operations.
+> `n` is the number of elements in the collection.set, and `k` is the number of elements returned in the view for range operations.
 
 ---
 
@@ -81,7 +81,7 @@ Although `SortedSet` is an interface and doesn’t have constructors itself, its
 
 ## 🔸 Constructors and Implementations
 
-Although `SortedSet` is an interface and doesn’t have constructors itself, its primary implementation `TreeSet` provides full support for sorted set operations.
+Although `SortedSet` is an interface and doesn’t have constructors itself, its primary implementation `TreeSet` provides full support for sorted collection.set operations.
 
 
 

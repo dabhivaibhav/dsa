@@ -30,7 +30,7 @@
 | Operation        | Time Complexity |
 |------------------|-----------------|
 | `get(index)`     | O(1)            |
-| `set(index, val)`| O(1)            |
+| `collection.set(index, val)`| O(1)            |
 | `add(val)`       | Amortized O(1)  |
 | `add(index, val)`| O(n)            |
 | `remove(index)`  | O(n)            |
@@ -102,10 +102,10 @@ System.out.println(names.get(2)); // Output: Bob
 
 ## ✏️ Modifying Elements
 
-### Using `set(index, element)`:
+### Using `collection.set(index, element)`:
 
 ```java
-names.set(3, "Eve"); // Replaces "Charlie" with "Eve"
+names.collection.set(3, "Eve"); // Replaces "Charlie" with "Eve"
 ```
 
 > Note: `String` is immutable in Java. Modifying a String in the list changes the reference to a new object. Old objects are removed by the garbage collector if no longer referenced.

@@ -37,7 +37,7 @@ System.out.println(numbers[0]);
 - A **group of individual objects** treated as a single entity.
 
 ### What is the Collection Framework?
-- A **set of classes and interfaces** for storing and manipulating groups of data.
+- A **collection.set of classes and interfaces** for storing and manipulating groups of data.
 - Part of `java.util` package.
 
 ### Key Characteristics:
@@ -97,7 +97,7 @@ This table summarizes whether common Java collection classes implement `Serializ
 | Size                             | Fixed                              | Dynamic (growable)                     |
 | Type                             | Homogeneous only                   | Homogeneous & Heterogeneous            |
 | Performance                      | High                               | Slightly lower due to abstraction      |
-| Utility Methods                  | Not available                      | Rich set of utility methods            |
+| Utility Methods                  | Not available                      | Rich collection.set of utility methods            |
 | Underlying Structure             | None                               | Based on data structures               |
 | Stores                           | Primitives & Objects               | Objects only                           |
 
@@ -157,11 +157,11 @@ System.out.println(names);
 **Example**:
 
 ```java
-Set<Integer> set = new HashSet<>();
-set.add(10);
-set.add(20);
-set.add(10); // Duplicate won't be added
-System.out.println(set);
+Set<Integer> collection.set = new HashSet<>();
+collection.set.add(10);
+collection.set.add(20);
+collection.set.add(10); // Duplicate won't be added
+System.out.println(collection.set);
 ```
 
 ---

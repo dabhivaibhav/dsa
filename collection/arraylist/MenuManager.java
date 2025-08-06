@@ -1,4 +1,4 @@
-package arraylist;
+package collection.arraylist;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -41,7 +41,7 @@ public class MenuManager {
                         System.out.println("Can't remove element from an empty list");
                         break;
                     }
-                    System.out.println("Current elements of arraylist: " + list);
+                    System.out.println("Current elements of collection.arraylist: " + list);
                     System.out.println("Enter the choice to remove an element \n" +
                             "1. Remove by index \n" +
                             "2. Remove by value/element");
@@ -65,7 +65,7 @@ public class MenuManager {
                     }
                     break;
                 case 3:
-                    System.out.println("Current elements of arraylist: " + list);
+                    System.out.println("Current elements of collection.arraylist: " + list);
                     break;
                 default:
 

@@ -45,7 +45,7 @@ String str = list.get(0); // Safe, no casting needed
 ```java
 class Box<T> {
     private T value;
-    public void set(T value) { this.value = value; }
+    public void collection.set(T value) { this.value = value; }
     public T get() { return value; }
 }
 ```
@@ -56,11 +56,11 @@ class Box<T> {
 
 ```java
 Box<Integer> intBox = new Box<>();
-intBox.set(100);
+intBox.collection.set(100);
 System.out.println(intBox.get());
 
 Box<String> strBox = new Box<>();
-strBox.set("Generics");
+strBox.collection.set("Generics");
 System.out.println(strBox.get());
 ```
 

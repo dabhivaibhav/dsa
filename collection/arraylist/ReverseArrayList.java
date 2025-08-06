@@ -1,4 +1,4 @@
-package arraylist;
+package collection.arraylist;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -24,7 +24,7 @@ public class ReverseArrayList {
         }
         System.out.println("Reversed ArrayList" + list);
 
-        // here we can use addAll method but the efficient way is parameterized constructor to create a new arraylist
+        // here we can use addAll method but the efficient way is parameterized constructor to create a new collection.arraylist
         ArrayList<Integer> list1 = new ArrayList<>(list);
         System.out.println("List1" + list1);
         list.clear();

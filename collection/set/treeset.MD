@@ -14,7 +14,7 @@
 - ❌ **No Duplicate Elements Allowed**
 - ❌ **Heterogeneous Elements Not Allowed** (unless a custom `Comparator` is provided)
 - ⚠️ **Null Insertion**:
-    - Allowed only **once**, and **only** if the set is initially empty.
+    - Allowed only **once**, and **only** if the collection.set is initially empty.
     - Any further insertion or comparison with `null` will cause a `NullPointerException`.
 
 ---
@@ -23,10 +23,10 @@
 
 | Constructor | Description |
 |-------------|-------------|
-| `TreeSet()` | Creates an empty set sorted in **natural order**. |
-| `TreeSet(Comparator c)` | Creates a set with **custom sorting order** using a `Comparator` object. |
-| `TreeSet(Collection c)` | Creates a set containing elements of the collection in **sorted order**. |
-| `TreeSet(SortedSet s)` | Creates a set with the same sorting as the provided `SortedSet`. |
+| `TreeSet()` | Creates an empty collection.set sorted in **natural order**. |
+| `TreeSet(Comparator c)` | Creates a collection.set with **custom sorting order** using a `Comparator` object. |
+| `TreeSet(Collection c)` | Creates a collection.set containing elements of the collection in **sorted order**. |
+| `TreeSet(SortedSet s)` | Creates a collection.set with the same sorting as the provided `SortedSet`. |
 
 ---
 
