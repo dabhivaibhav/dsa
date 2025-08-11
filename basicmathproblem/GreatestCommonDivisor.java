@@ -7,8 +7,6 @@ Problem: GCD of Two Numbers. You are given two integers n1 and n2. You need find
 two given numbers. Return the GCD of the two numbers. The Greatest Common Divisor (GCD) of two integers is the largest
 positive integer that divides both of the integers.
 Constraints: 1 <= n1, n2 <= 1000
-
-
  */
 public class GreatestCommonDivisor {
 
