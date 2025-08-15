@@ -174,6 +174,46 @@ T(n) = aT(n/b) + O(f(n))
 
 ---
 
+# Multiple Recursion
+
+## Why do we need multiple recursion calls?
+Multiple recursion is needed when a single function call must branch into more than one recursive call in order to solve a problem. This happens when the problem’s structure naturally requires exploring multiple independent subproblems at each step, rather than just one.
+
+In short, you need multiple recursion when the solution to the current state is the *combined result* of multiple smaller states that must each be explored. If you only have one smaller state to handle at each step, single recursion is enough.
+
+---
+
+## How to calculate time complexity for multiple recursion
+To calculate the time complexity for a multiple recursion algorithm, follow these steps:
+
+1. **Identify the recurrence relation**
+    - Determine how many recursive calls are made per function call.
+    - Example: Fibonacci without memoization makes two calls: `T(n) = T(n-1) + T(n-2) + O(1)`.
+
+2. **Express it as a recurrence**
+    - If each call spawns `k` calls on smaller inputs of size `n - m`, you can write:
+      ```
+      T(n) = k * T(n - m) + O(1)
+      ```
+
+3. **Solve the recurrence**
+    - Use the **recursion tree method** or **Master Theorem** (if applicable).
+    - Example for Fibonacci: `T(n) ≈ 2^n` because the recursion tree has exponential growth.
+
+4. **Consider overlapping subproblems**
+    - If the recursion recomputes the same results many times, the complexity can blow up exponentially.
+    - With memoization or dynamic programming, the same multiple recursion can be reduced to polynomial time.
+
+**Example Table:**
+
+| Problem                  | Recursive Calls per Step | Recurrence Relation                  | Time Complexity |
+|--------------------------|--------------------------|---------------------------------------|-----------------|
+| Fibonacci (no memo)      | 2                        | `T(n) = T(n-1) + T(n-2) + O(1)`       | O(2^n)          |
+| Binary Tree Traversal    | 2                        | `T(n) = 2T(n/2) + O(1)`               | O(n)            |
+| Merge Sort               | 2                        | `T(n) = 2T(n/2) + O(n)`               | O(n log n)      |
+
+---
+
 ## 🧠 DSA Tips
 - Prefer recursion for **tree/graph traversal**, **divide & conquer**, and **backtracking**.
 - Ensure your **base case** is correct and reachable.
