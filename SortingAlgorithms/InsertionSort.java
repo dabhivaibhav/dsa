@@ -3,6 +3,12 @@ package SortingAlgorithms;
 
 import java.util.Arrays;
 
+/*
+You are given an array of integers. You need to sort the array in ascending order using the Insertion Sort algorithm.
+Insertion Sort works by building a sorted array one element at a time. It takes each element from the input array and
+inserts it into its correct position in the already sorted part of the array. The process continues until the entire
+array is sorted.
+ */
 public class InsertionSort {
 
     public static void main(String[] args) {
