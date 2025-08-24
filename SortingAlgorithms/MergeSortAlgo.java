@@ -37,11 +37,12 @@ public class MergeSortAlgo {
     }
 
     private static void mergeArr(int[] arr, int low, int mid, int high) {
-       //tempArray to store the merger array
+        //tempArray to store the merger array
         ArrayList<Integer> list = new ArrayList<>();
         int left = low; // Starting index of the left subarray
         int right = mid + 1; // Starting index of the right subarray
 
+        //here it will compare the left and right subarray and add the smaller element to the list
         while(left <= mid && right <= high) {
             if(arr[left] <= arr[right]) {
                 list.add(arr[left]);
@@ -52,16 +53,19 @@ public class MergeSortAlgo {
             }
         }
 
+        //here it will add the remaining elements of the left subarray to the list
         while(left <= mid) {
             list.add(arr[left]);
             left++;
         }
 
+        //here it will add the remaining elements of the right subarray to the list
         while(right <= high) {
             list.add(arr[right]);
             right++;
         }
 
+        //here it will copy the elements of the list to the original array
         for(int i = low; i <= high; i++) {
             arr[i] = list.get(i - low);
         }
