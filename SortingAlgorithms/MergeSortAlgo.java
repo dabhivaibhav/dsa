@@ -18,7 +18,7 @@ public class MergeSortAlgo {
         System.out.println(Arrays.toString(arr));
     }
 
-    private static void mergeSort(int[] arr, int low, int high) {
+    public static void mergeSort(int[] arr, int low, int high) {
         if (low < high) {
 
             //Find the mid point

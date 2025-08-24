@@ -25,8 +25,8 @@ The **`Set`** collection in Java represents a group of **unique elements**—dup
 
 ### 1. `HashSet<E> collection.set = new HashSet<>();`
 - **Description**: Creates an empty `HashSet` with:
-  - **Default initial capacity** = 16
-  - **Default load factor** = 0.75
+    - **Default initial capacity** = 16
+    - **Default load factor** = 0.75
 - Automatically resizes when the number of elements exceeds `capacity * loadFactor`.
 
 ```java
@@ -58,8 +58,8 @@ Set<Integer> collection.set = new HashSet<>(50); // Ideal for storing up to 50 e
 
 ### 4. `HashSet<E> collection.set = new HashSet<>(int initialCapacity, float loadFactor);`
 - **Description**: Full control over internal capacity and load threshold.
-  - **initialCapacity**: Initial number of buckets.
-  - **loadFactor**: Determines when to rehash (`capacity * loadFactor`).
+    - **initialCapacity**: Initial number of buckets.
+    - **loadFactor**: Determines when to rehash (`capacity * loadFactor`).
 
 ```java
 Set<String> collection.set = new HashSet<>(32, 0.5f); // Resize when 16 elements are reached
@@ -93,6 +93,7 @@ map.put("apple", PRESENT);
 - Uses **`equals()`** to ensure no duplicates exist in the same bucket.
 - No shifting of elements occurs on deletion, unlike in `ArrayList`.
 - Allows **one null element** since `HashMap` allows one null key.
+- Since **Java 8**, long collision chains can be **treeified** (red–black tree), making per-bucket operations **O(log m)** instead of linear.
 
 ---
 
@@ -100,15 +101,17 @@ map.put("apple", PRESENT);
 
 | **Method**             | **Average Time** | **Worst Time** | **Description** |
 |------------------------|------------------|----------------|-----------------|
-| `add(E e)`             | O(1)             | O(n)           | Adds element if not already present. |
-| `remove(Object o)`     | O(1)             | O(n)           | Removes specified element if it exists. |
-| `contains(Object o)`   | O(1)             | O(n)           | Checks if an element exists in the collection.set. |
+| `add(E e)`             | O(1)             | O(log n)*; O(n) on resize           | Adds element if not already present. |
+| `remove(Object o)`     | O(1)             | O(log n)*           | Removes specified element if it exists. |
+| `contains(Object o)`   | O(1)             | O(log n)*           | Checks if an element exists in the collection.set. |
 | `size()`               | O(1)             | O(1)           | Returns the number of elements. |
 | `isEmpty()`            | O(1)             | O(1)           | Checks if the collection.set is empty. |
 | `clear()`              | O(n)             | O(n)           | Removes all elements from the collection.set. |
 | `iterator()`           | O(n)             | O(n)           | Returns an iterator over the collection.set. |
 | `clone()`              | O(n)             | O(n)           | Returns a shallow copy of the collection.set. |
 | `toArray()`            | O(n)             | O(n)           | Converts collection.set elements into an array. |
+
+**Notes:** `*` Treeified bucket worst-case (Java 8+). With many inserts colliding into a single bucket, per-op becomes **O(log n)**; across **n** such inserts the total can be **O(n log n)** (∑ log k). A single `add` that triggers a **resize/rehash** costs **O(n)** for that call.
 
 ---
 ## 🔸 What is a Hash Bucket and Same Hash Bucket?
@@ -206,8 +209,8 @@ System.out.println(linkedSet); // Output: [one, two, three]
 ### 🔹 Use Cases:
 - When you want a `Set` that guarantees **both uniqueness and insertion order**.
 - Examples:
-  - Caching recent search queries
-  - Maintaining the order of selected UI elements
+    - Caching recent search queries
+    - Maintaining the order of selected UI elements
 
 ---
 ## 🔸 Internal Working of LinkedHashSet
@@ -280,9 +283,9 @@ for (String s : collection.set) {
 
 | **Method**             | **Average Time** | **Worst Time** | **Description** |
 |------------------------|------------------|----------------|-----------------|
-| `add(E e)`             | O(1)             | O(n)           | Adds element if not already present; maintains insertion order. |
-| `remove(Object o)`     | O(1)             | O(n)           | Removes specified element if it exists. |
-| `contains(Object o)`   | O(1)             | O(n)           | Checks if an element exists in the collection.set. |
+| `add(E e)`             | O(1)             | O(log n)*; O(n) on resize           | Adds element if not already present; maintains insertion order. |
+| `remove(Object o)`     | O(1)             | O(log n)*           | Removes specified element if it exists. |
+| `contains(Object o)`   | O(1)             | O(log n)*           | Checks if an element exists in the collection.set. |
 | `size()`               | O(1)             | O(1)           | Returns the number of elements. |
 | `isEmpty()`            | O(1)             | O(1)           | Checks if the collection.set is empty. |
 | `clear()`              | O(n)             | O(n)           | Removes all elements from the collection.set. |
