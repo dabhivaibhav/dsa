@@ -9,7 +9,7 @@ Constraints:
             -10^4 <= nums[i] <= 10^4
 
 
-Here I have used two pointer approach. So first I get the K and I took K%n because k might be bigger than length of array.
+Here I have used two pointer approach. So first I get the "K" and I took "K%n" because you have to perform the rotation by the modulo you are getting.
 Then I reverse the array from k to n-1, then from 0 to k-1 and finally from 0 to n-1.
 Time complexity: O(n)
 Space complexity: O(1)
