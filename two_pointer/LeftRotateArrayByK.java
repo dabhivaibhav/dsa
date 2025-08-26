@@ -26,11 +26,11 @@ public class LeftRotateArrayByK {
         int[] nums1 = {1, 2, 3, 4, 5};
         int k = 3; // Number of positions to rotate left
         System.out.println("Array before left rotation by " + k + ":");
-        Arrays.toString(nums);
+        System.out.println(Arrays.toString(nums));
         System.out.println("Array after left rotation by " + k + ":");
         leftRotateByK(nums, k);
         System.out.println("\nAnother approach for left rotation by " + k + ":");
-        anotherApproach(nums1, k);
+        anotherApproach(nums1, 5);
     }
 
     private static void leftRotateByK(int[] nums, int k) {
