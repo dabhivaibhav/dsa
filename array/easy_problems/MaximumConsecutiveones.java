@@ -1,4 +1,4 @@
-package array;
+package array.easy_problems;
 
 /*
 Given a binary array nums, return the maximum number of consecutive 1s in the array.A binary array is an array that

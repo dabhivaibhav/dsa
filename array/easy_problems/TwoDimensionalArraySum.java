@@ -1,4 +1,4 @@
-package array;
+package array.easy_problems;
 
 /**
  * Write a program to print sum of each row in 2D array.

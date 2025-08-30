@@ -1,4 +1,4 @@
-package array;
+package array.easy_problems;
 
 /**
  * Write a program that displays the sum,

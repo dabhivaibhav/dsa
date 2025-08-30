@@ -65,7 +65,7 @@ public class SortArrayOf012 {
             } else if (nums[mid] == 1) {
                 // If we find 1, just increment mid as it's in correct position
                 mid++;
-            } else if (nums[mid] == 2) {
+            } else{
                 // If we find 2, swap with high pointer and decrement high
                 int temp = nums[high];
                 nums[high] = nums[mid];

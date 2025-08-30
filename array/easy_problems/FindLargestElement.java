@@ -1,4 +1,4 @@
-package array;
+package array.easy_problems;
 
 import static SortingAlgorithms.MergeSortAlgo.mergeSort;
 
