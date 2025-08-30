@@ -87,8 +87,6 @@ public class RemoveDuplicateElements {
         }
         int index = 0;
         for (int i = 1; i < nums.length; i++) {
-//            System.out.println("i: " + i + " index: " + index);
-//            System.out.println("nums[i]: " + nums[i] + " nums[index]: " + nums[index]);
             if (nums[i] != nums[index]) {
                 nums[index + 1] = nums[i];
                 index++;
