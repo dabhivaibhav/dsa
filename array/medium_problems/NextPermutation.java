@@ -1,8 +1,10 @@
 package array.medium_problems;
 
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import static array.medium_problems.GenerateAllPermutation.permutation;
 
 /*
 A permutation of an array of integers is an arrangement of its members into a sequence or linear order.
@@ -27,41 +29,57 @@ Input: nums = [3,2,1]
 Output: [1,2,3]
 Explanation: [3,2,1] is the last permutation. So we return the first: [1,2,3].
  */
+
 public class NextPermutation {
 
-
     public static void main(String[] args) {
-
-        int[] nums = {1, 2, 3};
-        System.out.println(permutation(nums));
+        int[] nums = {3, 2, 1};
+        permutationBruteForceApproach(nums);
     }
 
+    /**
+     * The goal is to find the next lexicographically greater permutation of given numbers.
+     * Time Complexity: O(n! * n) where n is the length of input array
+     * O(n!) for generating all permutations
+     * O(n) for finding current permutation and copying next permutation
+     * Space Complexity: O(n!) to store all permutations
+     * Finds the next permutation using brute force approach:
+     * 1. Generate all possible permutations using helper method
+     * 2. Find the index of current permutation in the list
+     * 3. Return the next permutation (or first if current is last)
+     *
+     * @param nums Input array to find next permutation for
+     */
+    private static void permutationBruteForceApproach(int[] nums) {
+        // Generate all possible permutations of the input array
+        List<List<Integer>> arr = permutation(nums);
 
-    public static List<List<Integer>> permutation(int[] nums) {
-        List<List<Integer>> ans = new ArrayList<>();
-        List<Integer> ds = new ArrayList<>();
-        boolean[] frequency = new boolean[nums.length];
-        nextPermutation(nums, ds, ans, frequency);
-        return ans;
-
-
-    }
-
-    private static void nextPermutation(int[] nums, List<Integer> ds, List<List<Integer>> ans, boolean[] frequency) {
-        if (ds.size() == nums.length) {
-            ans.add(new ArrayList<>(ds));
-            return;
-        }
-        for (int i = 0; i < nums.length; i++) {
-            if (!frequency[i]) {
-                frequency[i] = true;
-                ds.add(nums[i]);
-                nextPermutation(nums, ds, ans, frequency);
-                frequency[i] = false;
-                ds.remove(ds.size() - 1);
+        // Find the index of current permutation in the generated list
+        int currentIndex = -1;
+        for (int i = 0; i < arr.size(); i++) {
+            boolean match = true;
+            for (int j = 0; j < nums.length; j++) {
+                if (arr.get(i).get(j) != nums[j]) {
+                    match = false;
+                    break;
+                }
             }
-
+            if (match) {
+                currentIndex = i;
+                break;
+            }
         }
+
+        // Get next permutation, wrapping around to first if current is last
+        List<Integer> nextPerm = arr.get((currentIndex + 1) % arr.size());
+
+        // Copy next permutation back to input array
+        for (int i = 0; i < nums.length; i++) {
+            nums[i] = nextPerm.get(i);
+        }
+
+        System.out.println(Arrays.toString(nums));
     }
+
 
 }
