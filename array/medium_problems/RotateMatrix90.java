@@ -34,7 +34,7 @@ public class RotateMatrix90 {
 
         rotateMatrixBruteforceApproach(matrix);
         rotateMatrixOptimalApproach(matrix);
-//        rotateMatrixBruteforceApproach(matrix1);
+        rotateMatrixBruteforceApproach(matrix1);
 
     }
 
@@ -65,7 +65,7 @@ public class RotateMatrix90 {
 
         // Step 2: Print the rotated matrix
         // Final result: [[7,4,1],[8,5,2],[9,6,3]]
-        System.out.println("90 degrees rotation of the matrix is:");
+        System.out.println("Using Bruteforce approach 90 degrees rotation of the matrix is:");
         for (int[] row : result) {
             System.out.println(Arrays.toString(row));
         }
@@ -96,6 +96,7 @@ public class RotateMatrix90 {
             }
         }
 
+        System.out.println("Using optimal approach 90 degrees rotation of the matrix is:");
         // Step 2: Reverse each row
         // Final result: [[7,4,1],[8,5,2],[9,6,3]]
         for (int[] row : matrix) {
