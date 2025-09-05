@@ -31,10 +31,14 @@ public class LongestSubArraySum {
         int k = 15;
         int[] nums1 = {-3, 2, 1};
         int k1 = 6;
+        int[] nums2 = {2, 0, 0, 3};
+        int k2 = 3;
 
         longestSubArraySumBruteforce(nums, k);
         longestSubArraySumBruteforce(nums1, k1);
         longestSubArraySumBetterApproach(nums, k);
+        longestSubArraySumBetterApproach(nums1, k1);
+        longestSubArraySumBetterApproach(nums2, k2);
     }
 
 
@@ -77,33 +81,28 @@ public class LongestSubArraySum {
 
     public static void longestSubArraySumBetterApproach(int[] nums, int k) {
         int n = nums.length; // size of the array.
-
-        Map<Long, Integer> preSumMap = new HashMap<>();
         long sum = 0;
-        int maxLen = 0;
+        long leng = 0;
+        Map<Long, Integer> map = new HashMap<>();
+
+        // Outer loop - consider each element as a starting point
         for (int i = 0; i < n; i++) {
-            //calculate the prefix sum till index i:
+            // Add current element to sum
             sum += nums[i];
-
-            // if the sum = k, update the maxLen:
+            //if sum is equal to k, update the length of the subarray
             if (sum == k) {
-                maxLen = Math.max(maxLen, i + 1);
+                leng = i + 1;
+            }
+            //this will check for the current sum if the previous sum exists in the map
+            if (map.containsKey(sum - k)) {
+                leng = Math.max(leng, i - map.get(sum - k));
+            }
+            //this will add the current sum to the map if it doesn't exist
+            if( !map.containsKey( sum )){
+                map.put(sum, i);
             }
 
-            // calculate the sum of remaining part i.e. x-k:
-            long rem = sum - k;
-
-            //Calculate the length and update maxLen:
-            if (preSumMap.containsKey(rem)) {
-                int len = i - preSumMap.get(rem);
-                maxLen = Math.max(maxLen, len);
-            }
-
-            //Finally, update the map checking the conditions:
-            if (!preSumMap.containsKey(sum)) {
-                preSumMap.put(sum, i);
-            }
         }
-        System.out.println("Longest subarray sum: " + maxLen);
+        System.out.println("Longest subarray sum: " + leng);
     }
 }
