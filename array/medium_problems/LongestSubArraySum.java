@@ -43,11 +43,11 @@ public class LongestSubArraySum {
 
 
     /**
-     * Finds the length of longest subarray with sum equal to target value using brute force approach.
+     * Finds the length of the longest subarray with a sum equal to target value using brute force approach.
      * Algorithm:
-     * 1. Consider each element as starting point using outer loop
-     * 2. For each start point, calculate sum of subarrays using inner loop
-     * 3. Keep track of maximum length subarray that sums to target
+     * 1. Consider each element as a starting point using the outer loop
+     * 2. For each start point, calculate a sum of subarrays using the inner loop
+     * 3. Keep track of the maximum length subarray that sums to the target
      * <p>
      * Time Complexity: O(n²) where n is the length of input array
      * Space Complexity: O(1) as we only use constant extra space
@@ -56,10 +56,10 @@ public class LongestSubArraySum {
      * @param k    Target sum to find in subarrays
      */
     private static void longestSubArraySumBruteforce(int[] nums, int k) {
-        // Track length of longest valid subarray found
+        // Track length of the longest valid subarray found
         int longestSubArray = 0;
 
-        // Outer loop - consider each element as starting point
+        // Outer loop - consider each element as a starting point
         for (int i = 0; i < nums.length; i++) {
             int currentSum = 0;
             currentSum += nums[i];
@@ -70,7 +70,7 @@ public class LongestSubArraySum {
                 if (currentSum > k) {
                     currentSum = 0;
                 }
-                // If sum equals target, update longest length if current is longer
+                // If sum equals target, update the longest length if current is longer
                 if (currentSum == k) {
                     longestSubArray = Math.max(longestSubArray, j - i + 1);
                 }
@@ -79,29 +79,44 @@ public class LongestSubArraySum {
         System.out.println("Longest subarray sum: " + longestSubArray);
     }
 
-    public static void longestSubArraySumBetterApproach(int[] nums, int k) {
-        int n = nums.length; // size of the array.
-        long sum = 0;
-        long leng = 0;
-        Map<Long, Integer> map = new HashMap<>();
 
-        // Outer loop - consider each element as a starting point
+    /**
+     * Algorithm:
+     * 1. Maintain running sum and store prefix sums in HashMap
+     * 2. For each position, check if (sum - k) exists in a map to find a valid subarray
+     * 3. Update the longest length when a valid subarray found
+     * 4. Store the current prefix sum in a map if not already present
+     * Time Complexity: O(n) where n is the length of input array - single pass through array
+     * Space Complexity: O(n) to store prefix sums in HashMap
+     *
+     * @param nums Input array of integers
+     * @param k    Target sum to find in subarrays
+     */
+    public static void longestSubArraySumBetterApproach(int[] nums, int k) {
+        int n = nums.length;
+        long sum = 0;  // Running sum of elements
+        long leng = 0; // Length of the longest valid subarray
+        Map<Long, Integer> map = new HashMap<>(); // Stores prefix sums and their indices
+
+        // Process each element to find the longest subarray
         for (int i = 0; i < n; i++) {
-            // Add current element to sum
+            // Update the running sum with the current element
             sum += nums[i];
-            //if sum is equal to k, update the length of the subarray
+
+            // If the current sum equals k, entire subarray from start is valid
             if (sum == k) {
                 leng = i + 1;
             }
-            //this will check for the current sum if the previous sum exists in the map
+
+            // Check if there exists a prefix sum that can be removed to get target sum
             if (map.containsKey(sum - k)) {
                 leng = Math.max(leng, i - map.get(sum - k));
             }
-            //this will add the current sum to the map if it doesn't exist
-            if( !map.containsKey( sum )){
+
+            // Store the current prefix sum if not already in map
+            if (!map.containsKey(sum)) {
                 map.put(sum, i);
             }
-
         }
         System.out.println("Longest subarray sum: " + leng);
     }
