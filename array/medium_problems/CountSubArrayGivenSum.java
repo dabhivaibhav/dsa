@@ -1,5 +1,7 @@
 package array.medium_problems;
 
+import java.util.Map;
+
 /*
 Count subarrays with given sum
 
@@ -25,14 +27,18 @@ public class CountSubArrayGivenSum {
         int[] nums = {1, 1, 1};
         int[] nums1 = {1, 2, 3};
         int[] nums2 = {1, 2, -3, 1, 2, -3};
+        int[] nums3 = {1, 2, 3, -3, 1, 1, 1, 4, 2, -3};
         int k = 2;
         int k1 = 3;
         int k2 = 0;
+        int k3 = 3;
 
-        countSubArrayBruteForce(nums, k);
-        countSubArrayBruteForce(nums1, k1);
-        countSubArrayBruteForce(nums2, k2);
-
+//        countSubArrayBruteForce(nums, k);
+//        countSubArrayBruteForce(nums1, k1);
+//        countSubArrayBruteForce(nums2, k2);
+//        countSubArrayBetterApproach(nums, k);
+//        countSubArrayBetterApproach(nums2, k2);
+        countSubArrayBetterApproach(nums3, k3);
     }
 
 
@@ -76,6 +82,47 @@ public class CountSubArrayGivenSum {
         System.out.println(" Using Bruteforce approach: Number of subarrays with given sum: " + count);
     }
 
+
+    /**
+     * Algorithm:
+     * 1. Uses running sum (prefix sum) technique to track cumulative sum of elements
+     * 2. Uses HashMap to store prefix sums and their frequencies
+     * 3. For each position, checks if (sum - targetSum) exists in map to find valid subarrays
+     * 4. Increments count when either:
+     * - Current sum equals targetSum (entire prefix is valid)
+     * - (sum - targetSum) exists in map (some prefix can be removed to get targetSum)
+     * Time Complexity Analysis:
+     * - Best Case: O(n) when array has no subarrays with target sum
+     * - Average Case: O(n) as we make single pass through array with O(1) HashMap operations
+     * - Worst Case: O(n) even when all possible subarrays sum to target
+     * Space Complexity:
+     * - O(n) to store at most n prefix sums in HashMap
+     * - Best Case: O(1) when all elements are same and sum to target
+     * - Worst Case: O(n) when all prefix sums are unique
+     *
+     * @param nums      array of integers to process
+     * @param targetSum target sum to find in subarrays
+     */
+    public static void countSubArrayBetterApproach(int[] nums, int targetSum) {
+
+        Map<Long, Integer> map = new java.util.HashMap<>();
+        long sum = 0;
+        int count = 0;
+
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+
+            if (sum == targetSum) {
+                count++;
+            }
+            if (map.containsKey(sum - targetSum)) {
+                count += map.get(sum - targetSum);
+            }
+
+            map.put(sum, map.getOrDefault(sum, 0) + 1);
+        }
+        System.out.println(" Using Better approach: Number of subarrays with given sum: " + count);
+    }
 }
 
 
