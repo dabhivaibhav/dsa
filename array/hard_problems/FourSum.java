@@ -41,6 +41,26 @@ public class FourSum {
         System.out.println(foursumTwoPointers(nums2, target2));
     }
 
+
+    /**
+     * Brute Force approach to find all unique quadruplets that sum to target.
+     * Algorithm:
+     * 1. Use four nested loops to try every possible combination of four numbers
+     * 2. Check if their sum equals target
+     * 3. Sort each valid quadruplet to ensure uniqueness before adding to results
+     * <p>
+     * Example:
+     * nums = [1,0,-1,0,-2,2], target = 0
+     * One iteration finds: nums[5](2) + nums[2](-1) + nums[1](0) + nums[3](0) = 1
+     * After sorting: [-1,0,0,2]
+     * <p>
+     * Time Complexity: O(n^4) - four nested loops
+     * Space Complexity: O(1) - excluding the space needed for output
+     *
+     * @param nums   array of integers
+     * @param target desired sum
+     * @return List of unique quadruplets that sum to target
+     */
     private static List<List<Integer>> fourSumBruteForce(int[] nums, int target) {
         List<List<Integer>> results = new ArrayList<>();
         int n = nums.length;
@@ -63,6 +83,26 @@ public class FourSum {
         return results;
     }
 
+    /**
+     * Hash-based approach to find all unique quadruplets that sum to target.
+     * Algorithm:
+     * 1. Use two outer loops to fix first two numbers
+     * 2. Use HashSet to store the third number
+     * 3. Check if (target - sum of three numbers) exists in HashSet
+     * <p>
+     * Example:
+     * nums = [1,0,-1,0,-2,2], target = 0
+     * When i=0,j=1: nums[0](1) + nums[1](0) = 1
+     * For k=2: 1 + nums[2](-1) = 0
+     * Looking for 0 (target - 0) in HashSet
+     * <p>
+     * Time Complexity: O(n^3) - two outer loops and one pass through remaining elements
+     * Space Complexity: O(n) - for HashSet storage
+     *
+     * @param nums   array of integers
+     * @param target desired sum
+     * @return List of unique quadruplets that sum to target
+     */
     public static List<List<Integer>> fourSumHashing(int[] nums, int target) {
         int n = nums.length; // size of the array
         Set<List<Integer>> st = new HashSet<>();
@@ -95,6 +135,27 @@ public class FourSum {
         return ans;
     }
 
+    /**
+     * Two-pointer approach to find all unique quadruplets that sum to target.
+     * Algorithm:
+     * 1. Sort the array
+     * 2. Fix first two numbers using two loops
+     * 3. Use two pointers (low and high) for remaining range
+     * 4. Skip duplicates to avoid repeated quadruplets
+     * <p>
+     * Example:
+     * nums = [1,0,-1,0,-2,2], target = 0
+     * After sorting: [-2,-1,0,0,1,2]
+     * When i=0,j=1: nums[0](-2) + nums[1](-1) = -3
+     * Use low=2,high=5 to find two numbers summing to 3
+     * <p>
+     * Time Complexity: O(n^3) - two loops and linear two-pointer operation
+     * Space Complexity: O(1) - excluding the space needed for output
+     *
+     * @param nums   array of integers
+     * @param target desired sum
+     * @return List of unique quadruplets that sum to target
+     */
     private static List<List<Integer>> foursumTwoPointers(int[] nums, int target) {
         List<List<Integer>> triplets = new ArrayList<>();
         Arrays.sort(nums);

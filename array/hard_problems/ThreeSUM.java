@@ -45,6 +45,24 @@ public class ThreeSUM {
         System.out.println("Optimal Approach: " + threeSumOptimalApproach(nums));
     }
 
+    /**
+     * Brute Force Approach for finding triplets that sum to zero.
+     * <p>
+     * Algorithm:
+     * 1. Use three nested loops to try every possible combination of three numbers
+     * 2. Check if their sum equals zero
+     * 3. Add unique triplets to result list after sorting to avoid duplicates
+     * <p>
+     * Example:
+     * Input: [-1,0,1,2,-1,-4]
+     * One valid triplet found: [-1,-1,2] when i=0, j=4, k=3
+     * <p>
+     * Time Complexity: O(n³) due to three nested loops
+     * Space Complexity: O(1) excluding the space needed for output
+     *
+     * @param nums input array of integers
+     * @return List of triplets that sum to zero
+     */
     private static List<List<Integer>> threeSumBruteForceAppraoch(int[] nums) {
 
         List<List<Integer>> triplets = new ArrayList<>();
@@ -74,6 +92,25 @@ public class ThreeSUM {
         return triplets;
     }
 
+    /**
+     * Better Approach using HashSet for finding triplets that sum to zero.
+     * <p>
+     * Algorithm:
+     * 1. Fix first element with outer loop
+     * 2. Use HashSet to store elements as we traverse for second element
+     * 3. For each pair of elements, check if their complement exists in HashSet
+     * <p>
+     * Example:
+     * Input: [-1,0,1]
+     * When i=0 (-1), j=1 (0)
+     * We look for k=1 in the HashSet
+     * <p>
+     * Time Complexity: O(n²) as we have one outer loop and HashSet operations
+     * Space Complexity: O(n) for storing elements in HashSet
+     *
+     * @param nums input array of integers
+     * @return List of triplets that sum to zero
+     */
     private static List<List<Integer>> threeSumBetterApproach(int[] nums) {
         List<List<Integer>> triplets = new ArrayList<>();
 
@@ -94,6 +131,27 @@ public class ThreeSUM {
         return triplets;
     }
 
+    /**
+     * Optimal Two-Pointer Approach for finding triplets that sum to zero.
+     * <p>
+     * Algorithm:
+     * 1. Sort the array first
+     * 2. Fix first element and use two pointers (left and right) for remaining array
+     * 3. Skip duplicates to avoid duplicate triplets
+     * 4. Move pointers based on sum comparison with zero
+     * <p>
+     * Example:
+     * Input (sorted): [-4,-1,-1,0,1,2]
+     * Fix -4, use pointers on rest of array
+     * When sum < 0, increment left pointer
+     * When sum > 0, decrement right pointer
+     * <p>
+     * Time Complexity: O(n²) - one loop for first element, two pointers for rest
+     * Space Complexity: O(1) excluding the space needed for output
+     *
+     * @param nums input array of integers
+     * @return List of triplets that sum to zero
+     */
     private static List<List<Integer>> threeSumOptimalApproach(int[] nums) {
         List<List<Integer>> triplets = new ArrayList<>();
         Arrays.sort(nums);
