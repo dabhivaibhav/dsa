@@ -96,4 +96,51 @@ public class MergeOverlappingSubintervals {
         return ans;
 
     }
+
+
+    /**
+     * Merges overlapping intervals in the given array using an optimal approach.
+     * <p>
+     * Algorithm steps:
+     * 1. Sort intervals based on start time for proper ordering
+     * 2. Iterate through each interval once and:
+     * - If result list is empty or current interval doesn't overlap with last merged interval,
+     * add current interval to result
+     * - If overlap exists, extend the end time of last merged interval if needed
+     * 3. Convert result list to array and return
+     * <p>
+     * Think of intervals like time slots. If you have meetings from 1-3 PM and 2-4 PM,
+     * they overlap and can be merged into one slot of 1-4 PM. This approach is more efficient
+     * as it requires only a single pass through the sorted intervals.
+     * <p>
+     * Time Complexity: O(n * log n)
+     * - O(n * log n) for sorting n intervals
+     * - O(n) for single pass through intervals
+     * <p>
+     * Space Complexity: O(n)
+     * - Space needed to store the merged intervals in the result list
+     *
+     * @param arr Array of intervals where each interval is [start, end]
+     * @return Array of merged non-overlapping intervals
+     */
+    private static int[][] mergerOverLappingOptimalApproach(int[][] arr) {
+        int n = arr.length;
+        Arrays.sort(arr, Comparator.comparingInt(a -> a[0]));
+        List<int[]> merged = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            if (merged.isEmpty() || merged.get(merged.size() - 1)[1] < arr[i][0]) {
+                merged.add(arr[i]);
+            } else {
+                merged.get(merged.size() - 1)[1] = Math.max(merged.get(merged.size() - 1)[1], arr[i][1]);
+            }
+        }
+
+        int[][] ans = new int[merged.size()][2];
+        for (int i = 0; i < merged.size(); i++) {
+            ans[i] = merged.get(i);
+        }
+
+        return ans;
+    }
 }
