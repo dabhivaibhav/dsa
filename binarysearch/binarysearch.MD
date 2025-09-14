@@ -42,7 +42,11 @@ It cuts the search space in half each step → `O(log n)` time.
 - On **answer space** instead of array values (**Binary Search on Answer (BSOA)**):
     - e.g. Minimum days to finish tasks, smallest possible maximum subarray sum.
     - Works if `check(x)` is **monotonic** (false…false → true…true).
+- **why do we need upper bound and lower bound?**
+  - we often need to answer few questions like: where can I insert the element to maintain the sorted order? Where does the range of values start and end? what's the first element greater than a given value or element greater than the given value even if it's not present in the array?
+  - Real-world uses: In ordered sets, maps, and trees, these are fundamental operations. In competitive programming, they’re used to: count occurrences quickly, find first element >= a threshold (like deadlines, heights, weights), partition an array by a value
 
+In databases, indexing systems (like B-tree) internally use these to find where to insert new records.
 ---
 
 ## 🚫 When NOT to Use Binary Search
