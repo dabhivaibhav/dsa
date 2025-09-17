@@ -27,6 +27,30 @@ public class FindSqrt {
         findSqrtOptimalApproach(num2);
     }
 
+    /**
+     * findSqrtBruteForce
+     * <p>
+     * What it does:
+     * Finds the floor of the square root of a given positive integer n using a simple linear search.
+     * <p>
+     * Why it works:
+     * - Start from 1 and keep checking i*i <= n.
+     * - When i*i becomes greater than n, stop — the previous i is the floor of sqrt(n).
+     * <p>
+     * Time Complexity:
+     * - O(n): Checks all numbers from 1 to n in the worst case.
+     * <p>
+     * Space Complexity:
+     * - O(1): Uses only a constant amount of extra space.
+     * <p>
+     * Output:
+     * Prints the floor value of the square root of n.
+     * <p>
+     * Example:
+     * Input: 28
+     * Output: 5  (since sqrt(28) ≈ 5.29 and floor is 5)
+     */
+
     private static void findSqrtBruteForce(int n) {
         int ans = 0;
         for (int i = 1; i <= n; i++) {
@@ -39,6 +63,35 @@ public class FindSqrt {
         System.out.println("Brute force approach: Square root of " + n + " is: " + ans);
     }
 
+    /**
+     * findSqrtOptimalApproach
+     * <p>
+     * What it does:
+     * Finds the floor of the square root of a given positive integer n using binary search.
+     * <p>
+     * Why it works:
+     * - The square function is monotonically increasing: if x < y then x² < y².
+     * - Use binary search between 1 and n:
+     * - If mid*mid <= n, store mid as a potential answer and move right (low = mid + 1)
+     * to see if there’s a larger valid number.
+     * - If mid*mid > n, move left (high = mid - 1) to find a smaller number.
+     * - This keeps shrinking the search space until low > high.
+     * - By the time the loop ends, `high` points to the greatest number whose square is <= n,
+     * which is exactly the floor of sqrt(n). So `high` could directly be used as the answer.
+     * <p>
+     * Time Complexity:
+     * - O(log n): Binary search cuts the range in half each iteration.
+     * <p>
+     * Space Complexity:
+     * - O(1): Uses only a constant amount of extra space.
+     * <p>
+     * Output:
+     * Prints the floor value of the square root of n.
+     * <p>
+     * Example:
+     * Input: 36
+     * Output: 6  (since sqrt(36) is exactly 6)
+     */
     private static void findSqrtOptimalApproach(int n) {
         int ans = 0;
 
