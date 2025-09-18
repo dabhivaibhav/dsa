@@ -33,6 +33,8 @@ public class FindSmallestDivisorGivenThreshold {
 
         System.out.println(findSmallestDivisorBruteforce(nums, threshold));
         System.out.println(findSmallestDivisorBruteforce(nums1, threshold1));
+        System.out.println(findSmallestDivisionOptimal(nums, threshold));
+        System.out.println(findSmallestDivisionOptimal(nums1, threshold1));
     }
 
     /**
@@ -82,6 +84,72 @@ public class FindSmallestDivisorGivenThreshold {
             if (sum <= threshold) return i;   // first i that works is the answer
         }
         return -1; // if the problem guarantees a solution, this path won't hit
+    }
+
+
+    /**
+     * What it does:
+     * Finds the smallest positive divisor `d` such that the sum of
+     * ceil(nums[i] / d) across all elements is less than or equal to `threshold`.
+     * This method uses binary search on the answer for optimal performance.
+     * <p>
+     * Why it works:
+     * - The function f(d) = Σ ceil(nums[i] / d) is **monotonically non-increasing**:
+     * - If `d` increases, each term becomes smaller or stays the same.
+     * - So as `d` increases, the total sum of divisions goes down.
+     * - This monotonic behavior allows binary search over the possible divisor space.
+     * <p>
+     * How it works:
+     * - The possible divisor range is [1, max(nums)]:
+     * - At `d = 1`, sum is the largest (sum of all elements).
+     * - At `d = max(nums)`, each term becomes 1, so total sum = nums.length (which is ≤ threshold by constraints).
+     * - Perform binary search in this range:
+     * - Calculate mid = (low + high) / 2.
+     * - Compute the sum of ceil(nums[i] / mid) for all elements using
+     * integer ceiling math: `(num + mid - 1) / mid`.
+     * • This avoids floating-point operations and prevents rounding errors.
+     * • `long` is used for the sum to prevent overflow when nums are large.
+     * - If sum ≤ threshold:
+     * - mid is a valid divisor, but we try to find a smaller one → `high = mid - 1`.
+     * - If sum > threshold:
+     * - mid is too small, so we need a bigger divisor → `low = mid + 1`.
+     * - When the loop ends, `low` will be the smallest divisor that satisfies the threshold.
+     * <p>
+     * Time Complexity:
+     * - O(n * log(max(nums))):
+     * - Each binary search step does O(n) work to compute the sum,
+     * - and the binary search runs for O(log(max(nums))) steps.
+     * <p>
+     * Space Complexity:
+     * - O(1): Uses only a few extra variables.
+     * <p>
+     * Output:
+     * Returns the smallest divisor `d` such that the total sum is ≤ threshold.
+     * <p>
+     * Example:
+     * nums = [1, 2, 5, 9], threshold = 6
+     * → returns 5
+     * Explanation: ceil(1/5)+ceil(2/5)+ceil(5/5)+ceil(9/5) = 1+1+1+2 = 5 ≤ 6.
+     */
+
+    private static int findSmallestDivisionOptimal(int[] nums, int threshold) {
+        int low = 1;
+        int high = findMax(nums);
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+
+            long sum = 0L;
+            for (int num : nums) {
+                sum += (num + mid - 1) / mid;
+                if (sum > threshold) break;
+            }
+            if (sum <= threshold) {
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return low;
     }
 
     /**
