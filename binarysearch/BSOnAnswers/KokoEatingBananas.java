@@ -37,6 +37,8 @@ public class KokoEatingBananas {
 
         System.out.println(findKBruteforce(piles, h));
         System.out.println(findKBruteforce(piles1, h1));
+        System.out.println(findKOptimal(piles, h));
+        System.out.println(findKOptimal(piles1, h1));
     }
 
 
@@ -88,6 +90,68 @@ public class KokoEatingBananas {
         }
 
         return maxBananas;
+    }
+
+    /**
+     * What it does:
+     * Finds the minimum eating speed `k` (bananas per hour) at which Koko can finish
+     * all the bananas within `h` hours using an optimal binary search approach.
+     * <p>
+     * Why it works:
+     * - The number of hours needed to finish all piles at speed `k` is a monotonic function:
+     * - If `k` increases → total hours decrease.
+     * - If `k` decreases → total hours increase.
+     * - This monotonic behavior makes it ideal for binary search.
+     * <p>
+     * Choosing the search range:
+     * - Lower bound (`low = 1`): the slowest speed Koko could possibly eat.
+     * - Upper bound (`high = max(piles)`): the largest pile size.
+     * - If she eats at a speed equal to the largest pile, she finishes that pile in 1 hour
+     * and all other piles will take ≤ 1 hour each.
+     * - Any speed greater than the largest pile is unnecessary, because it won’t reduce hours
+     * below 1 for that largest pile. So `max(piles)` is the logical ceiling of the search space.
+     * <p>
+     * How it works:
+     * - Repeatedly choose `mid = (low + high)/2` as a candidate eating speed.
+     * - Calculate how many hours it would take at this speed using calculateTotalHours().
+     * - If hours ≤ h:
+     * - This speed is fast enough — but maybe we can go slower.
+     * - Move left to search smaller speeds: `high = mid - 1`.
+     * - If hours > h:
+     * - This speed is too slow — we must go faster.
+     * - Move right: `low = mid + 1`.
+     * - When the loop ends, `low` will be the smallest speed that still works.
+     * <p>
+     * Time Complexity:
+     * - O(n * log(maxPile)):
+     * - Each binary search step does O(n) work (calculating total hours),
+     * - and there are O(log(maxPile)) steps.
+     * <p>
+     * Space Complexity:
+     * - O(1): Uses only a few variables; no extra data structures.
+     * <p>
+     * Output:
+     * Returns the smallest eating speed `k` at which Koko can eat all piles within `h` hours.
+     * <p>
+     * Example:
+     * piles = [3, 6, 7, 11], h = 8
+     * Binary search range = [1, 11]
+     * → answer = 4
+     */
+    private static int findKOptimal(int[] piles, int h) {
+        int maxBananas = findMaxBanana(piles);
+        int low = 1;
+        int high = maxBananas;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            int hours = calculateTotalHours(piles, mid);
+            if (hours <= h) {
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return low;
     }
 
     /**
