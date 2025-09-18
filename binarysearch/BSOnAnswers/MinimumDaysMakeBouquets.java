@@ -47,17 +47,17 @@ Constraints:
 public class MinimumDaysMakeBouquets {
     public static void main(String[] args) {
 
-        int[] bloomDays = {1, 10, 3, 10, 2};
-        int m = 3;
-        int k = 1;
-        int[] bloomDays1 = {1, 10, 3, 10, 2};
-        int m1 = 3;
-        int k1 = 2;
+//        int[] bloomDays = {1, 10, 3, 10, 2};
+//        int m = 3;
+//        int k = 1;
+//        int[] bloomDays1 = {1, 10, 3, 10, 2};
+//        int m1 = 3;
+//        int k1 = 2;
         int[] bloomDays2 = {7, 7, 7, 7, 12, 7, 7};
         int m2 = 2;
         int k2 = 3;
-        System.out.println("Optimal Approach: Minimum days to make " + m + " bouquets is: " + findMinimumDay(bloomDays, m, k));
-        System.out.println("Better Approach: Minimum days to make " + m1 + " bouquets is: " + findMinimumDay(bloomDays1, m1, k1));
+//        System.out.println("Optimal Approach: Minimum days to make " + m + " bouquets is: " + findMinimumDay(bloomDays, m, k));
+//        System.out.println("Better Approach: Minimum days to make " + m1 + " bouquets is: " + findMinimumDay(bloomDays1, m1, k1));
         System.out.println("Better Approach: Minimum days to make " + m2 + " bouquets is: " + findMinimumDay(bloomDays2, m2, k2));
     }
 
