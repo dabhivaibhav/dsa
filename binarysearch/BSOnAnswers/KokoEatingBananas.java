@@ -93,71 +93,61 @@ public class KokoEatingBananas {
     }
 
     /**
+     * findKOptimal
+     * <p>
      * What it does:
      * Finds the minimum eating speed `k` (bananas per hour) at which Koko can finish
-     * all the bananas within `h` hours using an optimal binary search approach.
+     * all the bananas within `h` hours using binary search.
      * <p>
      * Why it works:
-     * - The number of hours needed to finish all piles at speed `k` is a monotonic function:
-     * - If `k` increases → total hours decrease.
-     * - If `k` decreases → total hours increase.
-     * - This monotonic behavior makes it ideal for binary search.
+     * - The total hours needed to eat all piles at a given speed `k` decreases as `k` increases.
+     * - This monotonic property makes it ideal for binary search:
+     * - If `k` is too slow → hours > h → we must go faster (move right).
+     * - If `k` is fast enough → hours <= h → try slower (move left).
+     * - The search range is [1, max(piles)]:
+     * - Lower bound = 1 (slowest possible speed).
+     * - Upper bound = max(piles) (if she eats as fast as the biggest pile, she finishes it in 1 hour
+     * and all other piles in ≤ 1 hour; any faster is unnecessary).
+     * - Each binary search step checks the total hours at `mid` speed using calculateTotalHours().
      * <p>
-     * Choosing the search range:
-     * - Lower bound (`low = 1`): the slowest speed Koko could possibly eat.
-     * - Upper bound (`high = max(piles)`): the largest pile size.
-     * - If she eats at a speed equal to the largest pile, she finishes that pile in 1 hour
-     * and all other piles will take ≤ 1 hour each.
-     * - Any speed greater than the largest pile is unnecessary, because it won’t reduce hours
-     * below 1 for that largest pile. So `max(piles)` is the logical ceiling of the search space.
-     * <p>
-     * How it works:
-     * - Repeatedly choose `mid = (low + high)/2` as a candidate eating speed.
-     * - Calculate how many hours it would take at this speed using calculateTotalHours().
-     * - If hours ≤ h:
-     * - This speed is fast enough — but maybe we can go slower.
-     * - Move left to search smaller speeds: `high = mid - 1`.
-     * - If hours > h:
-     * - This speed is too slow — we must go faster.
-     * - Move right: `low = mid + 1`.
-     * - When the loop ends, `low` will be the smallest speed that still works.
+     * Important Implementation Details:
+     * - Uses `long` for total hours to avoid integer overflow when piles are very large.
+     * - Returns `low` at the end because it represents the smallest speed that still works.
      * <p>
      * Time Complexity:
      * - O(n * log(maxPile)):
-     * - Each binary search step does O(n) work (calculating total hours),
-     * - and there are O(log(maxPile)) steps.
+     * - Binary search does O(log(maxPile)) steps.
+     * - Each step computes total hours in O(n).
      * <p>
      * Space Complexity:
-     * - O(1): Uses only a few variables; no extra data structures.
+     * - O(1): Uses only a few variables.
      * <p>
      * Output:
-     * Returns the smallest eating speed `k` at which Koko can eat all piles within `h` hours.
+     * Returns the smallest integer speed `k` that allows finishing all piles within `h` hours.
      * <p>
      * Example:
      * piles = [3, 6, 7, 11], h = 8
-     * Binary search range = [1, 11]
-     * → answer = 4
+     * → returns 4
      */
+
     private static int findKOptimal(int[] piles, int h) {
-        int maxBananas = findMaxBanana(piles);
         int low = 1;
-        int high = maxBananas;
+        int high = findMaxBanana(piles);
+
         while (low <= high) {
             int mid = low + (high - low) / 2;
-            int hours = calculateTotalHours(piles, mid);
-            if (hours <= h) {
+            long hours = calculateTotalHoursWithEarlyExit(piles, mid, h);
+
+            if (hours <= (long) h) {
                 high = mid - 1;
             } else {
                 low = mid + 1;
             }
         }
-        return low;
+        return low; // smallest k that works
     }
 
     /**
-     * What it does:
-     * Calculates how many total hours it would take for Koko to eat all piles at a given fixed speed `hourly`.
-     * <p>
      * Why it works:
      * - If a pile has `p` bananas and she eats at `hourly` bananas/hour,
      * she needs ceil(p / hourly) hours for that pile.
@@ -186,6 +176,49 @@ public class KokoEatingBananas {
         //find total hours:
         for (int i = 0; i < n; i++) {
             totalH += (int) Math.ceil((double) (piles[i]) / (double) (hourly));
+        }
+        return totalH;
+    }
+
+
+    /**
+     * What it does:
+     * Calculates how many hours Koko would need to finish all piles at a given eating speed `hourly`.
+     * <p>
+     * Why it works:
+     * - For each pile `p`, the hours required are ceil(p / hourly),
+     * because she spends full hours and can’t split time between piles.
+     * - This uses integer ceiling arithmetic `(p + hourly - 1) / hourly` instead of floating point,
+     * which is faster and avoids precision issues.
+     * - Accumulates the total hours across all piles and stops early if the total already exceeds `hLimit`
+     * (since any value beyond `hLimit` is enough to reject this speed during binary search).
+     * <p>
+     * Important Implementation Details:
+     * - Uses `long` for the running total to avoid overflow when piles have very large values.
+     * - Includes early exit optimization to stop summing once hours exceed the allowed `hLimit`.
+     * <p>
+     * Time Complexity:
+     * - O(n): Visits each pile once.
+     * <p>
+     * Space Complexity:
+     * - O(1): Uses only constant extra space.
+     * <p>
+     * Output:
+     * Returns the total number of hours needed to eat all piles at the given speed.
+     * <p>
+     * Example:
+     * piles = [3, 6, 7, 11], hourly = 4
+     * → hours = 1 + 2 + 2 + 3 = 8
+     */
+
+    private static long calculateTotalHoursWithEarlyExit(int[] piles, int hourly, int hLimit) {
+        long totalH = 0L;
+        for (int p : piles) {
+            // integer ceiling: ceil(p / hourly) without doubles, done in 64-bit
+            totalH += (p + (long) hourly - 1L) / (long) hourly;
+
+            // early exit: once we exceed h, no need to keep summing
+            if (totalH > (long) hLimit) return totalH;
         }
         return totalH;
     }
