@@ -162,7 +162,7 @@ public class CapacityToPackageShip {
     }
 
     /**
-     * What it does:
+     *  What it does:
      * Checks whether all packages can be shipped within the given number of days using the given ship capacity.
      * <p>
      * How it works:
