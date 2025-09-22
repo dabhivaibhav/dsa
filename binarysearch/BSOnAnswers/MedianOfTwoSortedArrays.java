@@ -32,6 +32,9 @@ public class MedianOfTwoSortedArrays {
 
         System.out.println(medianBruteForce(nums1, nums2));
         System.out.println(medianBruteForce(arr1, arr2));
+
+        System.out.println(medianBinarySearch(nums1, nums2));
+        System.out.println(medianBinarySearch(arr1, arr2));
     }
 
 
@@ -99,4 +102,107 @@ public class MedianOfTwoSortedArrays {
         return arr.length % 2 == 0 ? (arr[n / 2] + arr[(n / 2) - 1]) / 2.0 : arr[n / 2];
     }
 
+    /**
+     * What it does:
+     * Computes the median of two sorted arrays in O(log(min(n1, n2))) time
+     * using binary search on the shorter array to find a valid "partition"
+     * that splits the combined arrays into balanced left and right halves.
+     *
+     * <p>
+     * Why it works:
+     * - The median is the value(s) in the middle of the combined sorted sequence.
+     * - Instead of merging the arrays fully (O(n1 + n2)), we realize that the median
+     * depends only on the elements around the cut between left and right halves.
+     * - By partitioning both arrays at certain indices, we can ensure that:
+     * - Every element in the left partition ≤ every element in the right partition.
+     * - If we can find such a partition, then the median can be derived directly
+     * from the border values.
+     * - The key monotonic property: if the cut in array `a` is too far right,
+     * move it left; if it is too far left, move it right. This makes binary search possible.
+     *
+     * <p>
+     * How it works:
+     * 1. Always apply binary search on the shorter array (to minimize the search space).
+     * 2. Let `left = (n1 + n2 + 1) / 2` → the number of elements that must go into
+     * the left partition.
+     * 3. During binary search:
+     * - `mid1` = how many elements we take from `a` into the left.
+     * - `mid2` = `left - mid1` = how many elements we take from `b` into the left.
+     * 4. Define four boundary values:
+     * - `l1` = last element of `a`'s left partition (or -∞ if none).
+     * - `l2` = last element of `b`'s left partition (or -∞ if none).
+     * - `r1` = first element of `a`'s right partition (or +∞ if none).
+     * - `r2` = first element of `b`'s right partition (or +∞ if none).
+     * 5. Check if this is a valid partition:
+     * - If `l1 <= r2` AND `l2 <= r1`, the partitions are correct.
+     * - Median depends on total length:
+     * - Odd → median = max(l1, l2).
+     * - Even → median = (max(l1, l2) + min(r1, r2)) / 2.0.
+     * 6. If not valid:
+     * - If `l1 > r2` → took too many from `a`, move left (`high = mid1 - 1`).
+     * - Else → took too few from `a`, move right (`low = mid1 + 1`).
+     * 7. Continue until the correct partition is found.
+     *
+     * <p>
+     * Examples:
+     * Example 1:
+     * a = [1, 3], b = [2]
+     * - n1 = 2, n2 = 1, total = 3, left = 2.
+     * - mid1 = 1 → mid2 = 1 → l1 = 1, r1 = 3, l2 = 2, r2 = ∞.
+     * - Check: l1 <= r2 (1 ≤ ∞) ✓ and l2 <= r1 (2 ≤ 3) ✓ → valid cut.
+     * - Odd total → median = max(l1, l2) = max(1, 2) = 2.
+     * <p>
+     * Example 2:
+     * a = [1, 2], b = [3, 4]
+     * - n1 = 2, n2 = 2, total = 4, left = 2.
+     * - mid1 = 1 → mid2 = 1 → l1 = 1, r1 = 2, l2 = 3, r2 = 4.
+     * - Check: l1 <= r2 (1 ≤ 4) ✓ but l2 <= r1 (3 ≤ 2) ✗ → invalid (move right).
+     * - Next mid1 = 2 → mid2 = 0 → l1 = 2, r1 = ∞, l2 = -∞, r2 = 3.
+     * - Check: l1 <= r2 (2 ≤ 3) ✓ and l2 <= r1 (-∞ ≤ ∞) ✓ → valid cut.
+     * - Even total → median = (max(l1, l2) + min(r1, r2)) / 2 = (2 + 3) / 2 = 2.5.
+     * <p>
+     * Example 3:
+     * a = [], b = [1]
+     * - n1 = 0, n2 = 1, total = 1, left = 1.
+     * - mid1 = 0 → mid2 = 1 → l1 = -∞, r1 = ∞, l2 = 1, r2 = ∞.
+     * - Valid cut → odd total → median = max(l1, l2) = max(-∞, 1) = 1.
+     *
+     * <p>
+     * Time Complexity:
+     * - O(log(min(n1, n2))) → binary search on the shorter array.
+     * <p>
+     * Space Complexity:
+     * - O(1) → only a few variables for boundaries and indices.
+     *
+     * <p>
+     * Output:
+     * Returns the median as a double.
+     */
+
+    private static double medianBinarySearch(int[] a, int[] b) {
+        int n1 = a.length, n2 = b.length;
+        //if n1 is bigger swap the arrays:
+        if (n1 > n2) return medianBinarySearch(b, a);
+
+        int n = n1 + n2; //total length
+        int left = (n1 + n2 + 1) / 2; //length of left half
+        //apply binary search:
+        int low = 0, high = n1;
+        while (low <= high) {
+            int mid1 = (low + high) / 2;
+            int mid2 = left - mid1;
+            //calculate l1, l2, r1 and r2;
+            int l1 = (mid1 > 0) ? a[mid1 - 1] : Integer.MIN_VALUE;
+            int l2 = (mid2 > 0) ? b[mid2 - 1] : Integer.MIN_VALUE;
+            int r1 = (mid1 < n1) ? a[mid1] : Integer.MAX_VALUE;
+            int r2 = (mid2 < n2) ? b[mid2] : Integer.MAX_VALUE;
+
+            if (l1 <= r2 && l2 <= r1) {
+                if (n % 2 == 1) return Math.max(l1, l2);
+                else return ((double) (Math.max(l1, l2) + Math.min(r1, r2))) / 2.0;
+            } else if (l1 > r2) high = mid1 - 1;
+            else low = mid1 + 1;
+        }
+        return 0; //dummy statement
+    }
 }
