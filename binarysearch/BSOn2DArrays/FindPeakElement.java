@@ -40,6 +40,8 @@ public class FindPeakElement {
 
         System.out.println(Arrays.toString(findPeakElementBruteForce(mat)));
         System.out.println(Arrays.toString(findPeakElementBruteForce(mat1)));
+        System.out.println(Arrays.toString(findPeakElementOptimal(mat)));
+        System.out.println(Arrays.toString(findPeakElementOptimal(mat1)));
 
     }
 
@@ -117,5 +119,129 @@ public class FindPeakElement {
         return new int[]{-1, -1};
     }
 
+
+    /**
+     * What it does:
+     * Finds a peak element in a 2D matrix using an optimized binary search
+     * strategy on the columns. A peak is defined as an element strictly greater
+     * than its valid four neighbors (up, down, left, right). If multiple peaks
+     * exist, any one of them can be returned.
+     *
+     * <p>
+     * Why it works:
+     * - The brute force O(m·n) approach checks every element against neighbors.
+     * - A faster approach is to apply binary search on columns:
+     * 1. Pick the middle column.
+     * 2. Find the maximum element in that column (guaranteed candidate for peak).
+     * 3. Compare it with its immediate left and right neighbors:
+     * - If it is greater than both → it's a peak.
+     * - If the left neighbor is larger → a peak must exist in the left half.
+     * - If the right neighbor is larger → a peak must exist in the right half.
+     * - This works because if a neighbor is larger, the "slope" leads to a peak
+     * in that direction.
+     *
+     * <p>
+     * How it works:
+     * - Guard against null or empty input.
+     * - Initialize search range as all columns: low = 0, high = cols - 1.
+     * - While low <= high:
+     * 1. mid = (low + high) / 2
+     * 2. Use `findMaxElement` to find the row index of the maximum element in column mid.
+     * 3. Compare this value against its left and right neighbors:
+     * - If strictly greater than both, return [row, mid].
+     * - If left neighbor is greater, discard right half (high = mid - 1).
+     * - Else, discard left half (low = mid + 1).
+     * - If no peak is found (should not happen under problem constraints), return [-1, -1].
+     *
+     * <p>
+     * Example:
+     * mat = [
+     * [10, 20, 15],
+     * [21, 30, 14],
+     * [ 7, 16, 32]
+     * ]
+     * - Middle column = 1 → column = [20, 30, 16], max at row 1 (value 30).
+     * - Neighbors: left = 21, right = 14.
+     * - 30 > 21 and 30 > 14 → return [1, 1].
+     *
+     * <p>
+     * Time Complexity:
+     * - O(rows · log cols):
+     * - Each binary search step selects one column (log cols steps).
+     * - Finding the maximum in a column costs O(rows).
+     * <p>
+     * Space Complexity:
+     * - O(1): constant extra space.
+     *
+     * <p>
+     * Output:
+     * Returns an array [rowIndex, colIndex] of a peak element,
+     * or [-1, -1] if none is found (though problem guarantees a peak exists).
+     */
+    private static int[] findPeakElementOptimal(int[][] mat) {
+
+        if (mat == null || mat.length == 0 || mat[0] == null || mat[0].length == 0) {
+            return new int[]{-1, -1};
+        }
+        int columns = mat[0].length;
+
+        int low = 0;
+        int high = columns - 1;
+
+        // Perform binary search on columns
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+
+            // Find the index of the row with the maximum element
+            // in the middle column
+            int row = findMaxElement(mat, mid);
+            int val = mat[row][mid];
+            // Determine left and right neighbors of middle element
+            int left = mid - 1 >= 0 ? mat[row][mid - 1] : Integer.MIN_VALUE;
+            int right = mid + 1 < columns ? mat[row][mid + 1] : Integer.MIN_VALUE;
+
+            // Check if the middle element is a peak
+            if (val > left && val > right) {
+                return new int[]{row, mid};
+            } else if (left > val) {
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+
+        // Return [-1, -1] if no peak element is found
+        return new int[]{-1, -1};
+    }
+
+    /**
+     * Helper: findMaxElement
+     * - Finds the row index of the maximum element in the given column.
+     *
+     * <p>
+     * Example:
+     * mat = [
+     * [10, 20, 15],
+     * [21, 30, 14],
+     * [ 7, 16, 32]
+     * ], mid = 1
+     * - Column = [20, 30, 16] → maximum = 30 at row 1 → return 1.
+     *
+     * <p>
+     * Time Complexity: O(rows), since each element in the column is checked once.
+     * Space Complexity: O(1).
+     */
+    private static int findMaxElement(int[][] mat, int mid) {
+        int rows = mat.length;
+        int maxValue = Integer.MIN_VALUE;
+        int index = Integer.MIN_VALUE;
+        for (int i = 0; i < rows; i++) {
+            if (mat[i][mid] > maxValue) {
+                maxValue = mat[i][mid];
+                index = i;
+            }
+        }
+        return index;
+    }
 
 }
