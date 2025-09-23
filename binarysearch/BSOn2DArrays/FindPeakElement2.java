@@ -26,7 +26,7 @@ Constraints:
             1 <= mat[i][j] <= 10^5
             No two adjacent cells are equal.
  */
-public class FindPeakElement {
+public class FindPeakElement2 {
 
     public static void main(String[] args) {
         int[][] mat = {
