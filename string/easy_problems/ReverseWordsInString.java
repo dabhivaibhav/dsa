@@ -39,6 +39,7 @@ public class ReverseWordsInString {
         System.out.println(reverseWordsStringBruteForce(string));
         System.out.println(reverseWordsStringBruteForce(string1));
         System.out.println(reverseWordsStringBruteForce(string2));
+        System.out.println(reverseWordsStringOptimal(string));
 
     }
 
@@ -114,5 +115,72 @@ public class ReverseWordsInString {
         }
         return sb.toString();
     }
+
+    /**
+     * Reverses the order of words while collapsing spaces to a single space and
+     * removing leading/trailing spaces—using O(1) auxiliary space.
+     *
+     * Idea (in place on a char array):
+     * 1) Normalize spaces: trim ends and collapse internal runs to a single space.
+     * 2) Reverse the entire normalized range.
+     * 3) Reverse each word within that range to fix letter order.
+     *
+     * Time  : O(n)
+     * Space : O(1) extra (we only use a few indices; the output itself is O(n))
+     */
+    private static String reverseWordsStringOptimal(String s) {
+        if (s == null || s.isEmpty()) return "";
+
+        // Work in-place on a mutable buffer
+        char[] a = s.toCharArray();
+        int n = a.length;
+
+        // 1) Normalize spaces in-place: trim + collapse to single spaces
+        int i = 0;             // read pointer
+        int j = 0;             // write pointer
+        // skip leading spaces
+        while (i < n && a[i] == ' ') i++;
+
+        while (i < n) {
+            // copy the next word
+            while (i < n && a[i] != ' ') a[j++] = a[i++];
+
+            // skip spaces between words
+            while (i < n && a[i] == ' ') i++;
+
+            // write a single space if more words remain
+            if (i < n) a[j++] = ' ';
+        }
+
+        int len = j; // effective length after normalization
+        if (len == 0) return "";
+
+        // 2) Reverse the whole normalized segment
+        reverse(a, 0, len - 1);
+
+        // 3) Reverse each word
+        int start = 0;
+        for (int k = 0; k < len; k++) {
+            if (a[k] == ' ') {
+                reverse(a, start, k - 1);
+                start = k + 1;
+            }
+        }
+        // last word
+        reverse(a, start, len - 1);
+
+        return new String(a, 0, len);
+    }
+
+    private static void reverse(char[] a, int l, int r) {
+        while (l < r) {
+            char tmp = a[l];
+            a[l] = a[r];
+            a[r] = tmp;
+            l++;
+            r--;
+        }
+    }
+
 }
 
