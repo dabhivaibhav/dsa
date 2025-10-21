@@ -12,15 +12,14 @@ public class MyDoubleLinkedList {
 
     public void insert(int data) {
         Node node = new Node(data);
-        // move tail forward
         if (head == null) {
             head = node;
         } else {
-            Node oldTail = tail;
-            oldTail.next = node;
-            node.previous = oldTail;
+            tail.next = node;
+            node.previous = tail;
         }
         tail = node;
+        size++;
     }
 
     //insert a node at the beginning of LinkedList
@@ -50,6 +49,7 @@ public class MyDoubleLinkedList {
             node.previous = tail;
         }
         tail = node;
+        size++;
     }
 
 
@@ -65,6 +65,7 @@ public class MyDoubleLinkedList {
         }
         head = head.next;
         head.previous = null;
+        size--;
     }
 
     public void deleteTail() {
@@ -80,28 +81,26 @@ public class MyDoubleLinkedList {
 
         tail = tail.previous;
         tail.next = null;
+        size--;
     }
 
     public void deleteByIndex(int index) {
 
-        if(index < 1 || index > size){
+        if (index < 1 || index > size) {
             throw new IndexOutOfBoundsException("Invalid index: " + index);
         }
-
-        if(index == 1){
+        if (index == 1) {
             deleteHead();
-            size--;
             return;
         }
-        if(index == size){
+        if (index == size) {
             deleteTail();
-            size--;
             return;
         }
+
         Node temp = head;
-        for(int i=1; i<index; i++){
-            temp = temp.next;
-        }
+        for (int i = 1; i < index; i++) temp = temp.next;
+
         temp.previous.next = temp.next;
         temp.next.previous = temp.previous;
         size--;
@@ -125,6 +124,26 @@ public class MyDoubleLinkedList {
             node = node.previous;
         }
         System.out.println();
+    }
+
+    public void reverse() {
+
+        if (head == null || head.next == null) return;
+
+        Node curr = head;
+
+        // Flip next <-> previous for every node
+        while (curr != null) {
+            Node next = curr.next;
+            curr.next = curr.previous;
+            curr.previous = next;
+            curr = next; // move along the original "next" chain
+        }
+
+        Node oldHead = head;
+        head = tail;
+        tail = oldHead;
+
     }
 
     private class Node {

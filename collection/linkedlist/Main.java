@@ -13,10 +13,12 @@ public class Main {
         list.showList();
 
         MyDoubleLinkedList doubleLinkedList = new MyDoubleLinkedList();
-        doubleLinkedList.insertFirst(10);
-        doubleLinkedList.insertFirst(20);
-        doubleLinkedList.insertLast(30);
-        doubleLinkedList.insertFirst(40);
+        doubleLinkedList.insert(10);
+        doubleLinkedList.insert(20);
+        doubleLinkedList.insert(30);
+        doubleLinkedList.insert(40);
+        doubleLinkedList.showList();
+        doubleLinkedList.reverse();
         doubleLinkedList.showList();
         doubleLinkedList.showListReverse();
 
