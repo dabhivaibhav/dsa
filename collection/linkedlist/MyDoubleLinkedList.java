@@ -146,7 +146,7 @@ public class MyDoubleLinkedList {
 
     }
 
-    private class Node {
+    private static class Node {
 
         int data;
         Node next;

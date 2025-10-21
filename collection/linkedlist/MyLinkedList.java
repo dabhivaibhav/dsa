@@ -1,12 +1,14 @@
 package collection.linkedlist;
 
+import collection.linkedlist.medium_problems.MiddleOfLinkedList;
+
 public class MyLinkedList {
 
     private Node head;
     private Node tail;
     private int size;
 
-    private class Node {
+    public class Node {
         private int data;
         private Node next;
 
@@ -178,6 +180,26 @@ public class MyLinkedList {
             node = node.next;
         }
         System.out.println();
+    }
+
+    public Node getHead(){
+        return head;
+    }
+    public void findMiddleofLinkedList(MyLinkedList list){
+     Node temp = head;
+     Node slow = head;
+     Node fast = head;
+     while(fast!=null && fast.next!=null){
+         slow = slow.next;
+         fast = fast.next.next;
+     }
+     temp = slow;
+    while(temp!=null){
+        System.out.print(temp.data+" ");
+        temp = temp.next;
+    }
+    System.out.println();
+
     }
 
     // Optional helper to get value at index
