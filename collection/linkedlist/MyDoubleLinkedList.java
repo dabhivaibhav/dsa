@@ -67,6 +67,45 @@ public class MyDoubleLinkedList {
         head.previous = null;
     }
 
+    public void deleteTail() {
+        if (tail == null) {
+            System.out.println("Linked list is empty.");
+            return;
+        }
+        if (tail.previous == null) {
+            head = null;
+            tail = null;
+            return;
+        }
+
+        tail = tail.previous;
+        tail.next = null;
+    }
+
+    public void deleteByIndex(int index) {
+
+        if(index < 1 || index > size){
+            throw new IndexOutOfBoundsException("Invalid index: " + index);
+        }
+
+        if(index == 1){
+            deleteHead();
+            size--;
+            return;
+        }
+        if(index == size){
+            deleteTail();
+            size--;
+            return;
+        }
+        Node temp = head;
+        for(int i=1; i<index; i++){
+            temp = temp.next;
+        }
+        temp.previous.next = temp.next;
+        temp.next.previous = temp.previous;
+        size--;
+    }
 
     //displays data of LinkedList
     public void showList() {
