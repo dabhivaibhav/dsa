@@ -17,7 +17,7 @@ Output: false
 
 Constraints:
             The number of nodes in the list is in the range [1, 105].
-            0 <= Node.val <= 9
+            0 <= Node.data <= 9
 
 Follow up: Could you do it in O(n) time and O(1) space?
  */
@@ -51,6 +51,8 @@ public class PalindromLinkedList {
         System.out.println(checkPalindromLinkedListBruteForce(list1));
         System.out.println(checkPalindromLinkedListBruteForce1(list2.head));
         System.out.println(checkPalindromLinkedListBruteForce1(list3.head));
+        System.out.println(checkPalindromLinkedListOptimal(list.head));
+        System.out.println(checkPalindromLinkedListOptimal(list1.head));
     }
 
     /**
@@ -128,27 +130,27 @@ public class PalindromLinkedList {
      * <p>
      * Intuition:
      * - Stack stores elements in LIFO (last-in-first-out) order, so if you push all elements from the head,
-     *   popping from the stack gives the elements in reverse order.
+     * popping from the stack gives the elements in reverse order.
      * - Compare the original order (walking from head) to the reversed order (from stack) node by node.
      * - If all elements match, the list is a palindrome.
      * <p>
      * Why each line matters:
      * - if (head == null || head.next == null) return false;
-     *   For empty or single-node lists, returns false (could be argued to return true, but this is the author's policy).
+     * For empty or single-node lists, returns false (could be argued to return true, but this is the author's policy).
      * - Stack<Integer> stack = new Stack<>();
-     *   Prepare a stack to store all node data.
+     * Prepare a stack to store all node data.
      * - while (temp != null) { stack.push(temp.data); temp = temp.next; }
-     *   Push each data value from the list into the stack; when done, stack has the values in order from front to back.
+     * Push each data value from the list into the stack; when done, stack has the values in order from front to back.
      * - temp = head;
-     *   Reset pointer to beginning for comparison.
+     * Reset pointer to beginning for comparison.
      * - while (!stack.isEmpty()) { ... }
-     *   Compare each element popped from stack (last-in) to the current node in the original list (front).
+     * Compare each element popped from stack (last-in) to the current node in the original list (front).
      * - if (stack.pop() != temp.data) { return false; }
-     *   If values differ at any step, it's not a palindrome—exit immediately.
+     * If values differ at any step, it's not a palindrome—exit immediately.
      * - temp = temp.next;
-     *   Continue moving through the list.
+     * Continue moving through the list.
      * - return true;
-     *   If all elements match, return true—it's a palindrome!
+     * If all elements match, return true—it's a palindrome!
      * <p>
      * Example:
      * Input: 1 → 2 → 2 → 1
@@ -182,6 +184,80 @@ public class PalindromLinkedList {
         return true;
     }
 
+    /**
+     * checkPalindromLinkedListOptimal
+     * <p>
+     * What it does:
+     * Efficiently checks whether a singly linked list is a palindrome using O(n) time and O(1) extra space.
+     * Finds the midpoint, reverses the second half, and compares the two halves node by node.
+     * Returns true if the list is a palindrome, false otherwise.
+     * <p>
+     * Intuition:
+     * - To check for palindrome, we need to compare mirror positions from the front and back.
+     * - We can't walk backward in a singly linked list, so we reverse the second half (after the middle)
+     *   to enable direct left-to-right comparison with the first half.
+     * - Only O(1) extra space is required since we manipulate pointers, not extra memory.
+     * <p>
+     * Why each line matters:
+     * - if (head == null) return false;
+     *   No data means not a palindrome by definition (could also be true, but author’s choice).
+     * - if (head.next == null) return true;
+     *   One node always reads the same forwards and backwards.
+     * - Node slow = head; Node fast = head;
+     *   Two pointers for finding the halfway point (midpoint) using Tortoise and Hare (Floyd’s).
+     * - while (fast != null && fast.next != null) { slow = slow.next; fast = fast.next.next; }
+     *   Move slow one step and fast two steps; when fast reaches end, slow is at the middle.
+     * - Node newHead = reverseList(slow);
+     *   Reverse the second half of the list starting from midpoint (slow).
+     * - Node oldHead = head;
+     *   Keep pointer for comparing from the start.
+     * - while (oldHead.next != null) { ... }
+     *   Walk both halves together, comparing corresponding nodes.
+     * - if (newHead.data != oldHead.data) return false;
+     *   If any node differs, it's not a palindrome.
+     * - newHead = newHead.next; oldHead = oldHead.next;
+     *   Step forward in both halves.
+     * - return true;
+     *   If all nodes match, the linked list is a palindrome.
+     * <p>
+     * Example:
+     * Input: 1 → 2 → 2 → 1
+     * - Find midpoint (slow at second node '2')
+     * - Reverse second half: 2 → 1 becomes 1 → 2
+     * - Compare: 1 vs 1, 2 vs 2 — all match, returns true.
+     * Input: 1 → 2 → 3
+     * - Find midpoint (slow at '2')
+     * - Reverse: 3
+     * - Compare: 1 vs 3 — mismatch, returns false.
+     * <p>
+     * Time Complexity:
+     * - O(n): Linear scan (find middle, reverse, compare).
+     * <p>
+     * Space Complexity:
+     * - O(1): Only pointers used; no extra structures.
+     */
+    private static boolean checkPalindromLinkedListOptimal(Node head) {
+        if (head == null) return false;
+        if (head.next == null) return true;
+        Node slow = head;
+        Node fast = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        Node newHead = reverseList(slow);
+        Node oldHead = head;
+
+        while (oldHead.next != null) {
+            if (newHead.data != oldHead.data) {
+                return false;
+            }
+            newHead = newHead.next;
+            oldHead = oldHead.next;
+        }
+        return true;
+    }
+
     private static void reverseLinkedListOptimal(Node head, PalindromLinkedList list) {
 
         Node temp = head;
@@ -195,12 +271,24 @@ public class PalindromLinkedList {
         list.head = previous;
     }
 
+    public static  Node reverseList(Node head) {
+        Node prev = null;
+        Node temp = head;
+
+        if (head == null || head.next == null) return head;
+        Node newHead = reverseList(head.next);
+        Node front = head.next;
+        front.next = head;
+        head.next = null;
+        return newHead;
+    }
+
     public int size() {
         return size;
     }
 
-    public void insert(int val) {
-        Node node = new Node(val);
+    public void insert(int data) {
+        Node node = new Node(data);
 
         if (head == null) {
             head = node;
