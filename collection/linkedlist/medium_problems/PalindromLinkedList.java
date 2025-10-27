@@ -1,4 +1,4 @@
-package string.medium_problems;
+package collection.linkedlist.medium_problems;
 
 import java.util.Stack;
 
