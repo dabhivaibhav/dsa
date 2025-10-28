@@ -41,6 +41,14 @@ public class OddEvenLinkedList {
         list.insert(50);
         System.out.println(oddEvenLinkedListBruteForce(list.head, list.size));
         printList(list.head);
+        OddEvenLinkedList list1 = new OddEvenLinkedList();
+        list1.insert(10);
+        list1.insert(20);
+        list1.insert(30);
+        list1.insert(40);
+        list1.insert(50);
+        System.out.println(oddEvenLinkedListOptimal(list1.head));
+        printList(list1.head);
     }
 
     /**
@@ -112,6 +120,59 @@ public class OddEvenLinkedList {
             temp = temp.next;
             count++;
         }
+        return head;
+    }
+
+    /**
+     * oddEvenLinkedListOptimal
+     * <p>
+     * What it does:
+     * Rearranges a singly linked list so that nodes at odd indices appear first, followed by nodes at even indices,
+     * preserving the original relative order within each group.
+     * Returns the head of the reordered list.
+     * <p>
+     * Intuition:
+     * - Use two pointers: one for odd-positioned nodes (starting at head), one for even-positioned nodes (starting at head.next).
+     * - Traverse the list, “stitching” all odd nodes together and all even nodes together into separate chains.
+     * - At the end, connect the odd chain to the start of the even chain for the final ordering.
+     * <p>
+     * Why each line matters:
+     * - if (head == null || head.next == null) return head;
+     * Handles edge cases where list is empty or contains one node (already in correct order).
+     * - Node odd = head; Node even = head.next; Node evenHead = even;
+     * Set up pointers and remember the start of the even group so you can attach it at the end.
+     * - while (even != null && even.next != null) { ... }
+     * Iterate: re-link odd and even nodes to form two chains; advance both pointers to their next nodes.
+     * - At loop end, odd.next = evenHead;
+     * Attach the even chain after the last odd node.
+     * - return head;
+     * Return the reordered list.
+     * <p>
+     * Example:
+     * Input: 1 → 2 → 3 → 4 → 5
+     * Output: 1 → 3 → 5 → 2 → 4
+     * - The odd chain: 1 → 3 → 5; The even chain: 2 → 4; Final stitching: 1 → 3 → 5 → 2 → 4
+     * <p>
+     * Time Complexity:
+     * - O(n): The list is traversed once.
+     * <p>
+     * Space Complexity:
+     * - O(1): Only a handful of pointers are used for rearrangement.
+     */
+    private static Node oddEvenLinkedListOptimal(Node head) {
+        if (head == null || head.next == null) return head;
+
+        Node odd = head;
+        Node even = head.next;
+        Node evenHead = even;
+        while (even != null && even.next != null) {
+            odd.next = odd.next.next;
+            even.next = even.next.next;
+            odd = odd.next;
+            even = even.next;
+        }
+        odd.next = evenHead;
+
         return head;
     }
 
