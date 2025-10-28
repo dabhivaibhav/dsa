@@ -90,16 +90,15 @@ public class RemoveMIddleNode {
         if (head == null || head.next == null) {
             return null;
         }
-        Node temp = new Node(0, head);
-        Node slow = temp, fast = head;
-
+        Node slow = head, fast = head;
+        fast = fast.next.next;
         while (fast != null && fast.next != null) {
             slow = slow.next;
             fast = fast.next.next;
         }
 
         slow.next = slow.next.next;
-        return temp.next;
+        return head ;
     }
 
     private void insert(int val) {
