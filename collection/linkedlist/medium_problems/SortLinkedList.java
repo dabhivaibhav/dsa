@@ -48,6 +48,18 @@ public class SortLinkedList {
         sortLinkedListBruteForce(list.head);
         list.showList();
 
+        SortLinkedList list1 = new SortLinkedList();
+        list1.insert(10);
+        list1.insert(90);
+        list1.insert(80);
+        list1.insert(70);
+        list1.insert(60);
+        System.out.print("Before sorting: ");
+        list1.showList();
+        System.out.print("After sorting: ");
+        sortLinkedListBruteForce(list1.head);
+        list1.showList();
+
     }
 
 
@@ -114,6 +126,106 @@ public class SortLinkedList {
         }
     }
 
+    /**
+     * sortLinkedListOptimal
+     * <p>
+     * What it does:
+     * Sorts a singly linked list in ascending order using the merge sort algorithm.
+     * The method recursively splits the list into halves, sorts each half, and merges the sorted halves to produce a fully sorted linked list.
+     * This approach guarantees O(n log n) time complexity and uses O(log n) extra space due to recursion.
+     * <p>
+     * Intuition:
+     * - Linked lists lack random access, so algorithms like quicksort are not ideal.
+     * - Merge sort works efficiently with linked lists because splitting and merging only involve pointer updates.
+     * - The list is divided in half using the fast and slow pointer technique, recursively sorted, then merged.
+     * <p>
+     * Why each line matters:
+     * - if (head == null || head.next == null) return head;
+     * Base case: an empty or single-node list is already sorted.
+     * - Node middle = findMiddle(head);
+     * Identifies the midpoint of the list using two pointers for even splitting.
+     * - Node right = middle.next; middle.next = null;
+     * Splits the list into two halves at the middle node.
+     * - left = sortLinkedListOptimal(left); right = sortLinkedListOptimal(right);
+     * Recursively sorts both halves of the list.
+     * - return mergeTwoSortedLinkedLists(left, right);
+     * Merges two sorted lists into one sorted list.
+     * <p>
+     * Helper Method: mergeTwoSortedLinkedLists
+     * - Merges two sorted singly linked lists into a single sorted linked list.
+     * - Uses a dummy node so pointer manipulation is consistent, avoiding edge cases for the head.
+     * - Iterates through both lists, attaching the smaller node at each step to the result.
+     * - If either list ends, attaches the remaining nodes from the other list.
+     * <p>
+     * Helper Method: findMiddle
+     * - Finds the middle node of a linked list using the fast and slow pointer technique.
+     * - This ensures the list is split as evenly as possible, which is important for merge sort efficiency.
+     * <p>
+     * Edge Cases Handled:
+     * - Empty list: Returns null.
+     * - Single-node list: Returns the node.
+     * - Duplicate, negative, and positive values: All are handled and sorted correctly.
+     * - Works for lists of any length, including odd and even sizes.
+     * <p>
+     * Example:
+     * Input: 5 → 1 → 3 → 1 → 2
+     * Output: 1 → 1 → 2 → 3 → 5
+     * <p>
+     * Time Complexity:
+     * - O(n log n): Due to recursive splitting and merging steps. Each split divides the list in half, and each merge is O(n).
+     * <p>
+     * Space Complexity:
+     * - O(log n): Due to the recursion stack in merge sort.
+     * - O(1) additional explicit space. No arrays or auxiliary structures are used; only pointers.
+     */
+    private static Node sortLinkedListOptimal(Node head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        Node middle = findMiddle(head);
+        Node right = middle.next;
+        middle.next = null;
+        Node left = head;
+        left = sortLinkedListOptimal(left);
+        right = sortLinkedListOptimal(right);
+        return mergeTwoSortedLinkedLists(left, right);
+    }
+
+    public static Node mergeTwoSortedLinkedLists(Node list1, Node list2) {
+        Node dummyNode = new Node(-1, null);
+        Node temp = dummyNode;
+        while (list1 != null && list2 != null) {
+            if (list1.val <= list2.val) {
+                temp.next = list1;
+                list1 = list1.next;
+            } else {
+                temp.next = list2;
+                list2 = list2.next;
+            }
+            temp = temp.next;
+        }
+        if (list1 != null) {
+            temp.next = list1;
+        } else {
+            temp.next = list2;
+        }
+        return dummyNode.next;
+    }
+
+    private static Node findMiddle(Node head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        Node slow = head;
+        Node fast = head.next;
+
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return slow;
+    }
+
     private void insert(int val) {
         Node node = new Node(val);
         if (head == null) {
@@ -125,7 +237,6 @@ public class SortLinkedList {
         }
         size++;
     }
-
 
     private void showList() {
         Node temp = head;
