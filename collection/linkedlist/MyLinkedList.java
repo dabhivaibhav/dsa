@@ -1,7 +1,5 @@
 package collection.linkedlist;
 
-import collection.linkedlist.medium_problems.MiddleOfLinkedList;
-
 public class MyLinkedList {
 
     private Node head;

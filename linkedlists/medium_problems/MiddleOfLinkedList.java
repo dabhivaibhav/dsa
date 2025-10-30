@@ -1,6 +1,4 @@
-package collection.linkedlist.medium_problems;
-
-import collection.linkedlist.MyLinkedList;
+package linkedlists.medium_problems;
 
 /*
 Leetcode 876: Middle of the Linked List

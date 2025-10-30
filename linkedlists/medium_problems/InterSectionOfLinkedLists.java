@@ -1,4 +1,4 @@
-package collection.linkedlist.medium_problems;
+package linkedlists.medium_problems;
 
 /*
 160. Intersection of two linked lists

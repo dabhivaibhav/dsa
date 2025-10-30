@@ -1,4 +1,4 @@
-package collection.linkedlist.medium_problems;
+package linkedlists.medium_problems;
 
 
 /*
@@ -23,8 +23,6 @@ Constraints:
 
 Follow up: A linked list can be reversed either iteratively or recursively. Could you implement both?
  */
-
-import collection.linkedlist.MyLinkedList;
 
 import java.util.LinkedList;
 import java.util.Stack;

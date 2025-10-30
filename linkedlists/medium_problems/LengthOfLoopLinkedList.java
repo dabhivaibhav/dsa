@@ -1,4 +1,4 @@
-package collection.linkedlist.medium_problems;
+package linkedlists.medium_problems;
 
 /*
 Length of loop in LinkedList

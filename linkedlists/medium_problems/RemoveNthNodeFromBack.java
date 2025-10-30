@@ -1,4 +1,4 @@
-package collection.linkedlist.medium_problems;
+package linkedlists.medium_problems;
 
 /*
 19. Remove Nth Node From End of List

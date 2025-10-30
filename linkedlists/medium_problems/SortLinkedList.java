@@ -1,4 +1,4 @@
-package collection.linkedlist.medium_problems;
+package linkedlists.medium_problems;
 
 import java.util.ArrayList;
 import java.util.Collections;

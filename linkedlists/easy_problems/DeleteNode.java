@@ -1,4 +1,4 @@
-package collection.linkedlist.easy_problems;
+package linkedlists.easy_problems;
 
 /**
  237. Delete Node in a Linked List
