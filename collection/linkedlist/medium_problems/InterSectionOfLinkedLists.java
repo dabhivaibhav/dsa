@@ -204,6 +204,59 @@ public class InterSectionOfLinkedLists {
         return null;
     }
 
+    /**
+     * getIntersectionNodeOptimal2
+     * <p>
+     * What it does:
+     * Efficiently finds the intersection node of two singly linked lists using the two-pointer switching technique.
+     * If the lists intersect, both pointers will eventually meet at the intersection node; otherwise, both will reach null simultaneously, indicating no intersection.
+     *
+     * Intuition:
+     * - If two lists are of different lengths, aligning them by length is tricky.
+     * - By traversing both lists with two pointers (d1 and d2), and switching each pointer to the head of the other list when it reaches the end,
+     *   the pointers will cover the same total distance. If there is an intersection, they will sync up at the intersection node.
+     * - If there is no intersection, both will reach the end (null) after traversing the entirety of both lists.
+     *
+     * Why each line matters:
+     * - Node d1 = headA; Node d2 = headB;
+     *     Initializes pointers to heads of both lists.
+     * - while(d1 != d2):
+     *     Repeats until both pointers reference the same node (either intersection or null).
+     * - d1 = d1 == null ? headB : d1.next;
+     *     When d1 reaches the end of its list, switches it to the head of the other list.
+     * - d2 = d2 == null ? headA : d2.next;
+     *     Similarly, when d2 reaches the end, switches to headA.
+     * - return d1;
+     *     Returns the intersection node (if found) or null (if no intersection).
+     *
+     * Edge Cases Handled:
+     * - No intersection: Both pointers eventually reach null and d1 == d2 == null.
+     * - Intersection at any position: Pointers will meet at intersection node.
+     * - Lists of different lengths: Still works; pointers are aligned by the switching mechanism.
+     * - Empty lists: Returns null.
+     *
+     * Example:
+     * For lists: A: 1 → 2 → 3 → 4 → 5
+     *            B: 9 → 8 → 4 → 5
+     * Returns node with value 4, the intersection point.
+     *
+     * Time Complexity:
+     * - O(m + n): Both pointers traverse at most (length of A + length of B).
+     *
+     * Space Complexity:
+     * - O(1): Uses only pointer variables, constant space.
+     */
+    private static Node getIntersectionNodeOptimal2(Node headA, Node headB) {
+        Node d1 = headA;
+        Node d2 = headB;
+
+        while(d1 != d2) {
+            d1 = d1 == null? headB:d1.next;
+            d2 = d2 == null? headA:d2.next;
+        }
+        return d1;
+    }
+
     private void insert(int val) {
         Node node = new Node(val);
         if (head == null) {
