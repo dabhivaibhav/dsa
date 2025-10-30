@@ -97,7 +97,7 @@ dsa/
 - [x] Two Pointer Approach
 - [ ] Dynamic Programming
 - [ ] Pattern-based questions
-- [ ] Binary Search on Answers
+- [x] Binary Search on Answers
 - [ ] Backtracking & State Tracking
 
 ---
