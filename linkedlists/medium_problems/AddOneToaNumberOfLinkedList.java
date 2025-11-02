@@ -39,8 +39,13 @@ public class AddOneToaNumberOfLinkedList {
         list.insert(1);
         list.insert(2);
         list.insert(3);
-        list.showList();
         list.addOneNumberBruteForce(list.head);
+
+        AddOneToaNumberOfLinkedList list1 = new AddOneToaNumberOfLinkedList();
+        list1.insert(1);
+        list1.insert(2);
+        list1.insert(3);
+        list1.addOneNumberOptimalApproach(list1.head);
         list.showList();
     }
 
@@ -53,48 +58,48 @@ public class AddOneToaNumberOfLinkedList {
      * first reversed so the least significant digit comes first, allowing traversal in the natural addition direction.
      * The method then increments the number by one, handling any carry propagation, and reverses the list again to
      * restore the original order.
-     *
+     * <p>
      * Intuition:
      * - Since the least significant digit is at the tail of the list, direct addition requires reaching the end first.
-     *   Reversing the list brings the least significant digit to the head, making it easy to process.
+     * Reversing the list brings the least significant digit to the head, making it easy to process.
      * - Adding one may propagate a carry across multiple nodes (e.g., 1→9→9 → 2→0→0).
      * - After performing the addition, reversing the list again restores the original digit order.
-     *
+     * <p>
      * Why each line matters:
      * - head = reverseLinkedList(head);
-     *     Reverses the list so addition can start from the least significant digit.
+     * Reverses the list so addition can start from the least significant digit.
      * - int carry = 1;
-     *     Initializes carry as 1 to perform the “+1” operation.
+     * Initializes carry as 1 to perform the “+1” operation.
      * - while (temp != null):
-     *     Iterates through each node, updating digits and managing carry.
+     * Iterates through each node, updating digits and managing carry.
      * - temp.val = (temp.val + carry) % 10;
-     *     Updates the current digit after addition.
+     * Updates the current digit after addition.
      * - carry = (temp.val + carry) / 10;
-     *     Calculates carry for the next digit.
+     * Calculates carry for the next digit.
      * - if (temp.next == null && carry > 0):
-     *     Appends a new node if a carry remains after processing the last digit (e.g., 9→9 → 1→0→0).
+     * Appends a new node if a carry remains after processing the last digit (e.g., 9→9 → 1→0→0).
      * - head = reverseLinkedList(head);
-     *     Restores the list to its original order after completing the addition.
+     * Restores the list to its original order after completing the addition.
      * - this.head = head;
-     *     Updates the main list’s head reference with the modified list.
-     *
+     * Updates the main list’s head reference with the modified list.
+     * <p>
      * Edge Cases Handled:
      * - Empty list: No operation performed.
      * - Carry propagation: Correctly adds new node when carry remains (e.g., 9→9→9 → 1→0→0→0).
      * - Single-node list: Works for both small and large values (e.g., 5 → 6, 9 → 1→0).
-     *
+     * <p>
      * Example:
      * Input:  head → 1 → 2 → 3
      * Output: head → 1 → 2 → 4
      * Explanation: The number 123 becomes 124 after adding one.
-     *
+     * <p>
      * Input:  head → 9 → 9
      * Output: head → 1 → 0 → 0
      * Explanation: The number 99 becomes 100 after adding one.
-     *
+     * <p>
      * Time Complexity:
      * - O(n): Each node is visited a constant number of times during two reversals and one addition pass.
-     *
+     * <p>
      * Space Complexity:
      * - O(1): Performs all operations in place using constant extra space.
      */
@@ -120,6 +125,85 @@ public class AddOneToaNumberOfLinkedList {
         }
         head = reverseLinkedList(head);
         this.head = head;
+    }
+
+    /**
+     * addOneNumberOptimalApproach
+     * <p>
+     * What it does:
+     * Adds one to the number represented by a singly linked list using a recursive approach.
+     * Each node contains a single digit, with the most significant digit at the head.
+     * The recursion travels to the end of the list (least significant digit), adds one,
+     * and then propagates the carry backward through the recursive call stack.
+     * If a carry remains after processing the most significant digit, a new node is added at the front.
+     *
+     * Intuition:
+     * - The challenge in adding one is that the least significant digit lies at the end of the list.
+     *   Instead of reversing the list, recursion naturally reaches the tail first and returns upward,
+     *   mimicking right-to-left addition.
+     * - Each recursive return step handles carry propagation cleanly, updating node values in place.
+     * - If the final carry after recursion is non-zero (e.g., all digits were 9),
+     *   a new head node is added to represent the overflow (e.g., 9→9→9 → 1→0→0→0).
+     *
+     * Why each line matters:
+     * - int carry = addOneHelper(head);
+     *     Starts the recursion from the head and receives the carry propagated back from the tail.
+     * - if (carry != 0):
+     *     Checks if an extra carry remains after processing all digits.
+     * - Node newHead = new Node(carry);
+     *     Creates a new node for the overflow carry (if needed).
+     * - newHead.next = head; head = newHead;
+     *     Prepends the new node to the front of the list to form the updated number.
+     *
+     * Inner Helper Method (addOneHelper):
+     * - if (node == null) return 1;
+     *     Base case: when recursion reaches beyond the last node, returns 1 to represent "+1".
+     * - int carry = addOneHelper(node.next);
+     *     Recursively processes the next node, returning the carry from deeper calls.
+     * - int sum = node.val + carry;
+     *     Adds the carry to the current digit.
+     * - node.val = sum % 10;
+     *     Updates the current node’s digit after addition.
+     * - return sum / 10;
+     *     Returns the new carry to be added to the previous node.
+     *
+     * Edge Cases Handled:
+     * - Empty list: Returns a single node with value 1.
+     * - All digits are 9: Creates a new head node to handle overflow (e.g., 9→9→9 → 1→0→0→0).
+     * - Single node: Correctly handles both with and without carry (e.g., 4 → 5, 9 → 1→0).
+     *
+     * Example:
+     * Input:  head → 1 → 2 → 9
+     * Output: head → 1 → 3 → 0
+     * Explanation: The number 129 becomes 130.
+     *
+     * Input:  head → 9 → 9
+     * Output: head → 1 → 0 → 0
+     * Explanation: The number 99 becomes 100.
+     *
+     * Time Complexity:
+     * - O(n): Each node is visited exactly once during recursion.
+     *
+     * Space Complexity:
+     * - O(n): Due to the recursion call stack (one frame per node).
+     */
+    private void addOneNumberOptimalApproach(Node head) {
+        int carry = addOneHelper(head);
+
+        if (carry != 0) {
+            Node newHead = new Node(carry);
+            newHead.next = head;
+            head = newHead;
+        }
+
+    }
+
+    int addOneHelper(Node node) {
+        if (node == null) return 1;
+        int carry = addOneHelper(node.next);
+        int sum = node.val + carry;
+        node.val = sum % 10;
+        return sum / 10;
     }
 
     private void showList() {
