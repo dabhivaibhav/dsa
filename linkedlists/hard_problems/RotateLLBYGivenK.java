@@ -93,7 +93,8 @@ public class RotateLLBYGivenK {
         Node newHead = newTail.next;
         newTail.next = null;
         tail.next = head;
-        return newHead;
+        head = newHead;
+        return head;
     }
 
     private void insert(int val) {
