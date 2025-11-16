@@ -99,4 +99,76 @@ public class SortStack {
             stack.push(temp.pop());
         }
     }
+
+    /**
+     * sortStack
+     * <p>
+     * What it does:
+     * Recursively sorts a stack of integers in descending order (largest at the top, smallest at the bottom),
+     * using only stack operations (push, pop, peek, isEmpty) and recursion—**no loops, no extra stack**.
+     * The sorting happens by recursively popping the entire stack, then inserting each element back into
+     * its sorted position (using the insert helper method) as recursion unwinds.
+     * <p>
+     * Intuition (beginner-friendly, step-by-step explanation):
+     * - The main idea is to sort the stack by leveraging recursion to break it down into smaller sub-problems:
+     * 1. Remove (pop) the top element.
+     * 2. Recursively sort the rest of the stack.
+     * 3. Insert the removed element back into the sorted stack
+     * (using the insert helper, which itself uses recursion).
+     * - The insert method finds the correct spot for the popped element within the sorted portion of the stack:
+     * - If stack is empty or the top of stack is <= the element you want to place, push it on top.
+     * - Otherwise, pop the next value off, recursively call insert,
+     * then place the popped value back (preserving order).
+     * - Recursion handles all movement; the stack is restored with elements in the correct order as the calls return.
+     * <p>
+     * Why each line matters:
+     * - `if (!stack.isEmpty()) { ... }`: Base case—when stack is empty, recursion stops.
+     * - `int temp = stack.pop();`: Pops the current element to be inserted later.
+     * - `sortStack(stack);`: Recursively sorts the remaining stack.
+     * - `insert(stack, temp);`: Inserts the element back into its sorted place recursively.
+     * - In insert: places `temp` at the right spot, or recurses deeper if necessary.
+     * <p>
+     * Edge Cases Handled:
+     * - Empty stack: Nothing happens, code is safe.
+     * - One-element stack: Already sorted, recursion returns immediately.
+     * - Duplicate values: All instances are preserved and sorted correctly.
+     * <p>
+     * Example:
+     * Input: [4, 1, 3, 2] (with 4 at top)
+     * Output: [4, 3, 2, 1] (with 4 at top)
+     * <p>
+     * Time Complexity:
+     * - O(N^2): Each insertion may pop/push nearly all N elements in the worst case.
+     * <p>
+     * Space Complexity:
+     * - O(N): Due to recursion call stack.
+     * <p>
+     * Limitations:
+     * - Must not use loops or extra stacks—pure recursion and only provided stack operations.
+     * - For large stacks (N near 100), recursion depth is acceptable, but deeper stacks may hit call stack limits.
+     */
+
+    public void sortStack(Stack<Integer> stack) {
+        if (!stack.isEmpty()) {
+            int temp = stack.pop();
+            sortStack(stack);
+            insert(stack, temp);
+        }
+    }
+
+    public void insert(Stack<Integer> stack, int temp) {
+        if (stack.isEmpty() || stack.peek() <= temp) {
+            stack.push(temp);
+            return;
+        }
+
+        // Pop the top element and recursively insert
+        int val = stack.pop();
+        insert(stack, temp);
+
+        // Push the popped element back
+        stack.push(val);
+    }
+
+
 }
