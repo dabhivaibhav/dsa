@@ -22,7 +22,9 @@ public class GenerateParentheses {
 
     public static void main(String[] args) {
         System.out.println(generateParentheses(3));
-
+        List<String> result = new ArrayList<>();
+        generateParenthesesRecursion("", 0, 0, 3, result);
+        System.out.println(result);
 
     }
 
@@ -31,6 +33,7 @@ public class GenerateParentheses {
         int len = 2 * n;
         StringBuilder sb = new StringBuilder();
         generateParenthesesBruteForce(len, 0, sb, result, n);
+
         return result;
     }
 
@@ -159,6 +162,86 @@ public class GenerateParentheses {
         return balance == 0;
     }
 
+
+    /**
+     * generateParenthesesRecursion
+     * <p>
+     * What it does:
+     * Generates all valid (well-formed) parentheses combinations of `n` pairs
+     * using an optimized backtracking approach that *never generates invalid strings*.
+     * <p>
+     * Unlike the brute-force method, this approach applies constraints while
+     * constructing the string, ensuring that only valid paths are explored.
+     * <p>
+     * Core Idea (Key Insight):
+     * - A valid parentheses string must satisfy:
+     *   1. Number of '(' ≤ n
+     *   2. Number of ')' ≤ number of '(' at any time
+     * - By enforcing these rules during recursion, we avoid unnecessary work.
+     * <p>
+     * Parameters Explanation:
+     * - `curr`: Current partially constructed parentheses string.
+     * - `open`: Number of '(' used so far.
+     * - `close`: Number of ')' used so far.
+     * - `n`: Total number of parentheses pairs required.
+     * - `res`: List that stores all valid parentheses combinations.
+     * <p>
+     * How recursion works (step-by-step):
+     * - At each step, we decide whether we can safely add '(' or ')'.
+     * - '(' can be added if we have not used all `n` opening brackets.
+     * - ')' can be added only if there are more unmatched '(' (i.e., `close < open`).
+     * - The recursion continues until the string length becomes `2 * n`.
+     * <p>
+     * Why each condition matters:
+     * - `curr.length() == 2 * n`:
+     *   - Base case: a complete valid string is formed.
+     * - `if (open < n)`:
+     *   - Ensures we do not exceed the allowed number of opening brackets.
+     * - `if (close < open)`:
+     *   - Guarantees that we never close more brackets than we open,
+     *     preserving validity at every step.
+     * <p>
+     * Example Walkthrough (n = 3):
+     * - Start: curr="", open=0, close=0
+     * - Add '(' → curr="(", open=1
+     * - Add '(' → curr="((", open=2
+     * - Add ')' → curr="(()", close=1
+     * - Continue recursively until valid strings like:
+     *   "((()))", "(()())", "(())()", "()(())", "()()()"
+     * <p>
+     * Why this approach is optimal:
+     * - Invalid strings like ")(" or "())(" are never generated.
+     * - The recursion tree is pruned early using constraints.
+     * - This drastically reduces the number of recursive calls.
+     * <p>
+     * Time Complexity:
+     * - O(Cₙ), where Cₙ is the nth Catalan number.
+     * - Approximately O(4ⁿ / √n) in asymptotic form.
+     * <p>
+     * Space Complexity:
+     * - O(n) recursion depth.
+     * - O(Cₙ * n) for storing the output strings.
+     * <p>
+     * Edge Cases Handled:
+     * - n = 0 → returns a list with an empty string.
+     * - n = 1 → returns ["()"].
+     * <p>
+     * Interview Insight:
+     * - This is the **expected optimal solution**.
+     * - Shows understanding of:
+     *   - Backtracking
+     *   - Constraint-based recursion
+     *   - Pruning invalid paths early
+     * - Always preferred over brute-force in coding interviews.
+     */
+    private static void generateParenthesesRecursion(String curr, int open, int close, int n, List<String> res) {
+        if (curr.length() == 2 * n) {
+            res.add(curr);
+            return;
+        }
+        if (open < n) generateParenthesesRecursion(curr + "(", open + 1, close, n, res);
+        if (close < open) generateParenthesesRecursion(curr + ")", open, close + 1, n, res);
+    }
 
 
 
