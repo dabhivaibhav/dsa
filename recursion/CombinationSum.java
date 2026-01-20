@@ -63,13 +63,13 @@ public class CombinationSum {
      * combinationSum
      * <p>
      * What it does:
-     * Finds and prints **all unique combinations** of numbers from the `candidates`
+     * Finds and prints all unique combinations of numbers from the `candidates`
      * array that sum exactly to the given `target`.
      * <p>
-     * Each number in `candidates` may be used **unlimited times**, and the order
+     * Each number in `candidates` may be used unlimited times, and the order
      * of elements inside a combination does not matter.
      * <p>
-     * This method uses **backtracking with recursion**, exploring all valid
+     * This method uses backtracking with recursion, exploring all valid
      * include/exclude paths while maintaining a current combination list.
      * <p>
      * Core Idea:
@@ -95,7 +95,7 @@ public class CombinationSum {
      * - Pick the current element:
      * - Add `candidates[index]` to `combination`.
      * - Reduce `target` by the picked value.
-     * - Recurse with the **same index** (element can be reused).
+     * - Recurse with the same index (element can be reused).
      * - Backtrack:
      * - Remove the last added element to restore state.
      * - Not pick the current element:
@@ -126,7 +126,7 @@ public class CombinationSum {
      * - Target smaller than smallest candidate.
      * <p>
      * Interview Insight:
-     * - This is the **classic backtracking pattern** for:
+     * - This is the classic backtracking pattern for:
      * - Combination Sum
      * - Unbounded Knapsack
      * - Key observation:
