@@ -98,7 +98,7 @@ dsa/
 - [ ] Dynamic Programming
 - [ ] Pattern-based questions
 - [x] Binary Search on Answers
-- [ ] Backtracking & State Tracking
+- [x] Backtracking & State Tracking
 
 ---
 
