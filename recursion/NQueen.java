@@ -37,6 +37,17 @@ public class NQueen {
         }
         nQueenBruteForce(0, n, board, result);
         System.out.println(result);
+
+        result.clear();
+        board = new String[n][n];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(board[i], ".");
+        }
+        int[] leftRow = new int[n];
+        int[] lowerDiagonal = new int[2 * n - 1];
+        int[] upperDiagonal = new int[2 * n - 1];
+        nQueenRecursionOptimized(0, board, n, leftRow, upperDiagonal, lowerDiagonal, result);
+        System.out.println(result);
     }
 
 
@@ -131,4 +142,90 @@ public class NQueen {
         return true;
     }
 
+
+    /**
+     * nQueenRecursionOptimized (N-Queens with Hashing)
+     * <p>
+     * What it does:
+     * This is an optimized version of the N-Queens solver. Instead of scanning the
+     * board manually to check if a square is safe, it uses three lookup arrays
+     * (hashing) to check for queen attacks in constant time O(1).
+     * Core Intuition:
+     * We process the board column by column (from left to right).
+     * A queen at (row, col) attacks:
+     * Its horizontal row.
+     * Its lower diagonal (bottom-left to top-right).
+     * Its upper diagonal (top-left to bottom-right).
+     * We use three boolean-like arrays (0 for empty, 1 for occupied) to keep
+     * track of these "attack zones" instantly.
+     * <p>
+     * Why this is better:
+     * In the brute force version, the 'isSafe' function takes O(N) time to scan.
+     * Here, we check three array indices, which takes O(1) time. This significantly
+     * speeds up the search.
+     * <p>
+     * The Hashing Logic:
+     * leftRow: Size N. Tracks which rows already have a queen.
+     * lowerDiagonal: Size 2N-1. The formula (row + col) uniquely identifies
+     * every diagonal that slopes from bottom-left to top-right.
+     * upperDiagonal: Size 2N-1. The formula (n - 1 + col - row) uniquely
+     * identifies every diagonal that slopes from top-left to bottom-right.
+     * <p>
+     * Step-by-step explanation:
+     * col: The current column index we are trying to fill.
+     * board: The 2D grid where we place "Q" or ".".
+     * leftRow / upperDiagonal / lowerDiagonal: The lookup arrays used for safety checks.
+     * <p>
+     * Base Case:
+     * If col == n, we have successfully placed a queen in every column.
+     * The current board is a valid solution. We copy it and add it to the result list.
+     * <p>
+     * Recursive Case:
+     * For the current column, try every row from 0 to n-1.
+     * Check if the row and both diagonals are free (all must be 0).
+     * <p>
+     * If Safe:
+     * Mark: Place "Q" and set the corresponding indices in the three arrays to 1.
+     * Recursion: Call nQueenRecursionOptimized for col + 1.
+     * Backtrack: Reset "Q" to "." and set the array indices back to 0.
+     * Example (N=4):
+     * To check if (row 2, col 1) is safe:
+     * Check leftRow[2]
+     * Check lowerDiagonal[2 + 1] = lowerDiagonal[3]
+     * Check upperDiagonal[4 - 1 + 1 - 2] = upperDiagonal[2]
+     * If all are 0, we can place a queen!
+     * <p>
+     * Complexity:
+     * Time: O(N!) - Still the same number of states to explore, but each state is processed faster.
+     * Space: O(N) - For the lookup arrays and the recursion stack. (Excluding the board itself).
+     */
+    private static void nQueenRecursionOptimized(int col, String[][] board, int n,
+                                                 int[] leftRow, int[] upperDiagonal, int[] lowerDiagonal,
+                                                 List<List<String>> res) {
+        if (col == n) {
+            List<String> temp = new ArrayList<>();
+            for (int i = 0; i < n; i++) {
+                temp.add(String.join("", board[i]));
+            }
+            res.add(temp);
+            return;
+        }
+
+        for (int row = 0; row < n; row++) {
+            if (leftRow[row] == 0 && lowerDiagonal[row + col] == 0 &&
+                    upperDiagonal[n - 1 + col - row] == 0) {
+
+                board[row][col] = "Q";
+                leftRow[row] = 1;
+                lowerDiagonal[row + col] = 1;
+                upperDiagonal[n - 1 + col - row] = 1;
+                nQueenRecursionOptimized(col + 1, board, n, leftRow, upperDiagonal, lowerDiagonal, res);
+
+                board[row][col] = ".";
+                leftRow[row] = 0;
+                lowerDiagonal[row + col] = 0;
+                upperDiagonal[n - 1 + col - row] = 0;
+            }
+        }
+    }
 }
