@@ -113,10 +113,10 @@ public class RatInaMaze {
 
         if (grid[r][c] == 1 && !visited[r][c]) {
             visited[r][c] = true;
-            ratInaAMazeBruteForce(r, c - 1, grid, n, path + "L", res, visited);
             ratInaAMazeBruteForce(r + 1, c, grid, n, path + "D", res, visited);
-            ratInaAMazeBruteForce(r - 1, c, grid, n, path + "U", res, visited);
+            ratInaAMazeBruteForce(r, c - 1, grid, n, path + "L", res, visited);
             ratInaAMazeBruteForce(r, c + 1, grid, n, path + "R", res, visited);
+            ratInaAMazeBruteForce(r - 1, c, grid, n, path + "U", res, visited);
             visited[r][c] = false;
         }
     }
