@@ -34,12 +34,10 @@ Constraints:
 public class ExpressionAddOperators {
 
     public static void main(String[] args) {
-        String[] operators = {"+", "-", "*"};
         List<String> result = new ArrayList<>();
         String num = "123";
         int target = 6;
         addOperators(num, target, 0, 0, 0, "", result);
-        ;
         System.out.println(result);
     }
 
