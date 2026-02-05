@@ -46,27 +46,27 @@ performing n operations will take overall O(n) time even if one of those operati
 public class QueueImplUsingStackPushInefficient {
 
     public static void main(String[] args) {
-        MyStack myStack = new MyStack();
+        MyQueue myQueue = new MyQueue();
 
-        myStack.push(1);
-        myStack.push(2);
-        myStack.push(3);
-        myStack.push(4);
-        myStack.printQueue();
+        myQueue.push(1);
+        myQueue.push(2);
+        myQueue.push(3);
+        myQueue.push(4);
+        myQueue.printQueue();
         System.out.println();
-        System.out.println("Removed element from queue is: " + myStack.pop());
-        myStack.printQueue();
+        System.out.println("Removed element from queue is: " + myQueue.pop());
+        myQueue.printQueue();
         System.out.println();
-        System.out.println("Top element is: " + myStack.peek());
-        System.out.println("Removed element from queue is: " + myStack.pop());
-        System.out.println("Removed element from queue is: " + myStack.pop());
-        myStack.printQueue();
+        System.out.println("Top element is: " + myQueue.peek());
+        System.out.println("Removed element from queue is: " + myQueue.pop());
+        System.out.println("Removed element from queue is: " + myQueue.pop());
+        myQueue.printQueue();
         System.out.println();
-        System.out.println("Top element is: " + myStack.peek());
-        System.out.println("Removed element from queue is: " + myStack.pop());
-        myStack.pop();
-        myStack.peek();
-        myStack.printQueue();
+        System.out.println("Top element is: " + myQueue.peek());
+        System.out.println("Removed element from queue is: " + myQueue.pop());
+        myQueue.pop();
+        myQueue.peek();
+        myQueue.printQueue();
 
     }
 
@@ -142,7 +142,7 @@ public class QueueImplUsingStackPushInefficient {
      * then restores the previous elements back on top.
      */
 
-    private static class MyStack {
+    private static class MyQueue {
         Stack<Integer> stack1 = new Stack<Integer>();
         Stack<Integer> stack2 = new Stack<Integer>();
 
