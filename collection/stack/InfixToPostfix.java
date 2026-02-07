@@ -160,7 +160,7 @@ public class InfixToPostfix {
         return sb.toString();
     }
 
-    public static int prec(char c) {
+    private static int prec(char c) {
         if (c == '^') return 3;
         if (c == '*' || c == '/') return 2;
         if (c == '+' || c == '-') return 1;
