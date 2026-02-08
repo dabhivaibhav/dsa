@@ -13,6 +13,8 @@ public class PostfixToPrefix {
     }
 
     /**
+     * We can convert Postfix to infix and then infix to prefix. But
+     * this approach is simple and efficient.
      * What it does:
      * Converts a given postfix expression into a prefix expression.
      * Postfix notation places operators after operands,
