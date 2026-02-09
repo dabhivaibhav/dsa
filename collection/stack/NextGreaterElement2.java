@@ -1,6 +1,7 @@
 package collection.stack;
 
 import java.util.Arrays;
+import java.util.Stack;
 
 /*
 Leetcode 503. Next Greater Element II
@@ -29,13 +30,16 @@ public class NextGreaterElement2 {
     public static void main(String[] args) {
         int[] nums = {1, 2, 1};
         System.out.println(Arrays.toString(nextGreaterElementBruteForce(nums)));
+        System.out.println(Arrays.toString(nextGreaterElementOptimized(nums)));
         nums = new int[]{1, 2, 3, 4, 3};
         System.out.println(Arrays.toString(nextGreaterElementBruteForce(nums)));
+        System.out.println(Arrays.toString(nextGreaterElementOptimized(nums)));
         nums = new int[]{1, 3, 2, 4};
         System.out.println(Arrays.toString(nextGreaterElementBruteForce(nums)));
+        System.out.println(Arrays.toString(nextGreaterElementOptimized(nums)));
         nums = new int[]{4, 1, 2};
         System.out.println(Arrays.toString(nextGreaterElementBruteForce(nums)));
-
+        System.out.println(Arrays.toString(nextGreaterElementOptimized(nums)));
 
     }
 
@@ -131,6 +135,99 @@ public class NextGreaterElement2 {
                     break;
                 }
             }
+        }
+        return result;
+    }
+
+
+    /**
+     * nextGreaterElementOptimized
+     * <p>
+     * What it does:
+     * Finds the next greater element for every element in a circular array
+     * using an optimized stack based approach.
+     * For each index i, it returns the first element greater than nums[i]
+     * encountered while moving to the right in circular order.
+     * If no such element exists, the result is -1.
+     * <p>
+     * Why this optimized approach is needed:
+     * The brute force solution checks up to n elements for each index,
+     * resulting in O(n^2) time complexity.
+     * This optimized solution reduces the time complexity to O(n)
+     * by using a monotonic stack.
+     * <p>
+     * Key idea behind the solution:
+     * - Use a monotonic decreasing stack to keep track of potential next greater elements.
+     * - Traverse the array twice (2 * n iterations) to simulate circular behavior.
+     * - Use modulo indexing (i % n) to wrap around the array.
+     * <p>
+     * Explanation of data structures:
+     * - result array stores the next greater element for each index.
+     * - stack stores candidate elements in decreasing order.
+     * The top of the stack is always the nearest greater element candidate.
+     * <p>
+     * Why we iterate from 2 * n - 1 to 0:
+     * - Traversing twice ensures that elements at the beginning of the array
+     * can find their next greater elements at the end of the array.
+     * - Iterating from right to left ensures that the stack contains elements
+     * to the right of the current index.
+     * <p>
+     * Step by step explanation of the loop:
+     * <p>
+     * 1) Access the current element using nums[i % n]:
+     * This allows circular traversal without modifying the array.
+     * <p>
+     * 2) Remove smaller or equal elements from the stack:
+     * - While the stack is not empty and the top element is less than or equal
+     * to the current value, pop it.
+     * - These elements cannot be the next greater element for the current value.
+     * <p>
+     * 3) Fill the result only during the first pass:
+     * - When i < n, we are processing the original indices.
+     * - If the stack is empty, there is no greater element, so store -1.
+     * - Otherwise, the top of the stack is the next greater element.
+     * <p>
+     * 4) Push the current element onto the stack:
+     * - This element may serve as the next greater element for elements
+     * to its left.
+     * <p>
+     * Why this works:
+     * - Each element is pushed onto the stack once and popped at most once.
+     * - The stack always maintains elements greater than the current value.
+     * - The first greater element to the right is always at the top of the stack.
+     * <p>
+     * Example walkthrough:
+     * nums = [1, 2, 1]
+     * <p>
+     * Traversal order (conceptually): [1, 2, 1, 1, 2, 1]
+     * <p>
+     * Final result:
+     * [2, -1, 2]
+     * <p>
+     * Time complexity:
+     * O(4n), where n is the length of the array.
+     * Here I am pushing elements to and popping from the stack twice. that's why it is O(4n).
+     * <p>
+     * Space complexity:
+     * O(2n) due to the stack because I am storing double of the array and result array.
+     * <p>
+     * Interview takeaway:
+     * This solution uses a monotonic stack and double traversal
+     * to efficiently solve the circular next greater element problem.
+     * Modulo indexing avoids creating an actual duplicated array.
+     */
+    private static int[] nextGreaterElementOptimized(int[] nums) {
+        int[] result = new int[nums.length];
+        int n = nums.length;
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 2 * n - 1; i >= 0; i--) {
+            while (!stack.isEmpty() && stack.peek() <= nums[i % n]) {
+                stack.pop();
+            }
+            if (i < n) {
+                result[i] = stack.isEmpty() ? -1 : stack.peek();
+            }
+            stack.push(nums[i % n]);
         }
         return result;
     }
