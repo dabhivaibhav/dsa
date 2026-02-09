@@ -1,6 +1,9 @@
 package collection.stack;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
 
 /*
 Leetcode 496. Next Greater Element I
@@ -39,7 +42,8 @@ public class NextGreaterElement1 {
     public static void main(String[] args) {
         int[] nums1 = {4, 1, 2};
         int[] nums2 = {1, 3, 4, 2};
-        System.out.println(Arrays.toString(nextGreaterElement(nums1, nums2)));
+        System.out.println(Arrays.toString(findNextGreaterElementBruteForce(nums1, nums2)));
+        System.out.println(Arrays.toString(findNextGreaterElementOptimized(nums1, nums2)));
     }
 
 
@@ -124,7 +128,7 @@ public class NextGreaterElement1 {
      * After presenting this, you should mention that the time complexity
      * can be optimized to O(n1 + n2) using a stack and a hashmap.
      */
-    private static int[] nextGreaterElement(int[] nums1, int[] nums2) {
+    private static int[] findNextGreaterElementBruteForce(int[] nums1, int[] nums2) {
         int[] result = new int[nums1.length];
 
         for (int i = 0; i < nums1.length; i++) {
@@ -149,6 +153,111 @@ public class NextGreaterElement1 {
             }
 
             result[i] = nextGreater;
+        }
+        return result;
+    }
+
+    /**
+     * findNextGreaterElementOptimized
+     * <p>
+     * What it does:
+     * Finds the next greater element for each value in nums1 by preprocessing nums2.
+     * For every element x in nums1, the method returns the first element greater than x
+     * that appears to the right of x in nums2.
+     * If no such element exists, the result is -1.
+     * <p>
+     * Key idea behind the optimization:
+     * Instead of searching to the right for every element in nums1,
+     * this method computes the next greater element for all elements in nums2 in one pass.
+     * The results are stored in a map for constant time lookup later.
+     * <p>
+     * Why a stack is used:
+     * A monotonic decreasing stack is used to track elements from nums2
+     * whose next greater element has not yet been found.
+     * The stack ensures that elements are processed in an efficient order.
+     * <p>
+     * Explanation of data structures:
+     * - map stores the next greater element for each number in nums2.
+     * Key is the number, value is its next greater element.
+     * - stack stores numbers in decreasing order.
+     * Elements wait in the stack until a greater number appears.
+     * <p>
+     * Step by step explanation of processing nums2:
+     * - Traverse nums2 from left to right.
+     * - For each number:
+     * - While the stack is not empty and the current number is greater
+     * than the element on top of the stack:
+     * - Pop the stack element.
+     * - Record that the current number is the next greater element
+     * for the popped value.
+     * - Push the current number onto the stack.
+     * <p>
+     * Why this works:
+     * The first number that pops an element from the stack
+     * is the first greater number to its right.
+     * Since each element is pushed and popped at most once,
+     * the total processing time is linear.
+     * <p>
+     * Building the result for nums1:
+     * - Iterate through nums1.
+     * - For each value, fetch its next greater element from the map.
+     * - If the value is not present in the map, return -1.
+     * <p>
+     * Example:
+     * nums1 = [4, 1, 2]
+     * nums2 = [1, 3, 4, 2]
+     * <p>
+     * Processing nums2:
+     * - 1 waits in stack
+     * - 3 is greater than 1, so map[1] = 3
+     * - 4 is greater than 3, so map[3] = 4
+     * - 2 waits but has no greater element
+     * <p>
+     * Final map:
+     * 1 -> 3
+     * 3 -> 4
+     * <p>
+     * Result for nums1:
+     * 4 -> -1
+     * 1 -> 3
+     * 2 -> -1
+     * <p>
+     * Time complexity:
+     * O(nums1.length + nums2.length).
+     * Each element of nums2 is pushed and popped once,
+     * and each lookup for nums1 is constant time.
+     * <p>
+     * Space complexity:
+     * O(nums2.length) for the stack and map.
+     * <p>
+     * Interview takeaway:
+     * This optimized solution uses a monotonic stack to reduce the time complexity
+     * from quadratic to linear by preprocessing the next greater elements in nums2.
+     * The map allows quick lookup for nums1 elements.
+     */
+
+    private static int[] findNextGreaterElementOptimized(int[] nums1, int[] nums2) {
+        // Map to store the 'Next Greater' relationship for every number in nums2
+        Map<Integer, Integer> map = new HashMap<>();
+        // Monotonic stack (will stay in descending order)
+        Stack<Integer> stack = new Stack<>();
+
+        // Process nums2 to find NGE for all elements
+        for (int num : nums2) {
+            // While the current number is bigger than the top of the stack,
+            // we've found the "Next Greater" for the number on the stack.
+            while (!stack.isEmpty() && num > stack.peek()) {
+                map.put(stack.pop(), num);
+            }
+            // Add current number to stack to wait for its own next greater
+            stack.push(num);
+        }
+
+        // Build the result for nums1
+        int[] result = new int[nums1.length];
+        for (int i = 0; i < nums1.length; i++) {
+            // If the map has a value, use it; otherwise, use -1
+            result[i] = map.getOrDefault(nums1[i], -1);
         }
         return result;
     }
