@@ -40,7 +40,9 @@ public class NextSmallerElement {
         System.out.println("\nOptimized approach: ");
         System.out.println(Arrays.toString(findNextSmallerElementOptimized(new int[]{4, 8, 5, 2, 25})));
         System.out.println(Arrays.toString(findNextSmallerElementOptimized(new int[]{10, 9, 8, 7})));
-
+        System.out.println("\nOptimized approach using index based approach: ");
+        System.out.println(Arrays.toString(findNextSmallerElementOptimizedIndexBased(new int[]{4, 8, 5, 2, 25})));
+        System.out.println(Arrays.toString(findNextSmallerElementOptimizedIndexBased(new int[]{10, 9, 8, 7})));
 
     }
 
@@ -175,6 +177,50 @@ public class NextSmallerElement {
 
             // Put ourselves on the stack for the elements to our left
             stack.push(nums[i]);
+        }
+        return result;
+    }
+
+    /**
+     * The Real-Life Story: The "Tall Person" Problem
+     * Imagine a line of people waiting to enter a theater. They are standing in a narrow hallway, one behind the other.
+     * <p>
+     * The Goal: Every person wants to know: "Who is the first person behind me who is shorter than me?" (Next Smaller Element).
+     * <p>
+     * The Problem with Values only: If you just shout out heights, it gets confusing. "I'm 6ft, who's shorter?" "Me! I'm 5ft!" "Wait, which 5ft person? The one at the front of the line or the one in the middle?"
+     * <p>
+     * The Solution: The Ticket Number (The Index) In real life, we use positions. Instead of heights, we track Ticket Numbers.
+     * <p>
+     * Ticket #0 is 6ft tall.
+     * <p>
+     * Ticket #1 is 5ft tall.
+     * <p>
+     * If I say "Ticket #1 is shorter than Ticket #0," there is zero confusion. I know exactly who they are and exactly where they are standing.
+     */
+    private static int[] findNextSmallerElementOptimizedIndexBased(int[] nums) {
+        int n = nums.length;
+        int[] result = new int[n];
+
+        // Initialize with -1 because some people might never find
+        // a shorter person behind them.
+        Arrays.fill(result, -1);
+
+        // This is our "Waiting Room" (storing Ticket Numbers/Indices)
+        Stack<Integer> stack = new Stack<>();
+
+        // We walk through the line from Left to Right
+        for (int i = 0; i < n; i++) {
+
+            // While the waiting room isn't empty
+            // the new person (nums[i]) is shorter than the person waiting...
+            while (!stack.isEmpty() && nums[i] < nums[stack.peek()]) {
+                // Get the ticket number of the person who was waiting
+                int ticketNumber = stack.pop();
+                // Their wait is over! The new person is their "Next Smaller"
+                result[ticketNumber] = nums[i];
+            }
+            // After checking the room, the new person joins the wait
+            stack.push(i);
         }
         return result;
     }
