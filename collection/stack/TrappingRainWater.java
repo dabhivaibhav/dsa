@@ -28,8 +28,7 @@ public class TrappingRainWater {
         int[] height = {0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1};
         System.out.println(findTrappedWaterBruteForce(height));
         System.out.println(findTrappedWaterOptimized1(height));
-        int[] height1 = {3, 0, 2};
-        System.out.println(findTrappedWaterOptimized1(height1));
+        System.out.println(findTrappedWaterOptimized2(height));
 
     }
 
@@ -297,6 +296,160 @@ public class TrappingRainWater {
             int waterLevel = Math.min(maxLeft, suffixMax[i]);
             totalWater += (waterLevel - height[i]);
         }
+        return totalWater;
+    }
+    /*
+    Thought process:
+    I already had an optimized solution using suffixMax which made the time complexity O(n),
+    but that solution used extra space O(n) because of the suffix array.
+
+    Now my goal was to optimize space from O(n) to O(1).
+    At first I could not directly figure out how to remove the suffix array,
+    because in the formula min(leftMax, rightMax) we need rightMax.
+
+    So I took reference from YouTube and AI and learned an important intuition:
+    I do not need to know the exact rightMax for every index in advance,
+    as long as I process the side that is currently smaller.
+
+    That leads to the two pointer approach:
+    - Put left pointer at the start of the array
+    - Put right pointer at the end of the array
+    - Maintain maxLeft and maxRight while moving the pointers inward
+
+    Now the key rule:
+    Always process the smaller height side first.
+
+    If height[left] <= height[right]:
+    - The left side is the limiting boundary right now.
+    - If maxLeft is greater than height[left], water can be trapped at left and water amount is maxLeft - height[left]
+    - Otherwise update maxLeft
+    - Move left forward
+
+    If height[right] < height[left]:
+    - The right side is the limiting boundary right now.
+    - If maxRight is greater than height[right], water can be trapped at right and water amount is maxRight - height[right]
+    - Otherwise update maxRight
+    - Move right backward
+
+    By doing this, I compute trapped water in one pass and I never store suffixMax,
+    so space becomes O(1) while time stays O(n).
+    */
+
+    /**
+     * findTrappedWaterOptimized2
+     * <p>
+     * What it does:
+     * Computes the total amount of trapped rain water using the two pointer technique.
+     * This method solves the same problem as the suffixMax approach but reduces
+     * the extra space from O(n) to O(1).
+     * <p>
+     * Core idea:
+     * Water trapped at any index depends on the smaller boundary between:
+     * the maximum height seen on the left side and the maximum height seen on the right side.
+     * The smaller boundary decides the water level.
+     * <p>
+     * Why the two pointer approach works:
+     * We do not need the full suffixMax array if we carefully decide which side to process.
+     * At any step:
+     * - If height[left] is smaller than or equal to height[right],
+     * then the trapped water at left is guaranteed to be limited by maxLeft
+     * (because there is at least a right boundary of height[right] that is not smaller).
+     * - If height[right] is smaller than height[left],
+     * then the trapped water at right is guaranteed to be limited by maxRight.
+     * <p>
+     * Explanation of variables:
+     * - left starts at index 0 and moves right.
+     * - right starts at index n - 1 and moves left.
+     * - maxLeft stores the maximum height encountered so far from the left.
+     * - maxRight stores the maximum height encountered so far from the right.
+     * - totalWater accumulates the total trapped water.
+     * <p>
+     * Step by step explanation of the loop:
+     * The loop runs while left <= right.
+     * This ensures every index is processed exactly once from one side.
+     * <p>
+     * Case 1: height[left] <= height[right]
+     * - This means the left side is the smaller boundary right now.
+     * - The best possible water level at left is decided by maxLeft.
+     * - If height[left] is greater than or equal to maxLeft:
+     * update maxLeft because we found a new left boundary.
+     * - Otherwise:
+     * maxLeft is taller than the current bar, so water can be trapped here.
+     * trapped water at left = maxLeft - height[left]
+     * - Move left forward because left index is fully resolved.
+     * <p>
+     * Case 2: height[left] > height[right]
+     * - This means the right side is the smaller boundary right now.
+     * - The best possible water level at right is decided by maxRight.
+     * - If height[right] is greater than or equal to maxRight:
+     * update maxRight because we found a new right boundary.
+     * - Otherwise:
+     * maxRight is taller than the current bar, so water can be trapped here.
+     * trapped water at right = maxRight - height[right]
+     * - Move right backward because right index is fully resolved.
+     * <p>
+     * Why we always process the smaller side first:
+     * The smaller side is the limiting wall for water trapping.
+     * Once we know which side is smaller, the trapped water at that side
+     * can be computed immediately using the max boundary from that same side.
+     * We do not need to know the exact maximum on the opposite side in that moment.
+     * <p>
+     * Example intuition:
+     * If height[left] is smaller than height[right],
+     * the right side is guaranteed to have some wall at least as tall as height[left],
+     * so left is the limiting side and maxLeft decides water trapped at left.
+     * <p>
+     * Complexity:
+     * Time: O(n)
+     * Each pointer moves at most n steps in total, and each index is handled once.
+     * <p>
+     * Space: O(1)
+     * Only a few variables are used, no extra arrays.
+     * <p>
+     * Interview takeaway:
+     * This is the best practical solution for trapping rain water.
+     * It keeps the same core logic of min(leftMax, rightMax) but computes it
+     * on the fly using two pointers, saving space while staying linear time.
+     */
+
+    private static int findTrappedWaterOptimized2(int[] height) {
+        int n = height.length;
+
+        // Initialize two pointers at both ends of the array
+        int left = 0;
+        int right = n - 1;
+
+        // Variables to track the maximum height to the left and right
+        int maxLeft = 0;
+        int maxRight = 0;
+
+        // Variable to store total trapped water
+        int totalWater = 0;
+
+        // Iterate until left pointer meets right pointer
+        while (left <= right) {
+            // If left bar is smaller or equal to right bar
+            if (height[left] <= height[right]) {
+                // If current left bar is higher than maxLeft, update maxLeft
+                if (height[left] >= maxLeft) {
+                    maxLeft = height[left];
+                } else {
+                    // Water trapped on left is difference between maxLeft and current height
+                    totalWater += maxLeft - height[left];
+                }
+                left++; // Move left pointer to the right
+            } else {
+                // If current right bar is higher than maxRight, update maxRight
+                if (height[right] >= maxRight) {
+                    maxRight = height[right];
+                } else {
+                    // Water trapped on right is difference between maxRight and current height
+                    totalWater += maxRight - height[right];
+                }
+                right--; // Move right pointer to the left
+            }
+        }
+        // Return total trapped water
         return totalWater;
     }
 }
