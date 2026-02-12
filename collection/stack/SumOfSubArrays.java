@@ -236,10 +236,8 @@ public class SumOfSubArrays {
             // Count of elements to the right including current
             int right = nse[i] - i;
 
-            // Total subarrays where arr[i] is the minimum
             long freq = (long) left * right;
 
-            // Contribution = frequency * value
             int val = (int) ((freq * arr[i]) % mod);
 
             // Add contribution to sum
