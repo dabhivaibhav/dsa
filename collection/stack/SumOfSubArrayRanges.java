@@ -1,5 +1,7 @@
 package collection.stack;
 
+import java.util.Stack;
+
 /*
 Leetcode 2104. Sum of Subarray Ranges
 
@@ -141,8 +143,10 @@ public class SumOfSubArrayRanges {
      * From here, the natural optimization is to use monotonic stacks
      * and contribution technique to achieve O(n) time complexity.
      */
-    private static int sumOfSubArrayRangesBruteForce(int[] nums) {
+    private static long sumOfSubArrayRangesBruteForce(int[] nums) {
 
+        if (nums.length == 0) return 0;
+        if (nums.length == 1) return 0;
         long sum = 0;
         for (int i = 0; i < nums.length; i++) {
             long min = nums[i];
@@ -153,6 +157,185 @@ public class SumOfSubArrayRanges {
                 sum += max - min;
             }
         }
-        return (int) sum;
+        return sum;
     }
+
+    /**
+     * SumOfSubArrayRangesOptimized:
+     * <p>
+     * Instead of computing the range for every subarray directly,
+     * this solution breaks the problem into two independent parts:
+     * - Sum of subarray maximums
+     * - Sum of subarray minimums
+     * <p>
+     * The final answer is:
+     * sum of subarray maximums minus sum of subarray minimums
+     * <p>
+     * Core insight:
+     * Every element contributes to many subarrays as:
+     * - the minimum value
+     * - the maximum value
+     * <p>
+     * If we can count how many subarrays treat nums[i] as the minimum
+     * and how many treat nums[i] as the maximum,
+     * we can compute its total contribution without enumerating subarrays.
+     * <p>
+     * High-level approach:
+     * 1. Compute sum of subarray minimums using monotonic increasing stacks.
+     * 2. Compute sum of subarray maximums using monotonic decreasing stacks.
+     * 3. Subtract the two results to get the sum of subarray ranges.
+     * <p>
+     * Why this works:
+     * For any element nums[i]:
+     * - It contributes as a minimum in all subarrays where it is the smallest value.
+     * - It contributes as a maximum in all subarrays where it is the largest value.
+     * <p>
+     * The number of such subarrays is determined by how far the element
+     * can expand to the left and right before a smaller or larger element blocks it.
+     * <p>
+     * Key technique used:
+     * Index-based monotonic stacks.
+     * <p>
+     * For each element, we compute:
+     * - Distance to previous smaller or larger element
+     * - Distance to next smaller or larger element
+     * <p>
+     * These distances tell us how many subarrays include nums[i]
+     * as the minimum or maximum.
+     * <p>
+     * Method overview:
+     * <p>
+     * sumOfSubArrayRangesOptimized:
+     * - Orchestrates the solution.
+     * - Returns sumSubarrayMaxs(nums) - sumSubarrayMins(nums).
+     * <p>
+     * sumSubarrayMins:
+     * - Uses a monotonic increasing stack.
+     * - Finds how many subarrays treat each element as the minimum.
+     * - Uses two arrays:
+     * left[i]  = distance to previous smaller or equal element
+     * right[i] = distance to next smaller element
+     * <p>
+     * sumSubarrayMaxs:
+     * - Uses a monotonic decreasing stack.
+     * - Finds how many subarrays treat each element as the maximum.
+     * - Uses two arrays:
+     * left[i]  = distance to previous larger or equal element
+     * right[i] = distance to next larger element
+     * <p>
+     * Tie-breaking rules:
+     * - For minimums:
+     * one side uses strictly smaller, the other uses smaller or equal
+     * - For maximums:
+     * one side uses strictly larger, the other uses larger or equal
+     * <p>
+     * These rules prevent double counting when duplicate values exist.
+     * <p>
+     * Example intuition:
+     * nums = [1, 2, 3]
+     * <p>
+     * Subarray minimum contributions:
+     * 1 contributes to 3 subarrays
+     * 2 contributes to 2 subarrays
+     * 3 contributes to 1 subarray
+     * <p>
+     * Subarray maximum contributions:
+     * 1 contributes to 1 subarray
+     * 2 contributes to 2 subarrays
+     * 3 contributes to 3 subarrays
+     * <p>
+     * Range sum = max contributions minus min contributions
+     * <p>
+     * Complexity:
+     * Time: O(n)
+     * Each element is pushed and popped at most once per stack.
+     * <p>
+     * Space: O(n)
+     * Extra arrays and stacks are used for distance calculations.
+     * <p>
+     * Interview takeaway:
+     * This solution demonstrates advanced problem-solving skills:
+     * - Contribution technique
+     * - Monotonic stack mastery
+     * - Careful handling of duplicates
+     * <p>
+     * Once this pattern is understood, it applies to:
+     * - Sum of subarray minimums
+     * - Sum of subarray maximums
+     * - Histogram problems
+     * - Range and contribution-based problems
+     * <p>
+     * This is a high-signal solution often expected in senior-level interviews.
+     */
+
+    private static long sumOfSubArrayRangesOptimized(int[] nums) {
+        return sumSubarrayMaxs(nums) - sumSubarrayMins(nums);
+    }
+
+    private static long sumSubarrayMins(int[] nums) {
+        int n = nums.length;
+        long sum = 0;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        Stack<Integer> stack = new Stack<>();
+
+        // Finding Distance to Previous Smaller (or equal)
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && nums[stack.peek()] > nums[i]) {
+                stack.pop();
+            }
+            left[i] = stack.isEmpty() ? i + 1 : i - stack.peek();
+            stack.push(i);
+        }
+
+        stack.clear();
+
+        // Finding Distance to Next Smaller
+        for (int i = n - 1; i >= 0; i--) {
+            while (!stack.isEmpty() && nums[stack.peek()] >= nums[i]) {
+                stack.pop();
+            }
+            right[i] = stack.isEmpty() ? n - i : stack.peek() - i;
+            stack.push(i);
+        }
+
+        for (int i = 0; i < n; i++) {
+            sum += (long) nums[i] * left[i] * right[i];
+        }
+        return sum;
+    }
+
+    private static long sumSubarrayMaxs(int[] nums) {
+        int n = nums.length;
+        long sum = 0;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        Stack<Integer> stack = new Stack<>();
+
+        // Finding Distance to Previous Larger (or equal)
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && nums[stack.peek()] < nums[i]) {
+                stack.pop();
+            }
+            left[i] = stack.isEmpty() ? i + 1 : i - stack.peek();
+            stack.push(i);
+        }
+
+        stack.clear();
+
+        // Finding Distance to Next Larger
+        for (int i = n - 1; i >= 0; i--) {
+            while (!stack.isEmpty() && nums[stack.peek()] <= nums[i]) {
+                stack.pop();
+            }
+            right[i] = stack.isEmpty() ? n - i : stack.peek() - i;
+            stack.push(i);
+        }
+
+        for (int i = 0; i < n; i++) {
+            sum += (long) nums[i] * left[i] * right[i];
+        }
+        return sum;
+    }
+
 }

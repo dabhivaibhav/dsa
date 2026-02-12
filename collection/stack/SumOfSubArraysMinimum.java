@@ -22,7 +22,7 @@ Constraints:
             1 <= arr.length <= 3 * 10^4
             1 <= arr[i] <= 3 * 10^4
  */
-public class SumOfSubArrays {
+public class SumOfSubArraysMinimum {
 
     public static void main(String[] args) {
         int[] arr = {3, 1, 2, 4};
