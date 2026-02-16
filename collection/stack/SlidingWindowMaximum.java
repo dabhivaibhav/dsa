@@ -1,8 +1,6 @@
 package collection.stack;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /*
 Leetcode: 239. Sliding Window Maximum
@@ -117,5 +115,122 @@ public class SlidingWindowMaximum {
         return result.stream().mapToInt(Integer::intValue).toArray();
     }
 
+    /**
+     * Method: maxSlidingWindow(int[] nums, int k)
+     * <p>
+     * What it does:
+     * This method finds the maximum element in every sliding window
+     * of size k using an optimized O(n) approach.
+     * It uses a Deque to maintain a Monotonic Decreasing structure
+     * of indices so that the maximum element of the current window
+     * is always available at the front.
+     * <p>
+     * Core Idea:
+     * Instead of recalculating the maximum for every window,
+     * we maintain a structure that always keeps the potential
+     * maximum elements in decreasing order.
+     * <p>
+     * Why we store indices instead of values:
+     * - To check whether an element is outside the current window.
+     * - To access its value from nums when needed.
+     * - To handle duplicate values correctly.
+     * <p>
+     * Step-by-step explanation:
+     * <p>
+     * 1. Initialize:
+     * - result array of size n - k + 1.
+     * - ri pointer to track result index.
+     * - Deque to store indices of elements.
+     * <p>
+     * 2. Iterate through the array from left to right.
+     * <p>
+     * 3. Remove out-of-window elements:
+     * If the index at the front equals i - k,
+     * it means it has moved outside the current window.
+     * So we remove it from the front.
+     * <p>
+     * 4. Maintain decreasing order:
+     * While the current value nums[i] is greater than
+     * the value at the back of the deque,
+     * we remove those smaller indices.
+     * <p>
+     * Why?
+     * Because a smaller element before a larger one
+     * can never become the maximum of any future window.
+     * <p>
+     * 5. Add current index to the back of the deque.
+     * <p>
+     * 6. Once we have processed at least k elements
+     * (i >= k - 1),
+     * the front of the deque always stores
+     * the index of the maximum element
+     * for the current window.
+     * <p>
+     * 7. Store that value into result.
+     * <p>
+     * Example:
+     * nums = [1,3,-1,-3,5,3,6,7], k = 3
+     * <p>
+     * Window processing:
+     * After processing first 3 elements,
+     * deque front gives 3.
+     * <p>
+     * As window slides,
+     * smaller elements are removed,
+     * and deque always keeps strong candidates.
+     * <p>
+     * Final result: [3,3,5,5,6,7]
+     * <p>
+     * Why this works:
+     * Each element is:
+     * - Added once
+     * - Removed at most once
+     * <p>
+     * That guarantees linear time.
+     * <p>
+     * Time Complexity:
+     * O(n)
+     * Each index is inserted and removed at most once.
+     * <p>
+     * Space Complexity:
+     * O(k)
+     * Deque stores at most k indices at any time.
+     * <p>
+     * Interview Insight:
+     * This is a classic Monotonic Deque pattern.
+     * Use it when:
+     * - You need sliding window maximum or minimum.
+     * - You need fast window-based extreme values.
+     * - The brute force solution is O(n*k) and too slow.
+     * <p>
+     * Mental Model:
+     * The deque always stores potential "future winners"
+     * in decreasing order.
+     * The front is always the current window’s champion.
+     */
 
+    private static int[] maxSlidingWindowOptimized(int[] nums, int k) {
+        int n = nums.length;
+        int[] result = new int[n - k + 1];
+        int ri = 0; // result index
+
+        // Store indices in the deque, not the values
+        Deque<Integer> deque = new ArrayDeque<>();
+        for (int i = 0; i < n; i++) {
+            // Remove indices that are out of the window range
+            if (!deque.isEmpty() && deque.peekFirst() == i - k) {
+                deque.removeFirst();
+            }
+            // Remove all indices whose values are smaller than current value (The "Younger & Stronger" rule)
+            while (!deque.isEmpty() && nums[deque.peekLast()] < nums[i]) {
+                deque.removeLast();
+            }
+            deque.addLast(i);
+            // Once we have reached at least k elements, the front is our max
+            if (i >= k - 1) {
+                result[ri++] = nums[deque.peekFirst()];
+            }
+        }
+        return result;
+    }
 }
