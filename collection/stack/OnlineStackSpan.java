@@ -1,5 +1,6 @@
 package collection.stack;
 
+import java.util.Arrays;
 import java.util.Stack;
 
 /*
@@ -48,6 +49,10 @@ public class OnlineStackSpan {
         System.out.println(stockSpanner.next(60));
         System.out.println(stockSpanner.next(75));
         System.out.println(stockSpanner.next(85));
+
+        StockSpanner2 stockSpanner2 = new StockSpanner2();
+        int[] arr = {100, 80, 60, 70, 60, 75, 85};
+        System.out.println(Arrays.toString(stockSpanner2.stockSpan(arr, arr.length)));
 
     }
 
@@ -161,6 +166,193 @@ public class OnlineStackSpan {
             spanStack.push(currentSpan);
 
             return currentSpan;
+        }
+    }
+
+
+    /**
+     * Class: StockSpanner2
+     * <p>
+     * What this implementation does:
+     * This version solves the Stock Span problem in an offline manner.
+     * Instead of processing one price at a time like the online version,
+     * it receives the entire price array and computes the span for all days.
+     * <p>
+     * Core Idea:
+     * The span of a stock price at index i is:
+     * number of consecutive previous days (including today)
+     * where price <= current price.
+     * <p>
+     * Instead of checking backward linearly for each day,
+     * we use the concept of Previous Greater Element (PGE).
+     * <p>
+     * Why Previous Greater Element:
+     * If we know the nearest index to the left that has a strictly
+     * greater price than arr[i], then:
+     * <p>
+     * span = i - previousGreaterIndex
+     * <p>
+     * If no such element exists:
+     * span = i - (-1) = i + 1
+     * <p>
+     * So the entire problem reduces to:
+     * "Find the Previous Greater Element index for every position."
+     * <p>
+     * --------------------------------------------
+     * Method: findPGE(int[] arr)
+     * --------------------------------------------
+     * <p>
+     * What it does:
+     * Finds the index of the Previous Greater Element for every element.
+     * <p>
+     * Stack stores:
+     * Indices of elements in decreasing order of values.
+     * <p>
+     * Step-by-step logic:
+     * <p>
+     * 1. Traverse array from left to right.
+     * <p>
+     * 2. For each element:
+     * While stack is not empty AND
+     * arr[stack.peek()] <= current element:
+     * pop the stack.
+     * <p>
+     * Why:
+     * Because any smaller or equal element can never
+     * be a Previous Greater for future elements.
+     * <p>
+     * 3. After popping:
+     * - If stack is empty → no previous greater → store -1.
+     * - Else → top of stack is previous greater index.
+     * <p>
+     * 4. Push current index into stack.
+     * <p>
+     * Time Complexity:
+     * O(n)
+     * Each element is pushed once and popped once.
+     * <p>
+     * Space Complexity:
+     * O(n)
+     * <p>
+     * --------------------------------------------
+     * Method: stockSpan(int[] arr, int n)
+     * --------------------------------------------
+     * <p>
+     * What it does:
+     * Computes the stock span for every day.
+     * <p>
+     * Steps:
+     * 1. Call findPGE(arr) to get previous greater indices.
+     * 2. For each index i:
+     * <p>
+     * span[i] = i - PGE[i]
+     * <p>
+     * Why this works:
+     * <p>
+     * If previous greater exists at index j:
+     * span = i - j
+     * <p>
+     * If previous greater does not exist:
+     * PGE[i] = -1
+     * span = i - (-1) = i + 1
+     * <p>
+     * That means the price was never blocked by a greater value,
+     * so span stretches all the way to the beginning.
+     * <p>
+     * Example:
+     * Prices: [100, 80, 60, 70, 60, 75, 85]
+     * <p>
+     * PGE indices: [-1, 0, 1, 1, 3, 1, 0]
+     * <p>
+     * Span:
+     * index 0 → 0 - (-1) = 1
+     * index 1 → 1 - 0 = 1
+     * index 2 → 2 - 1 = 1
+     * index 3 → 3 - 1 = 2
+     * index 4 → 4 - 3 = 1
+     * index 5 → 5 - 1 = 4
+     * index 6 → 6 - 0 = 6
+     * <p>
+     * Final Span:
+     * [1, 1, 1, 2, 1, 4, 6]
+     * <p>
+     * Interview Insight:
+     * <p>
+     * This solution transforms the span problem into
+     * a Previous Greater Element problem.
+     * <p>
+     * Pattern Recognition:
+     * Whenever you see:
+     * - "Consecutive previous elements"
+     * - "Until a greater element appears"
+     * - "Distance to blocking element"
+     * <p>
+     * Think:
+     * Monotonic Stack + Index Difference.
+     * <p>
+     * Comparison with Online Version:
+     * - This is batch processing.
+     * - Online version compresses spans dynamically.
+     * - Both achieve O(n) time.
+     */
+
+    private static class StockSpanner2 {
+        Stack<int[]> stack = new Stack<>();
+        int index = -1;
+
+        public StockSpanner2() {
+            index = -1;
+            stack.clear();
+        }
+
+        private int[] findPGE(int[] arr) {
+            int n = arr.length; // Size of the array
+
+            // To store the previous greater elements
+            int[] ans = new int[n];
+
+            // Stack to get elements in LIFO fashion
+            Stack<Integer> st = new Stack<>();
+
+            // Start traversing from the front
+            for (int i = 0; i < n; i++) {
+                // Get the current element
+                int currEle = arr[i];
+
+                // Pop elements from the stack until we find a greater element
+                while (!st.isEmpty() && arr[st.peek()] <= currEle) {
+                    st.pop();
+                }
+
+                // If the stack is empty, it means there's no greater element, so assign -1
+                if (st.isEmpty())
+                    ans[i] = -1;
+                else
+                    ans[i] = st.peek(); // Otherwise, the top element is the previous greater
+
+                // Push the current index in the stack
+                st.push(i);
+            }
+
+            // Return the result (indices of previous greater elements)
+            return ans;
+        }
+
+        // Function to find the span of stock prices for each day
+        public int[] stockSpan(int[] arr, int n) {
+            // Get the indices of previous greater elements
+            int[] PGE = findPGE(arr);
+
+            // To store the final span results
+            int[] ans = new int[n];
+
+            // Compute the span for each element using the previous greater element indices
+            for (int i = 0; i < n; i++) {
+                ans[i] = i - PGE[i]; // Calculate span based on previous greater element
+            }
+
+            // Return the result (stock span for each day)
+            return ans;
         }
     }
 }
