@@ -1,4 +1,4 @@
-package collection.stack;
+package ImplementationProblems;
 
 import java.util.Arrays;
 import java.util.Stack;
