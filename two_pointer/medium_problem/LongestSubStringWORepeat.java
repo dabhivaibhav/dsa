@@ -32,7 +32,8 @@ public class LongestSubStringWORepeat {
     public static void main(String[] args) {
 
         String s = "abcabcbb";
-        System.out.println(lengthOfLongestSubstringBruteForce(s));
+        System.out.println("Brute force approach: " + lengthOfLongestSubstringBruteForce(s));
+        System.out.println("Optimized approach: " + lengthOfLongestSubstringOptimized(s));
     }
 
     /**
@@ -155,5 +156,199 @@ public class LongestSubStringWORepeat {
             set.add(ch);
         }
         return true;
+    }
+
+
+    /*
+     * THE "CATERPILLAR" (SLIDING WINDOW) INTUITION
+     * * 1. THE SETUP:
+     * Imagine a caterpillar moving across the string. The "Head" is our 'right'
+     * pointer, and the "Tail" is our 'left' pointer.
+     *
+     * 2. THE MOVEMENT (GROWING):
+     * The Head (right) moves forward one leaf (character) at a time. It "eats"
+     * the character and stores it in its stomach (a HashSet).
+     *
+     * 3. THE CONFLICT (REPEATING CHARACTER):
+     * If the Head tries to eat a character that is ALREADY in its stomach:
+     * - The caterpillar has a stomach ache! It cannot move the Head further.
+     * - To fix this, the Tail (left) must move forward, "digesting" (removing)
+     * characters from the stomach one by one.
+     * - The Tail keeps moving until the duplicate character is removed.
+     *
+     * 4. THE RECORD:
+     * After every successful move of the Head, we measure the caterpillar's
+     * current length: (right - left + 1). We keep track of the biggest size
+     * it ever reached.
+     *
+     * INTERVIEW TIPS & PATTERN RECOGNITION
+     *
+     * TIP 1: Identify the "Contiguous" Keyword
+     * Whenever you see "Longest Substring," "Smallest Subarray," or "Consecutive
+     * elements," think SLIDING WINDOW. If the elements must stay in order, the
+     * caterpillar approach is almost always the O(N) winner.
+     *
+     * TIP 2: The "Expand then Contract" Mantra
+     * In an interview, explain your logic as: "I will expand my window until it
+     * becomes invalid, then I will contract it from the left until it becomes
+     * valid again." This shows you understand the two-pointer coordination.
+     *
+     * TIP 3: Space-Time Tradeoff
+     * Using a HashSet (Space) allows us to check for duplicates in O(1) time.
+     * This is what brings our total time down from O(N²) (Brute Force) to O(N).
+     *
+     * TIP 4: The "+1" Rule
+     * Always remember: Length = (Right_Index - Left_Index + 1).
+     * If you forget the +1, you are calculating the "distance between points"
+     * rather than the "number of items."
+     *
+     * TIP 5: Optimization with HashMap
+     * If the interviewer asks for even more speed, tell them: "Instead of a HashSet,
+     * I can use a HashMap to store the 'Index' of each character. This allows the
+     * Tail (left pointer) to JUMP directly past the duplicate instead of
+     * stepping one by one."
+     * --------------------------------------------------------------------------------
+     */
+
+    /**
+     * Method: lengthOfLongestSubstringOptimized(String s)
+     * <p>
+     * What this method does:
+     * Finds the length of the longest substring without repeating characters
+     * using the Sliding Window (Two Pointer) technique.
+     * <p>
+     * Core Idea:
+     * Instead of generating all substrings, we maintain a dynamic window
+     * that always contains unique characters.
+     * <p>
+     * We expand the window from the right.
+     * If a duplicate appears, we shrink the window from the left
+     * until the duplicate is removed.
+     * <p>
+     * Thought Process:
+     * In the brute force approach, we repeatedly rechecked characters.
+     * That caused O(n^3) time complexity.
+     * <p>
+     * The key observation is:
+     * If a substring from index left to right is already unique,
+     * and we extend right,
+     * we only need to fix the window if a duplicate appears.
+     * <p>
+     * So instead of restarting,
+     * we adjust the window intelligently.
+     * <p>
+     * How the Code Works Step by Step:
+     * <p>
+     * int n = s.length();
+     * Store the length of the string.
+     * <p>
+     * int maxLength = 0;
+     * Tracks the maximum valid window length found.
+     * <p>
+     * int left = 0, right = 0;
+     * Two pointers define the current window.
+     * left  → start of the window
+     * right → end of the window
+     * <p>
+     * HashSet<Character> set:
+     * Stores the unique characters currently inside the window.
+     * <p>
+     * Main Loop:
+     * for (right = 0; right < n; right++)
+     * <p>
+     * We expand the window by moving right forward.
+     * <p>
+     * Handling Duplicates:
+     * <p>
+     * while (set.contains(s.charAt(right)))
+     * <p>
+     * If the character at right already exists in the window:
+     * - We remove characters from the left side.
+     * - Move left forward.
+     * - Keep shrinking until duplicate is removed.
+     * <p>
+     * This guarantees:
+     * The window always contains unique characters.
+     * <p>
+     * After duplicate removal:
+     * Add current character to the set.
+     * <p>
+     * set.add(s.charAt(right));
+     * <p>
+     * Update maximum length:
+     * <p>
+     * Window length = right - left + 1
+     * <p>
+     * maxLength = Math.max(maxLength, right - left + 1);
+     * <p>
+     * Example:
+     * Input: "abcabcbb"
+     * <p>
+     * Window expands: "a" → "ab" → "abc"
+     * <p>
+     * When second 'a' appears:
+     * Remove 'a' from left.
+     * Window becomes "bca".
+     * <p>
+     * Continue sliding.
+     * <p>
+     * Final maxLength = 3
+     * <p>
+     * Why This Is Efficient:
+     * <p>
+     * Each character:
+     * - Is added to the set once.
+     * - Is removed from the set at most once.
+     * <p>
+     * No character is processed more than twice.
+     * <p>
+     * Complexity:
+     * <p>
+     * Time Complexity: O(n)
+     * Each character is visited at most twice.
+     * <p>
+     * Space Complexity: O(n)
+     * In worst case, all characters are unique.
+     * <p>
+     * Interview Takeaway:
+     * <p>
+     * This is the classical Sliding Window template.
+     * <p>
+     * Whenever you see:
+     * - Longest substring
+     * - Without duplicates
+     * - Contiguous segment
+     * <p>
+     * Think:
+     * Two pointers + HashSet (or HashMap).
+     * <p>
+     * Mental Model:
+     * Expand right to explore.
+     * Shrink left to fix violations.
+     * Keep window valid at all times.
+     */
+
+    private static int lengthOfLongestSubstringOptimized(String s) {
+        int n = s.length();
+        int maxLength = 0;
+        int left = 0, right = 0;
+        // Set to store unique characters in the current window
+        HashSet<Character> set = new HashSet<>();
+
+        for (right = 0; right < n; right++) {
+
+            // If we find a duplicate, shrink the window from the left
+            while (set.contains(s.charAt(right))) {
+                set.remove(s.charAt(left));
+                left++;
+            }
+
+            // Add the current character and update max
+            set.add(s.charAt(right));
+
+            // Window length is (right - left + 1)
+            maxLength = Math.max(maxLength, right - left + 1);
+        }
+        return maxLength;
     }
 }
