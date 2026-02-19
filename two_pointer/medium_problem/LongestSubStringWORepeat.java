@@ -34,6 +34,12 @@ public class LongestSubStringWORepeat {
         String s = "abcabcbb";
         System.out.println("Brute force approach: " + lengthOfLongestSubstringBruteForce(s));
         System.out.println("Optimized approach: " + lengthOfLongestSubstringOptimized(s));
+
+        s = "cabdzabc";
+        System.out.println("Brute force approach: " + lengthOfLongestSubstringBruteForce(s));
+        System.out.println("Optimized approach: " + lengthOfLongestSubstringOptimized(s));
+
+
     }
 
     /**
