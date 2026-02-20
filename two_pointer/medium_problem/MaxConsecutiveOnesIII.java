@@ -28,6 +28,7 @@ public class MaxConsecutiveOnesIII {
         int[] nums = {1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0};
         int k = 2;
         System.out.println("Brute force approach: " + longestOnesBruteForce(nums, k));
+        System.out.println("Sliding window approach: " + longestOnesSlidingWindow(nums, k));
     }
 
     /**
@@ -123,6 +124,135 @@ public class MaxConsecutiveOnesIII {
                 if (zeroCount > k) break;
                 length = Math.max(length, j - i + 1);
             }
+        }
+        return length;
+    }
+
+    /**
+     * Method: longestOnesSlidingWindow(int[] nums, int k)
+     * <p>
+     * What this method does:
+     * Finds the maximum number of consecutive 1s in a binary array
+     * if we are allowed to flip at most k zeros.
+     * <p>
+     * Core Idea:
+     * Use the Sliding Window (Two Pointer) technique.
+     * <p>
+     * Instead of checking every subarray, we maintain a dynamic window
+     * that always satisfies the condition:
+     * "At most k zeros inside the window".
+     * <p>
+     * We expand the window from the right.
+     * If zero count exceeds k, we shrink from the left
+     * until the window becomes valid again.
+     * <p>
+     * Thought Process:
+     * <p>
+     * In the brute force approach, we restarted counting
+     * for every index, causing O(n^2) time.
+     * <p>
+     * The key observation is:
+     * If a window already satisfies zeroCount <= k,
+     * we should try expanding it.
+     * <p>
+     * If zeroCount > k,
+     * we only need to shrink from the left
+     * until it becomes valid again.
+     * <p>
+     * This avoids rechecking the same elements repeatedly.
+     * <p>
+     * How the Code Works Step by Step:
+     * <p>
+     * int length = 0;
+     * Stores maximum valid window length.
+     * <p>
+     * int left = 0;
+     * Left boundary of the window.
+     * <p>
+     * int zeroCount = 0;
+     * Tracks number of zeros inside current window.
+     * <p>
+     * Main Loop:
+     * for (right = 0; right < nums.length; right++)
+     * <p>
+     * Expand the window by moving right forward.
+     * <p>
+     * If nums[right] == 0:
+     * Increment zeroCount.
+     * <p>
+     * If zeroCount > k:
+     * The window is invalid.
+     * <p>
+     * While zeroCount > k:
+     * - If nums[left] is zero, reduce zeroCount.
+     * - Move left pointer forward.
+     * <p>
+     * This shrinks the window until it becomes valid again.
+     * <p>
+     * Once window is valid:
+     * Update maximum length using:
+     * length = Math.max(length, right - left + 1);
+     * <p>
+     * Example:
+     * <p>
+     * nums = [1,1,1,0,0,0,1,1,1,1,0], k = 2
+     * <p>
+     * Window expands.
+     * When more than 2 zeros appear,
+     * left pointer moves forward
+     * until zeroCount becomes <= k.
+     * <p>
+     * Longest valid window becomes length 6.
+     * <p>
+     * Why This Works:
+     * <p>
+     * Each element:
+     * - Is visited once by right pointer.
+     * - Is removed once by left pointer.
+     * <p>
+     * No repeated work.
+     * <p>
+     * Complexity:
+     * <p>
+     * Time Complexity: O(n)
+     * Each element enters and leaves window at most once.
+     * <p>
+     * Space Complexity: O(1)
+     * Only counters and pointers used.
+     * <p>
+     * Interview Takeaway:
+     * <p>
+     * This is a classic variable-size sliding window problem.
+     * <p>
+     * Pattern to remember:
+     * <p>
+     * 1. Expand right pointer.
+     * 2. Track condition (here zeroCount).
+     * 3. Shrink left pointer if condition violated.
+     * 4. Update answer.
+     * <p>
+     * Whenever problem says:
+     * "Longest subarray with at most k something"
+     * Think Sliding Window immediately.
+     */
+    private static int longestOnesSlidingWindow(int[] nums, int k) {
+        int length = 0;
+        int left = 0;
+        int right = 0;
+        int zeroCount = 0;
+        for (right = 0; right < nums.length; right++) {
+
+            if (nums[right] == 0) {
+                zeroCount++;
+            }
+            while (zeroCount > k) {
+                if (nums[left] == 0) {
+                    zeroCount--;
+                }
+                left++;
+            }
+            length = Math.max(length, right - left + 1);
+
         }
         return length;
     }
