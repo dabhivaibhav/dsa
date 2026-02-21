@@ -1,6 +1,8 @@
 package two_pointer.medium_problem;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /*
@@ -47,10 +49,13 @@ public class FruitInBasket {
         System.out.println(findMaxFruitBruteForce(new int[]{1, 2, 1}));
         System.out.println(findMaxFruitBruteForce(new int[]{1, 2, 3, 2, 2}));
         System.out.println(findMaxFruitBruteForce(new int[]{3, 3, 3, 1, 2, 1, 1, 2, 3, 3, 4}));
+        System.out.println(findMaxFruitSlidingWindow(new int[]{1, 2, 1}));
+        System.out.println(findMaxFruitSlidingWindow(new int[]{1, 2, 3, 2, 2}));
+        System.out.println(findMaxFruitSlidingWindow(new int[]{3, 3, 3, 1, 2, 1, 1, 2, 3, 3, 4}));
     }
 
     /**
-     * Method: findMaxFruitBruteForce(int[] fruits)
+     * findMaxFruitBruteForce(int[] fruits)
      * <p>
      * What this method does:
      * Finds the maximum number of fruits that can be collected
@@ -161,6 +166,137 @@ public class FruitInBasket {
                     answer = Math.max(answer, j - i + 1);
                 else break;
             }
+        }
+        return answer;
+    }
+
+
+    /**
+     * findMaxFruitSlidingWindow(int[] fruits)
+     * <p>
+     * What this method does:
+     * Finds the maximum number of fruits that can be collected
+     * using at most two baskets, where each basket can hold only
+     * one type of fruit.
+     * <p>
+     * Core Idea:
+     * This is the classic:
+     * "Longest subarray with at most 2 distinct elements."
+     * <p>
+     * Instead of checking every possible starting point,
+     * we maintain a sliding window that always satisfies:
+     * <p>
+     * map.size() <= 2
+     * <p>
+     * The window expands to the right.
+     * If more than 2 fruit types appear,
+     * we shrink the window from the left
+     * until it becomes valid again.
+     * <p>
+     * Thought Process:
+     * <p>
+     * Since fruits must be picked continuously,
+     * we are looking for a contiguous subarray.
+     * <p>
+     * Each basket can hold only one fruit type,
+     * meaning at most 2 distinct numbers inside the window.
+     * <p>
+     * So we:
+     * 1. Expand the window.
+     * 2. Track frequency of fruit types using a HashMap.
+     * 3. If distinct types exceed 2, shrink from left.
+     * 4. Update maximum length.
+     * <p>
+     * How the Code Works Step by Step:
+     * <p>
+     * int answer = 0;
+     * Stores maximum number of fruits collected.
+     * <p>
+     * int left = 0, right = 0;
+     * Two pointers defining current window.
+     * <p>
+     * Map<Integer, Integer> map:
+     * Stores fruit type → frequency inside window.
+     * <p>
+     * While right < fruits.length:
+     * <p>
+     * Add fruits[right] to the map:
+     * map.put(fruits[right], map.getOrDefault(...) + 1);
+     * <p>
+     * If map.size() > 2:
+     * That means we now have more than 2 fruit types.
+     * <p>
+     * While map.size() > 2:
+     * - Decrease frequency of fruits[left]
+     * - If frequency becomes 0, remove it from map
+     * - Move left forward
+     * <p>
+     * This shrinks the window until it becomes valid again.
+     * <p>
+     * Once valid:
+     * Update answer:
+     * <p>
+     * answer = Math.max(answer, right - left + 1);
+     * <p>
+     * Then move right forward.
+     * <p>
+     * Example:
+     * <p>
+     * fruits = [1, 2, 3, 2, 2]
+     * <p>
+     * Window expands:
+     * [1] → [1,2] → [1,2,3]  (invalid, 3 types)
+     * <p>
+     * Shrink from left:
+     * Remove 1 → window becomes [2,3]
+     * <p>
+     * Continue expanding:
+     * [2,3,2] → [2,3,2,2]
+     * <p>
+     * Maximum length = 4
+     * <p>
+     * Why This Is Efficient:
+     * <p>
+     * Each element:
+     * - Is added to the window once.
+     * - Is removed at most once.
+     * <p>
+     * No redundant reprocessing.
+     * <p>
+     * Complexity:
+     * <p>
+     * Time Complexity: O(n)
+     * Each element is visited at most twice.
+     * <p>
+     * Space Complexity: O(1)
+     * Map stores at most 3 keys at any time.
+     * <p>
+     * <p>
+     * Interview Takeaway:
+     * <p>
+     * Whenever you see:
+     * "Longest subarray with at most K distinct elements"
+     * <p>
+     * Immediately think:
+     * Sliding Window + HashMap (frequency counter).
+     * <p>
+     * This pattern appears again and again in medium problems.
+     */
+    private static int findMaxFruitSlidingWindow(int[] fruits) {
+        int answer = 0;
+        int left = 0, right = 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        while (right < fruits.length) {
+            map.put(fruits[right], map.getOrDefault(fruits[right], 0) + 1);
+            while (map.size() > 2) {
+                map.put(fruits[left], map.get(fruits[left]) - 1);
+                if (map.get(fruits[left]) == 0) {
+                    map.remove(fruits[left]);
+                }
+                left++;
+            }
+            answer = Math.max(answer, right - left + 1);
+            right++;
         }
         return answer;
     }
