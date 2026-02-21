@@ -52,6 +52,9 @@ public class FruitInBasket {
         System.out.println(findMaxFruitSlidingWindow(new int[]{1, 2, 1}));
         System.out.println(findMaxFruitSlidingWindow(new int[]{1, 2, 3, 2, 2}));
         System.out.println(findMaxFruitSlidingWindow(new int[]{3, 3, 3, 1, 2, 1, 1, 2, 3, 3, 4}));
+        System.out.println(findMaxFruitOptimal(new int[]{1, 2, 1}));
+        System.out.println(findMaxFruitOptimal(new int[]{1, 2, 3, 2, 2}));
+        System.out.println(findMaxFruitOptimal(new int[]{3, 3, 3, 1, 2, 1, 1, 2, 3, 3, 4}));
     }
 
     /**
@@ -289,6 +292,63 @@ public class FruitInBasket {
         while (right < fruits.length) {
             map.put(fruits[right], map.getOrDefault(fruits[right], 0) + 1);
             while (map.size() > 2) {
+                map.put(fruits[left], map.get(fruits[left]) - 1);
+                if (map.get(fruits[left]) == 0) {
+                    map.remove(fruits[left]);
+                }
+                left++;
+            }
+            answer = Math.max(answer, right - left + 1);
+            right++;
+        }
+        return answer;
+    }
+
+    /**
+     * findMaxFruitOptimal(int[] fruits)
+     * <p>
+     * What was improved:
+     * <p>
+     * In the previous sliding window solution, we used a
+     * while (map.size() > 2) loop to shrink the window.
+     * <p>
+     * In this version, we replace the inner while loop
+     * with a single if condition.
+     * <p>
+     * Why this works:
+     * <p>
+     * The window expands one step at a time (right++).
+     * Therefore, at most one extra fruit type can be added
+     * during each iteration.
+     * <p>
+     * So if the map size becomes greater than 2,
+     * shrinking the window by one position is enough
+     * to gradually restore validity in upcoming iterations.
+     * <p>
+     * Improvement:
+     * <p>
+     * - Removes the nested while loop.
+     * - Makes the code slightly cleaner and easier to read.
+     * - Still maintains O(n) time complexity.
+     * <p>
+     * Complexity:
+     * <p>
+     * Time Complexity: O(n)
+     * Space Complexity: O(1)
+     * <p>
+     * Key Insight:
+     * <p>
+     * Since right moves only one step at a time,
+     * we do not need to aggressively shrink the window.
+     * Controlled shrinking keeps the window valid efficiently.
+     */
+    private static int findMaxFruitOptimal(int[] fruits) {
+        int answer = 0;
+        int left = 0, right = 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        while (right < fruits.length) {
+            map.put(fruits[right], map.getOrDefault(fruits[right], 0) + 1);
+            if (map.size() > 2) {
                 map.put(fruits[left], map.get(fruits[left]) - 1);
                 if (map.get(fruits[left]) == 0) {
                     map.remove(fruits[left]);
