@@ -142,4 +142,7 @@ public class CountNumberOfNiceSubarrays {
         }
         return totalOddCount;
     }
+
+
+
 }
