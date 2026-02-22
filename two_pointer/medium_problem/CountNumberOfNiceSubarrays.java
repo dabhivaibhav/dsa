@@ -32,6 +32,7 @@ public class CountNumberOfNiceSubarrays {
         int[] nums = {1, 1, 2, 1, 1};
         int k = 3;
         System.out.println(numberOfSubarraysBruteForce(nums, k));
+        System.out.println(numberOfSubarraysSlidingWindow(nums, k));
     }
 
     /**
@@ -143,6 +144,138 @@ public class CountNumberOfNiceSubarrays {
         return totalOddCount;
     }
 
+    /*
+    THE BUDGET MENTAL MODEL
+    Imagine you need to find teams with EXACTLY k specialists.
 
+    THE PROBLEM
+    Counting Exactly k is hard because adding non-specialists (even numbers) keeps the count the same.
+    The window doesn't "break," so it's hard to know when to stop.
+
+    THE SOLUTION
+    Instead of counting Exactly k directly, we count At Most k.
+
+    THE BIG CIRCLE (AtMost k)
+    This counts every subarray with 0, 1, 2, up to k odd numbers.
+    Every time the right pointer moves, the number of NEW subarrays is the window length (right - left + 1).
+
+    THE SMALL CIRCLE (AtMost k-1)
+    This counts every subarray with 0, 1, 2, up to k-1 odd numbers.
+
+    THE SUBTRACTION
+    Big Circle minus Small Circle leaves only subarrays with EXACTLY k.
+    Think of a building: To find only people on the 5th floor, take everyone on floors 1-5 and subtract everyone on floors 1-4.
+
+    WHY IT WORKS
+    It turns a hard "Exactly" problem into a simple "At Most" sliding window problem.
+    Total = AtMost(k) - AtMost(k-1).
+    */
+
+    /**
+     * Method: numberOfSubarraysSlidingWindow(int[] nums, int k)
+     * <p>
+     * What this method does:
+     * Counts the number of subarrays containing exactly k odd numbers
+     * using an optimized Sliding Window technique.
+     * <p>
+     * <p>
+     * Core Insight:
+     * <p>
+     * Instead of directly counting subarrays with exactly k odds,
+     * we use a powerful identity:
+     * <p>
+     * exactly(k) = atMost(k) - atMost(k - 1)
+     * <p>
+     * Why this works:
+     * <p>
+     * - atMost(k) counts subarrays with 0, 1, 2, ..., k odd numbers.
+     * - atMost(k - 1) counts subarrays with 0, 1, 2, ..., k - 1 odd numbers.
+     * <p>
+     * Subtracting removes all smaller cases,
+     * leaving only subarrays with exactly k odds.
+     * <p>
+     * <p>
+     * Method: atMost(int[] nums, int k)
+     * <p>
+     * What it does:
+     * Counts the number of subarrays containing at most k odd numbers.
+     * <p>
+     * <p>
+     * How Sliding Window Works Here:
+     * <p>
+     * - Expand window using right pointer.
+     * - Increase oddCount when encountering an odd number.
+     * <p>
+     * - If oddCount exceeds k:
+     * Shrink window from left
+     * until oddCount <= k.
+     * <p>
+     * The key idea:
+     * <p>
+     * When the window is valid,
+     * the number of valid subarrays ending at index right is:
+     * <p>
+     * (right - left + 1)
+     * <p>
+     * Why?
+     * <p>
+     * Because any starting index between left and right
+     * forms a valid subarray ending at right.
+     * <p>
+     * <p>
+     * Example:
+     * <p>
+     * nums = [1,1,2,1,1], k = 3
+     * <p>
+     * atMost(3) counts all subarrays with ≤ 3 odds.
+     * atMost(2) counts all subarrays with ≤ 2 odds.
+     * <p>
+     * Subtracting gives subarrays with exactly 3 odds.
+     * <p>
+     * <p>
+     * Complexity:
+     * <p>
+     * Time Complexity: O(n)
+     * Each element is visited at most twice
+     * (once by right, once by left).
+     * <p>
+     * Space Complexity: O(1)
+     * <p>
+     * <p>
+     * Interview Takeaway:
+     * <p>
+     * Whenever you see:
+     * "Exactly K occurrences"
+     * <p>
+     * Think:
+     * atMost(K) - atMost(K - 1)
+     * <p>
+     * This trick works beautifully with sliding window
+     * when elements are non-negative or monotonic.
+     */
+    private static int numberOfSubarraysSlidingWindow(int[] nums, int k) {
+        return atMost(nums, k) - atMost(nums, k - 1);
+    }
+
+    private static int atMost(int[] nums, int k) {
+        if (k < 0) return 0;
+        int left = 0, right = 0, count = 0;
+        int oddCount = 0;
+
+        while (right < nums.length) {
+            if ((nums[right] & 1) != 0) oddCount++;
+
+            while (oddCount > k) {
+                if ((nums[left] & 1) != 0) oddCount--;
+                left++;
+            }
+
+            // This is the magic: The number of subarrays ending at 'right'
+            // with AT MOST k odd numbers is the window length!
+            count += (right - left + 1);
+            right++;
+        }
+        return count;
+    }
 
 }
