@@ -1,6 +1,7 @@
 package two_pointer.medium_problem;
 
 /*
+Leetcode 930: Binary Subarrays With Sum
 Given a binary array nums and an integer goal, return the number of non-empty subarrays with a sum goal.
 A subarray is a contiguous part of the array.
 
@@ -29,9 +30,11 @@ public class BinarySubArraysWithSum {
         int[] nums = {1, 0, 1, 0, 1};
         int goal = 2;
         System.out.println("Brute force approach: " + subarraysWithSumBruteForce(nums, goal));
+        System.out.println("Sliding window approach: " + (subarraysWithSumSlidingWindow(nums, goal) - subarraysWithSumSlidingWindow(nums, goal - 1)));
         int[] nums1 = {0, 0, 0, 0, 0};
         int goal1 = 0;
         System.out.println("Brute force approach: " + subarraysWithSumBruteForce(nums1, goal1));
+        System.out.println("Sliding window approach: " + (subarraysWithSumSlidingWindow(nums1, goal1) - subarraysWithSumSlidingWindow(nums1, goal1 - 1)));
     }
 
     /**
@@ -133,6 +136,91 @@ public class BinarySubArraysWithSum {
                     totalSubArray++;
                 }
             }
+        }
+        return totalSubArray;
+    }
+
+    /**
+     * subarraysWithSumSlidingWindow(int[] nums, int goal)
+     * <p>
+     * What this method does:
+     * Counts the number of subarrays with sum <= goal
+     * using the Sliding Window technique.
+     * <p>
+     * Important:
+     * This method does NOT directly return subarrays with sum == goal.
+     * It returns the count of subarrays with sum at most goal.
+     * <p>
+     * To get exactly goal, we use:
+     * <p>
+     * count(goal) - count(goal - 1)
+     * <p>
+     * Core Idea:
+     * <p>
+     * Since this is a binary array (only 0s and 1s),
+     * the sum increases monotonically when expanding the window.
+     * <p>
+     * That allows us to use a variable-size sliding window.
+     * <p>
+     * How It Works:
+     * <p>
+     * - Expand the window by moving right forward.
+     * - Add nums[right] to the running sum.
+     * <p>
+     * - If sum exceeds goal:
+     * Shrink window from the left
+     * until sum <= goal again.
+     * <p>
+     * - At each position of right:
+     * All subarrays ending at right
+     * and starting from left to right
+     * are valid.
+     * <p>
+     * Count added = (right - left + 1)
+     * <p>
+     * Why (right - left + 1)?
+     * <p>
+     * Because if the window is valid,
+     * then every starting index between left and right
+     * forms a valid subarray ending at right.
+     * <p>
+     * Example:
+     * <p>
+     * nums = [1,0,1,0,1], goal = 2
+     * <p>
+     * When window is valid,
+     * we accumulate counts dynamically.
+     * <p>
+     * Complexity:
+     * <p>
+     * Time Complexity: O(n)
+     * Each element is added and removed at most once.
+     * <p>
+     * Space Complexity: O(1)
+     * <p>
+     * Key Insight:
+     * <p>
+     * This technique works because:
+     * - The array contains only non-negative numbers.
+     * - Therefore, once sum exceeds goal,
+     * moving left reduces the sum.
+     * <p>
+     * This is a classic "at most K" sliding window pattern.
+     */
+    private static int subarraysWithSumSlidingWindow(int[] nums, int goal) {
+        if (goal < 0) return 0;
+        int totalSubArray = 0;
+        int left = 0;
+        int right = 0;
+        int sum = 0;
+        while (right < nums.length) {
+            sum += nums[right];
+            while (sum > goal) {
+                sum -= nums[left];
+                left++;
+            }
+            totalSubArray = totalSubArray + (right - left + 1);
+            right++;
         }
         return totalSubArray;
     }
