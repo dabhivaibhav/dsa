@@ -1,5 +1,8 @@
 package two_pointer.hard_problem;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /*
 Longest Substring With At Most K Distinct Characters
 
@@ -27,10 +30,14 @@ public class LongestSubstringWithKDistinctCharacters {
         String s = "aababbcaacc";
         int k = 2;
         System.out.println(findLengthBruteFroce(s, k));
+        System.out.println(findLengthSlidingWindow(s, k));
+        System.out.println(findLengthSlidingWindowOptimized(s, k));
 
         s = "abcddefg";
         k = 3;
         System.out.println(findLengthBruteFroce(s, k));
+        System.out.println(findLengthSlidingWindow(s, k));
+        System.out.println(findLengthSlidingWindowOptimized(s, k));
 
     }
 
@@ -146,4 +153,161 @@ public class LongestSubstringWithKDistinctCharacters {
         }
         return maxLength;
     }
+
+    /**
+     * findLengthSlidingWindow(String s, int k)
+     * <p>
+     * What this method does:
+     * Finds the length of the longest substring
+     * containing at most k distinct characters
+     * using the Sliding Window technique.
+     * <p>
+     * Core Idea:
+     * <p>
+     * Maintain a dynamic window [left...right]
+     * and track character frequencies using a HashMap.
+     * <p>
+     * Expand the window by moving 'right'.
+     * Shrink the window when distinct characters exceed k.
+     * <p>
+     * How It Works:
+     * <p>
+     * 1. Expand Phase:
+     * Add s.charAt(right) into the map.
+     * <p>
+     * 2. Shrink Phase:
+     * While distinct characters > k:
+     * - Decrease frequency of s.charAt(left)
+     * - Remove it from map if frequency becomes 0
+     * - Move left pointer forward
+     * <p>
+     * 3. Measure:
+     * When window is valid (≤ k distinct),
+     * update maxLength.
+     * <p>
+     * Time Complexity:
+     * <p>
+     * Outer loop (right pointer) runs O(n).
+     * Inner while loop (left pointer) also runs O(n) overall.
+     * <p>
+     * Total Time Complexity:
+     * O(n) + O(n)
+     * → O(2n)
+     * → O(n)
+     * <p>
+     * Why?
+     * Each character is added to the window once (right pointer)
+     * and removed from the window once (left pointer).
+     * <p>
+     * Space Complexity:
+     * O(k) → In worst case, map stores at most k characters.
+     */
+    private static int findLengthSlidingWindow(String s, int k) {
+        if (s == null || s.isEmpty() || k == 0) return 0;
+        int left = 0, maxLength = 0;
+        Map<Character, Integer> charFreqMap = new HashMap<>();
+        for (int right = 0; right < s.length(); right++) {
+            // Expand: Add the character at the "Head"
+            char rightChar = s.charAt(right);
+            charFreqMap.put(rightChar, charFreqMap.getOrDefault(rightChar, 0) + 1);
+            // Shrink: While we have more than K distinct characters
+            while (charFreqMap.size() > k) {
+                char leftChar = s.charAt(left);
+                charFreqMap.put(leftChar, charFreqMap.get(leftChar) - 1);
+                // If frequency hits 0, remove the character entirely
+                if (charFreqMap.get(leftChar) == 0) {
+                    charFreqMap.remove(leftChar);
+                }
+                // Move the "Tail" forward
+                left++;
+            }
+            // Measure: Current window [left...right] is now valid
+            maxLength = Math.max(maxLength, right - left + 1);
+        }
+        return maxLength;
+    }
+
+
+    /**
+     * findLengthSlidingWindowOptimized(String s, int k)
+     * <p>
+     * What was Improved:
+     * <p>
+     * Instead of using:
+     * while (map.size() > k)
+     * <p>
+     * We use:
+     * if (map.size() > k)
+     * <p>
+     * Why is this valid?
+     * <p>
+     * Because at every step, we only add ONE character.
+     * So the distinct count can increase by at most 1.
+     * <p>
+     * That means:
+     * We only ever exceed k by exactly 1.
+     * <p>
+     * Therefore,
+     * removing one character from the left
+     * is sufficient to restore validity.
+     * <p>
+     * Practical Improvement:
+     * <p>
+     * - Removes unnecessary repeated checks.
+     * - Slightly cleaner logic.
+     * - Same asymptotic complexity,
+     * but fewer operations in practice.
+     * <p>
+     * Time Complexity:
+     * <p>
+     * Right pointer → O(n)
+     * Left pointer  → O(n)
+     * <p>
+     * Total:
+     * O(n) + O(n)
+     * →O(2n)
+     * →O(n)
+     * <p>
+     * Space Complexity:
+     * O(k)
+     * <p>
+     * Final Insight:
+     * <p>
+     * The brute-force version was O(n²).
+     * Sliding window reduces it to linear time.
+     * <p>
+     * The true power here is recognizing:
+     * We never re-process characters unnecessarily.
+     * <p>
+     * Each character enters the window once
+     * and leaves once.
+     * <p>
+     * That’s the secret rhythm of all good
+     * sliding window problems.
+     */
+    private static int findLengthSlidingWindowOptimized(String s, int k) {
+        if (s == null || s.isEmpty() || k == 0) return 0;
+        int left = 0, maxLength = 0;
+        Map<Character, Integer> charFreqMap = new HashMap<>();
+        for (int right = 0; right < s.length(); right++) {
+            // Expand: Add the character at the "Head"
+            char rightChar = s.charAt(right);
+            charFreqMap.put(rightChar, charFreqMap.getOrDefault(rightChar, 0) + 1);
+            // Shrink: While we have more than K distinct characters
+            if (charFreqMap.size() > k) {
+                char leftChar = s.charAt(left);
+                charFreqMap.put(leftChar, charFreqMap.get(leftChar) - 1);
+                // If frequency hits 0, remove the character entirely
+                if (charFreqMap.get(leftChar) == 0) {
+                    charFreqMap.remove(leftChar);
+                }
+                // Move the "Tail" forward
+                left++;
+            }
+            // Measure: Current window [left...right] is now valid
+            maxLength = Math.max(maxLength, right - left + 1);
+        }
+        return maxLength;
+    }
+
 }
