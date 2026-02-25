@@ -30,6 +30,7 @@ public class SubArraysWithKIntegers {
         int[] nums = {1, 2, 1, 2, 3};
         int k = 2;
         System.out.println(subarraysWithKDistinctBruteForce(nums, k));
+        System.out.println(subarraysWithKDistinctSlidingWindow(nums, k));
     }
 
     /**
@@ -141,5 +142,118 @@ public class SubArraysWithKIntegers {
             }
         }
         return totalCount;
+    }
+
+
+    /**
+     * subarraysWithKDistinct(int[] nums, int k)
+     * <p>
+     * What We Improved:
+     * <p>
+     * Instead of directly counting subarrays
+     * with exactly k distinct integers (which is complex),
+     * we transformed the problem mathematically:
+     * <p>
+     * Exactly(k) = AtMost(k) − AtMost(k - 1)
+     * <p>
+     * Why This Is Powerful:
+     * <p>
+     * Counting "exactly k" directly is hard
+     * because the window must be tightly controlled.
+     * <p>
+     * But counting "at most k" is easy
+     * using a sliding window.
+     * <p>
+     * Once we can efficiently compute:
+     * number of subarrays with ≤ k distinct
+     * <p>
+     * We subtract:
+     * number of subarrays with ≤ (k - 1) distinct
+     * <p>
+     * The difference gives:
+     * number of subarrays with exactly k distinct.
+     * <p>
+     * How atMost() Works:
+     * <p>
+     * Maintain a sliding window [left...right].
+     * <p>
+     * 1. Expand by adding nums[right] into the map.
+     * 2. While distinct elements exceed k:
+     * shrink from left.
+     * 3. At each step:
+     * number of valid subarrays ending at 'right'
+     * is (right - left + 1)
+     * <p>
+     * Why (right - left + 1)?
+     * <p>
+     * Because every starting index between
+     * left and right forms a valid subarray
+     * ending at 'right'.
+     * <p>
+     * Example:
+     * <p>
+     * nums = [1,2,1,2,3], k = 2
+     * <p>
+     * AtMost(2)  = 12
+     * AtMost(1)  = 5
+     * <p>
+     * Exactly(2) = 12 - 5 = 7
+     * <p>
+     * Time Complexity:
+     * <p>
+     * atMost():
+     * Right pointer → O(n)
+     * Left pointer  → O(n)
+     * <p>
+     * Total per call:
+     * O(n) + O(n)
+     * →O(2n)
+     * →O(n)
+     * <p>
+     * Since we call atMost twice:
+     * <p>
+     * O(n) + O(n)
+     * →O(2n)
+     * →O(n)
+     * <p>
+     * Space Complexity:
+     * O(k)
+     * Map stores at most k distinct elements.
+     * <p>
+     * <p>
+     * Final Improvement Summary:
+     * <p>
+     * Brute-force solution was O(n²).
+     * <p>
+     * This optimized solution reduces it to O(n)
+     * using:
+     * - Sliding Window
+     * - Amortized pointer movement
+     * - Mathematical decomposition
+     * <p>
+     * This is a classic example where
+     * the real optimization is not coding trickery,
+     * but reframing the counting logic.
+     */
+    private static int subarraysWithKDistinctSlidingWindow(int[] nums, int k) {
+        return atMost(nums, k) - atMost(nums, k - 1);
+    }
+
+    private static int atMost(int[] nums, int k) {
+        int left = 0, count = 0;
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int right = 0; right < nums.length; right++) {
+            map.put(nums[right], map.getOrDefault(nums[right], 0) + 1);
+            // Shrink window if we have more than k distinct elements
+            while (map.size() > k) {
+                map.put(nums[left], map.get(nums[left]) - 1);
+                if (map.get(nums[left]) == 0) map.remove(nums[left]);
+                left++;
+            }
+            // The number of subarrays ending at 'right'
+            // with AT MOST k distinct elements is (right - left + 1)
+            count += (right - left + 1);
+        }
+        return count;
     }
 }
