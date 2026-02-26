@@ -37,12 +37,15 @@ public class MinimumWindowSubString {
         String s = "ADOBECODEBANC";
         String t = "ABC";
         System.out.println(minWindowBruteForce(s, t));
+        System.out.println(minWindowSliding(s, t));
         s = "a";
         t = "a";
         System.out.println(minWindowBruteForce(s, t));
+        System.out.println(minWindowSliding(s, t));
         s = "a";
         t = "aa";
         System.out.println(minWindowBruteForce(s, t));
+        System.out.println(minWindowSliding(s, t));
     }
 
     /**
@@ -172,5 +175,134 @@ public class MinimumWindowSubString {
             if (count[c] < 0) return false; // We are missing a character
         }
         return true;
+    }
+
+    /**
+     * minWindowSliding(String s, String t)
+     * <p>
+     * What We Improved:
+     * <p>
+     * Instead of generating all possible substrings of s
+     * and checking whether each substring contains all characters of t
+     * (which takes O(n²) substrings and O(n) validation → O(n³) total),
+     * we use a Sliding Window with a frequency map to track required characters efficiently.
+     * <p>
+     * We maintain a "debt map" that tells us how many characters are still needed
+     * and a counter that tells us when the window becomes valid.
+     * <p>
+     * Why This Is Powerful:
+     * <p>
+     * The brute-force approach repeatedly rebuilds frequency counts
+     * and rechecks substrings from scratch.
+     * <p>
+     * The sliding window avoids recomputation by:
+     * <p>
+     * - Expanding the window only once per character
+     * - Shrinking the window only when necessary
+     * - Tracking validity instantly using the counter variable
+     * <p>
+     * This ensures every character is processed at most twice.
+     * <p>
+     * How Sliding Window Works:
+     * <p>
+     * Maintain a window [start...end]
+     * <p>
+     * 1. Expand window by moving end pointer:
+     * - Decrease character debt in map
+     * - If the character was needed, decrease counter
+     * <p>
+     * 2. When counter becomes 0:
+     * - Window is valid (contains all characters of t)
+     * - Try shrinking from the left to find the minimum window
+     * <p>
+     * 3. While shrinking:
+     * - Update minimum window length if smaller window found
+     * - Restore character debt in map
+     * - If a required character is lost, increase counter
+     * <p>
+     * Example:
+     * <p>
+     * s = "ADOBECODEBANC"
+     * t = "ABC"
+     * <p>
+     * Valid windows found:
+     * "ADOBEC"
+     * "CODEBA"
+     * "BANC"  ← smallest valid window
+     * <p>
+     * Output: "BANC"
+     * <p>
+     * Time Complexity:
+     * <p>
+     * End pointer moves forward → O(n)
+     * Start pointer moves forward → O(n)
+     * <p>
+     * Total pointer movement:
+     * O(n) + O(n)
+     * →   O(2n)
+     * →   O(n)
+     * <p>
+     * Space Complexity:
+     * <p>
+     * O(1)
+     * <p>
+     * The frequency map has fixed size 128 (ASCII),
+     * which does not depend on input size.
+     * <p>
+     * Final Improvement Summary:
+     * <p>
+     * Brute-force solution was O(n³)
+     * due to substring generation and repeated validation.
+     * <p>
+     * This optimized solution reduces it to O(n)
+     * using:
+     * - Sliding Window
+     * - Frequency tracking
+     * - Incremental validation using counter
+     * - Greedy shrinking to maintain minimum window
+     * <p>
+     * This transforms an exponential-scale search
+     * into a linear-time optimal solution.
+     */
+    private static String minWindowSliding(String s, String t) {
+        if (s.length() < t.length()) return "";
+
+        // Map our 'Debt': How many of each character do we need?
+        int[] map = new int[128]; // Supports all ASCII
+        for (char c : t.toCharArray()) map[c]++;
+
+        int start = 0, end = 0, minStart = 0, minLen = Integer.MAX_VALUE;
+        int counter = t.length(); // Total characters we still need to find
+
+        while (end < s.length()) {
+            // If s[end] is a character we 'owe' (debt > 0), decrease counter
+            if (map[s.charAt(end)] > 0) {
+                counter--;
+            }
+
+            // We 'collect' the character, reducing our debt (can go negative)
+            map[s.charAt(end)]--;
+            end++;
+
+            // When counter is 0, our window is VALID (we have everything)
+            while (counter == 0) {
+                // Update the smallest window found so far
+                if (end - start < minLen) {
+                    minLen = end - start;
+                    minStart = start;
+                }
+
+                // Try to shrink from the left to find a smaller valid window
+                char leftChar = s.charAt(start);
+                map[leftChar]++; // Giving the character back to the map
+
+                // If the debt for this char becomes > 0, we no longer have a valid window
+                if (map[leftChar] > 0) {
+                    counter++;
+                }
+                start++;
+            }
+        }
+        return minLen == Integer.MAX_VALUE ? "" : s.substring(minStart, minStart + minLen);
     }
 }
