@@ -2,7 +2,7 @@
 
 ---
 
-### 1. Big Picture: Why Care About Heaps?
+# 1. Big Picture: Why Care About Heaps?
 
 A **heap** is a special tree-based data structure that gives you very fast access to the minimum or maximum element while still allowing efficient insertions and deletions. It is the standard way to implement a **priority queue** and appears frequently in interviews and real-world systems:
 
@@ -18,7 +18,7 @@ The goal of this guide is to take you from beginner to mastery: clear intuition,
 
 ---
 
-### 2. Formal Definition
+# 2. Formal Definition
 
 A (binary) **heap** is:
 
@@ -33,7 +33,7 @@ If either is missing, it’s not a (binary) heap.
 
 ---
 
-### 3. Complete Binary Tree
+# 3. Complete Binary Tree
 
 A binary tree is **complete** if:
 
@@ -45,27 +45,26 @@ A binary tree is **complete** if:
 
 **Valid complete binary tree:**
 
-text
-10
-/
-20 30
-/
-40 50
-
-text
+```
+    10
+    / \
+   20 30
+  / \
+ 40 50
+```
 
 This is complete: levels are filled, and the last level (40, 50) is filled from left to right.
 
 **Invalid complete binary tree:**
 
-text
-10
-/
-20 30
+````
+    10
+   / \
+  20 30
+  /
+ 40
+````
 
-40
-
-text
 
 This is not complete: the left child of 20 is missing but the right child exists, violating the “fill from left to right” rule.
 
@@ -73,7 +72,7 @@ The completeness property is what allows us to store heaps efficiently in arrays
 
 ---
 
-### 4. Heap Property
+# 4. Heap Property
 
 The **heap property** defines how nodes are ordered relative to their children.
 
@@ -85,16 +84,13 @@ For a **min-heap**:
 - The **minimum** element of the entire tree is at the **root**
 
 Example:
-
-text
-10
-/
-20 30
-/
-40 50
-
-text
-
+````
+    10
+   /  \
+  20  30
+  / \
+ 40 50
+````
 Here, `10 ≤ 20, 30` and `20 ≤ 40, 50`. Every parent is smaller than or equal to its children, so this is a valid min-heap.
 
 ### Max-Heap Property
@@ -106,14 +102,14 @@ For a **max-heap**:
 
 Example:
 
-text
+
 50
 /
 30 40
 /
 10 20
 
-text
+
 
 Here, `50 ≥ 30, 40` and `30 ≥ 10, 20`. Every parent is greater than or equal to its children, so this is a valid max-heap.
 
@@ -127,7 +123,7 @@ Important:
 
 ---
 
-### 5. Types of Heaps
+# 5. Types of Heaps
 
 ### 5.1 Min-Heap
 
@@ -156,7 +152,7 @@ Typical uses:
 
 ---
 
-### 6. Heap vs Binary Tree vs BST
+# 6. Heap vs Binary Tree vs BST
 
 ### Binary Tree
 
@@ -188,7 +184,7 @@ Typical uses:
 
 ---
 
-### 7. Array Representation of a Heap
+# 7. Array Representation of a Heap
 
 Most practical heaps are implemented using an **array**, not pointer-based nodes.
 
@@ -276,14 +272,13 @@ Current min-heap array:
 
 Tree:
 
-text
-10
-/
-20 30
-/
-40 50
-
-text
+````
+     10
+    /  \
+   20  30
+   / \
+  40 50
+````
 
 Insert `15`:
 
@@ -293,14 +288,13 @@ Insert `15`:
 
    Tree:
 
-text
-10
-/  \
-20    30
-/ \ /
+```
+     10
+   /   \
+  20   30
+ / \   /
 40 50 15
-
-text
+```
 
 2. Heapify Up from index 5 (value 15):
 
@@ -314,16 +308,14 @@ text
 
 Final heap:
 
-text
-10
-/
-20 15
-/
-40 50
+```
+     10
+    /   \
+   20   15
+  / \   /
+ 40 50 30
+```
 
-30
-
-text
 
 (Exact shape may differ depending on visualization, but the array is heap-valid.)
 
@@ -331,7 +323,7 @@ text
 
 Pseudocode:
 
-```text
+```
 function heapifyUp(i):
     while i > 0:
         p = parent(i)
@@ -380,7 +372,7 @@ Min-heap:
 
 Tree:
 
-```text
+```
     10
    /  \
   20   15
@@ -396,11 +388,11 @@ Extract-min:
     [30, 20, 15, 40, 50]
 
 Tree:
-    30
-   /  \
- 20    15
-/ \
-40 50
+      30
+     /  \
+    20    15
+   / \
+  40 50
 
 3. Heapify Down from index 0 (value 30):
 
@@ -422,7 +414,7 @@ Resulting heap:
 
 Pseudocode:
 
-```text
+```
 function heapifyDown(i):
  while true:
      left  = 2 * i + 1
@@ -516,7 +508,7 @@ Last non-leaf index = (n - 2) / 2 (integer division)
 
 Pseudocode:
 
-```text
+```
 function buildHeap(heap[], n):
     for i from (n - 2) / 2 down to 0:
         heapifyDown(i)
