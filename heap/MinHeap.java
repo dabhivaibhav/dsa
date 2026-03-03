@@ -73,21 +73,14 @@ public class MinHeap {
         minHeap.insert(18);
         minHeap.insert(13);
         minHeap.insert(17);
+
         System.out.print("Current Heap: ");
         minHeap.printHeap();
 
         System.out.println("Peek: " + minHeap.peek());
         System.out.println("Delete: " + minHeap.delete());
-        System.out.print("Current Heap: ");
-        minHeap.printHeap();
 
-
-        minHeap.insert(0);
-        System.out.print("Current Heap: ");
-        minHeap.printHeap();
-
-        System.out.println("Peek: " + minHeap.peek());
-        System.out.println("Delete: " + minHeap.delete());
+        System.out.println("Is Heap: " + minHeap.isHeap());
     }
 
     /**
@@ -127,6 +120,20 @@ public class MinHeap {
     public int peek() {
         if (isEmpty()) throw new IllegalStateException("Heap is empty");
         return heap[0];
+    }
+
+    public boolean isHeap() {
+        for (int i = 0; i <= (size - 2) / 2; i++) { // Only check nodes with children
+            int left = 2 * i + 1;
+            int right = 2 * i + 2;
+
+            // If left child exists and is smaller than parent -> Violation
+            if (left < size && heap[i] > heap[left]) return false;
+
+            // If right child exists and is smaller than parent -> Violation
+            if (right < size && heap[right] > heap[right]) return false;
+        }
+        return true;
     }
 
     private void heapifyUp(int index) {
@@ -181,7 +188,10 @@ public class MinHeap {
     }
 
     public void printHeap() {
-        System.out.println(Arrays.toString(heap));
+        for (int i = 0; i < size; i++) {
+            System.out.print(heap[i] + " ");
+        }
+        System.out.println();
     }
 
     public boolean isEmpty() {
