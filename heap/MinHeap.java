@@ -122,6 +122,10 @@ public class MinHeap {
         return heap[0];
     }
 
+    /**
+     * Checks if the heap is a valid min heap.
+     * Time Complexity: O(log N)
+     */
     public boolean isHeap() {
         for (int i = 0; i <= (size - 2) / 2; i++) { // Only check nodes with children
             int left = 2 * i + 1;
