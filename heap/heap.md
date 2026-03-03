@@ -556,21 +556,115 @@ Total: O(n).
 Below is a clear, commented implementation of a min-heap using an array.
 ```
 java
-class MinHeap {
+Here is the complete, clean, and interview-ready implementation of a Min-Heap. I have included the dynamic resizing (so you don't have to worry about the initial size) and the standard "Top-Down" and "Bottom-Up" logic.
+
+🚀 Complete Min-Heap Implementation (Java)
+Java
+import java.util.Arrays;
+
+public class MinHeap {
     private int[] heap;
     private int size;
     private int capacity;
 
-    public MinHeap(int capacity) {
-        this.capacity = capacity;
+    // Constructor: Start with a default capacity of 10
+    public MinHeap() {
+        this.capacity = 10;
         this.heap = new int[capacity];
         this.size = 0;
     }
 
-    // Index helpers
-    private int parent(int i) { return (i - 1) / 2; }
-    private int left(int i)   { return 2 * i + 1; }
-    private int right(int i)  { return 2 * i + 2; }
+     /**
+     * Adds a new value to the heap.
+     * Time Complexity: O(log N)
+     */
+    public void insert(int value) {
+        ensureCapacity();
+        // Put the new value at the very end
+        heap[size] = value;
+        // "Bubble Up" to fix the heap property
+        heapifyUp(size);
+        size++;
+    }
+
+    /**
+     * Removes and returns the minimum (top) element.
+     * Time Complexity: O(log N)
+     */
+    public int delete() {
+        if (isEmpty()) throw new IllegalStateException("Heap is empty");
+
+        int rootValue = heap[0];
+        // Replace root with the last element
+        heap[0] = heap[size - 1];
+        size--;
+        // "Bubble Down" the new root to its correct spot
+        heapifyDown(0);
+
+        return rootValue;
+    }
+
+    /**
+     * Just looks at the minimum element without removing it.
+     * Time Complexity: O(1)
+     */
+    public int peek() {
+        if (isEmpty()) throw new IllegalStateException("Heap is empty");
+        return heap[0];
+    }
+    
+    private void heapifyUp(int index) {
+        // While we aren't at the root and the parent is larger than us...
+        while (index > 0) {
+            int parentIndex = (index - 1) / 2;
+            if (heap[index] < heap[parentIndex]) {
+                swap(index, parentIndex);
+                index = parentIndex; // Move our focus to the parent's spot
+            } else {
+                break; // Everything is correct
+            }
+        }
+    }
+
+    private void heapifyDown(int index) {
+        while (true) {
+            int left = 2 * index + 1;
+            int right = 2 * index + 2;
+            int smallest = index;
+
+            // Check if left child exists and is smaller
+            if (left < size && heap[left] < heap[smallest]) {
+                smallest = left;
+            }
+            // Check if right child exists and is smaller than the smallest so far
+            if (right < size && heap[right] < heap[smallest]) {
+                smallest = right;
+            }
+
+            // If we found a smaller child, swap and keep sinking
+            if (smallest != index) {
+                swap(index, smallest);
+                index = smallest;
+            } else {
+                break; // Node is smaller than both its children
+            }
+        }
+    }
+
+    // --- Utility Methods ---
+
+    private void ensureCapacity() {
+        if (size == capacity) {
+            capacity *= 2;
+            heap = Arrays.copyOf(heap, capacity);
+        }
+    }
+
+    private void swap(int i, int j) {
+        int temp = heap[i];
+        heap[i] = heap[j];
+        heap[j] = temp;
+    }
 
     public boolean isEmpty() {
         return size == 0;
@@ -579,102 +673,7 @@ class MinHeap {
     public int getSize() {
         return size;
     }
-
-    public int peek() {
-        if (size == 0) {
-            throw new IllegalStateException("Heap is empty");
-        }
-        return heap;
-    }
-
-    public void insert(int value) {
-        if (size == capacity) {
-            throw new IllegalStateException("Heap is full");
-        }
-        heap[size] = value;       // Place at the end
-        heapifyUp(size);          // Fix heap upwards
-        size++;
-    }
-
-    private void heapifyUp(int index) {
-        while (index > 0) {
-            int p = parent(index);
-            if (heap[p] > heap[index]) {
-                swap(p, index);
-                index = p;
-            } else {
-                break;
-            }
-        }
-    }
-
-    public int extractMin() {
-        if (size == 0) {
-            throw new IllegalStateException("Heap is empty");
-        }
-        int min = heap;                 // Root element
-        heap = heap[size - 1];          // Move last to root
-        size--;
-        heapifyDown(0);                    // Fix heap downwards
-        return min;
-    }
-
-    private void heapifyDown(int index) {
-        while (true) {
-            int l = left(index);
-            int r = right(index);
-            int smallest = index;
-
-            if (l < size && heap[l] < heap[smallest]) {
-                smallest = l;
-            }
-            if (r < size && heap[r] < heap[smallest]) {
-                smallest = r;
-            }
-
-            if (smallest != index) {
-                swap(index, smallest);
-                index = smallest;
-            } else {
-                break;
-            }
-        }
-    }
-
-    public void decreaseKey(int index, int newValue) {
-        if (index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException();
-        }
-        if (newValue > heap[index]) {
-            throw new IllegalArgumentException("New value is greater than current value");
-        }
-        heap[index] = newValue;
-        heapifyUp(index);
-    }
-
-    public void increaseKey(int index, int newValue) {
-        if (index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException();
-        }
-        if (newValue < heap[index]) {
-            throw new IllegalArgumentException("New value is smaller than current value");
-        }
-        heap[index] = newValue;
-        heapifyDown(index);
-    }
-
-    public void delete(int index) {
-        // One strategy: decrease key to -infinity, then extractMin
-        decreaseKey(index, Integer.MIN_VALUE);
-        extractMin();
-    }
-
-    private void swap(int a, int b) {
-        int temp = heap[a];
-        heap[a] = heap[b];
-        heap[b] = temp;
-    }
-}
+ }  
 ```
 To make a max-heap, invert the comparison signs (> ↔ <) in heapifyUp, heapifyDown, and adjust decreaseKey / increaseKey logic accordingly.
 
