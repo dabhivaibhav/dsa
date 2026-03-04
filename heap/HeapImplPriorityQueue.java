@@ -9,7 +9,8 @@ public class HeapImplPriorityQueue {
     public static void main(String[] args) {
 
         PriorityQueue<Integer> minHeap = new PriorityQueue<>();
-        PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<>((a,b) -> b - a);
+        //OR Collections.reverseOrder();
 
         minHeap.add(10);
         minHeap.add(5);
