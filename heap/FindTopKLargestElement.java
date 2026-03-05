@@ -3,9 +3,9 @@ package heap;
 import java.util.Arrays;
 
 /*
-Problem: K Largest element in an array
+Problem: Top K Largest element in an array
 
-Given an array nums, return the kth largest element in the array.
+Given an array nums, return the k largest element in the array.
 
 Example 1
 Input: nums = [1, 2, 3, 4, 5], k = 2
@@ -21,15 +21,15 @@ Constraints:
             1 <= k <= nums.length
 
  */
-public class FindKLargestElement {
+public class FindTopKLargestElement {
 
     public static void main(String[] args) {
         int[] nums = {3, 4, 2, 1, 5};
         int k = 2;
-        System.out.println(Arrays.toString(findKLargestElement(nums, k)));
+        System.out.println(Arrays.toString(findTopKLargestElement(nums, k)));
     }
 
-    private static int[] findKLargestElement(int[] nums, int k) {
+    private static int[] findTopKLargestElement(int[] nums, int k) {
         MinHeap heap = new MinHeap(); // Your class!
 
         for (int num : nums) {

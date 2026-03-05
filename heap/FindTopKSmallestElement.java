@@ -3,9 +3,9 @@ package heap;
 import java.util.Arrays;
 
 /*
-Problem: K Smallest element in an array
+Problem: Top K Smallest element in an array
 
-Given an array nums, return the kth largest element in the array.
+Given an array nums, return the K smallest element in the array.
 
 Example 1
 Input: nums = [1, 2, 3, 4, 5], k = 2
@@ -21,16 +21,16 @@ Constraints:
             1 <= k <= nums.length
 
  */
-public class FindKSmallestElement {
+public class FindTopKSmallestElement {
 
     public static void main(String[] args) {
         int[] nums = {3, 10, 1, 2, 5};
         int k = 3;
-        System.out.println(Arrays.toString(findKSmallestElement(nums, k)));
+        System.out.println(Arrays.toString(findTopKSmallestElement(nums, k)));
     }
 
 
-    public static int[] findKSmallestElement(int[] nums, int k) {
+    public static int[] findTopKSmallestElement(int[] nums, int k) {
         MaxHeap heap = new MaxHeap();
 
         for (int num : nums) {
