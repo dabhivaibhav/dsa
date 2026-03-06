@@ -1,4 +1,6 @@
-package heap;
+package heap.easy_problem;
+
+import heap.MinHeap;
 
 /*
 Problem: Find K-th Largest element in an array

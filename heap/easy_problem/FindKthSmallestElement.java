@@ -1,4 +1,6 @@
-package heap;
+package heap.easy_problem;
+
+import heap.MaxHeap;
 
 /*
 Problem: Find K-th Smallest element in an array
