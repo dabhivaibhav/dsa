@@ -96,7 +96,7 @@ dsa/
 - [x] Sliding Window Pattern
 - [x] Two Pointer Approach
 - [ ] Dynamic Programming
-- [ ] Pattern-based questions
+- [x] Pattern-based questions
 - [x] Binary Search on Answers
 - [x] Backtracking & State Tracking
 
@@ -129,7 +129,7 @@ Thanks for visiting. Happy coding! 💻✨
 
 🔗 LinkedIn: https://www.linkedin.com/in/vaibhav-dabhi/
 
-📧 Email: vaibhavdabhi063@gmail.com
+📧 Email: vaibhavdabhi.tech@gmail.com
 
 Open to networking, feedback, and opportunities to grow together in tech.
 
