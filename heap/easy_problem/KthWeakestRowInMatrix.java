@@ -1,6 +1,7 @@
 package heap.easy_problem;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.PriorityQueue;
 
 /*
@@ -273,7 +274,7 @@ public class KthWeakestRowInMatrix {
         int[] result = new int[k];
         // Since it's a Max-Heap, the strongest of the K survivors comes out first
         for (int i = k - 1; i >= 0; i--) {
-            result[i] = maxHeap.poll()[1];
+            result[i] = Objects.requireNonNull(maxHeap.poll())[1];
         }
         return result;
     }
