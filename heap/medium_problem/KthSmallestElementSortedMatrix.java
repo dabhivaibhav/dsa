@@ -38,6 +38,7 @@ public class KthSmallestElementSortedMatrix {
         int k = 8;
         System.out.println(kthSmallestBruteForce(matrix, k));
         System.out.println(kthSmallestBetter(matrix, k));
+        System.out.println(kthSmallestOptimal(matrix, k));
     }
 
     /**
@@ -254,5 +255,215 @@ public class KthSmallestElementSortedMatrix {
             }
         }
         return pq.isEmpty() ? 0 : pq.peek();
+    }
+
+
+    /**
+     * kthSmallestOptimal(int[][] matrix, int k)
+     * <p>
+     * What this method does:
+     * <p>
+     * Returns the k-th smallest element
+     * in a sorted matrix using an
+     * optimal Binary Search approach
+     * on the value range.
+     * <p>
+     * Core Idea:
+     * <p>
+     * Instead of flattening the matrix
+     * or using extra space (heap),
+     * we leverage the sorted property:
+     * <p>
+     * - Rows are sorted
+     * - Columns are sorted
+     * <p>
+     * We perform Binary Search
+     * on the VALUE RANGE
+     * from smallest → largest element.
+     * <p>
+     * Thought Process:
+     * <p>
+     * We don’t search for the index,
+     * we search for the VALUE.
+     * <p>
+     * For a guessed value "mid",
+     * we count how many elements
+     * are ≤ mid.
+     * <p>
+     * This helps us decide:
+     * <p>
+     * - If we need larger values
+     * - Or smaller values
+     * <p>
+     * How the Code Works:
+     * <p>
+     * Step 1:
+     * <p>
+     * Initialize search space:
+     * <p>
+     * low  = matrix[0][0]          → smallest
+     * high = matrix[n-1][n-1]      → largest
+     * <p>
+     * Step 2:
+     * <p>
+     * While low < high:
+     * <p>
+     * - Compute mid
+     * - Count elements ≤ mid
+     * <p>
+     * Step 3:
+     * <p>
+     * If count < k:
+     * <p>
+     * → Not enough small elements
+     * → Move right
+     * <p>
+     * low = mid + 1
+     * <p>
+     * Step 4:
+     * <p>
+     * Else (count ≥ k):
+     * <p>
+     * → Possible answer found
+     * → Try smaller values
+     * <p>
+     * high = mid
+     * <p>
+     * Step 5:
+     * <p>
+     * When low == high,
+     * it represents the k-th smallest element.
+     * <p>
+     * Helper Method:
+     * <p>
+     * getCount(int[][] matrix, int target)
+     * <p>
+     * What this method does:
+     * <p>
+     * Counts number of elements
+     * in the matrix that are ≤ target.
+     * <p>
+     * Key Insight:
+     * <p>
+     * Start from BOTTOM-LEFT corner:
+     * <p>
+     * row = n - 1
+     * col = 0
+     * <p>
+     * Why this works:
+     * <p>
+     * - Moving RIGHT → values increase
+     * - Moving UP    → values decrease
+     * <p>
+     * This allows elimination of
+     * entire rows or columns efficiently.
+     * <p>
+     * Logic:
+     * <p>
+     * If matrix[row][col] ≤ target:
+     * <p>
+     * → All elements above (0 → row)
+     * in this column are also ≤ target
+     * <p>
+     * → Add (row + 1) to count
+     * <p>
+     * → Move right (col++)
+     * <p>
+     * Else:
+     * <p>
+     * → Current value too large
+     * <p>
+     * → Move up (row--)
+     * <p>
+     * This ensures O(n) traversal.
+     * <p>
+     * <p>
+     * Example:
+     * <p>
+     * matrix = [[1,5,9],
+     * [10,11,13],
+     * [12,13,15]]
+     * <p>
+     * k = 8
+     * <p>
+     * Search range:
+     * <p>
+     * low = 1, high = 15
+     * <p>
+     * mid = 8  → count = 2 → move right
+     * mid = 12 → count = 6 → move right
+     * mid = 14 → count = 8 → move left
+     * mid = 13 → count = 8 → move left
+     * <p>
+     * Answer = 13
+     * <p>
+     * Complexity:
+     * <p>
+     * Time Complexity:
+     * <p>
+     * O(n log (max - min))
+     * <p>
+     * - Binary search over value range
+     * - Each count operation = O(n)
+     * <p>
+     * Space Complexity:
+     * <p>
+     * O(1)
+     * <p>
+     * No extra space used.
+     * <p>
+     * Interview Takeaway:
+     * <p>
+     * This is the MOST OPTIMAL solution
+     * for this problem.
+     * <p>
+     * Key pattern:
+     * <p>
+     * "Binary Search on Answer"
+     * <p>
+     * Whenever:
+     * - Data is sorted
+     * - And you need k-th smallest/largest
+     * <p>
+     * Think:
+     * <p>
+     * → Can I guess an answer (mid)?
+     * → Can I validate it efficiently?
+     * <p>
+     * That’s the core idea here.
+     */
+    public static int kthSmallestOptimal(int[][] matrix, int k) {
+        int n = matrix.length;
+        int low = matrix[0][0];
+        int high = matrix[n - 1][n - 1];
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            int count = getCount(matrix, mid);
+
+            if (count < k) {
+                low = mid + 1;
+            } else {
+                high = mid;
+            }
+        }
+
+        return low;
+    }
+
+    private static int getCount(int[][] matrix, int target) {
+        int n = matrix.length;
+        int count = 0;
+        int row = n - 1;
+        int col = 0;
+
+        while (row >= 0 && col < n) {
+            if (matrix[row][col] <= target) {
+                count += (row + 1);
+                col++;
+            } else {
+                row--;
+            }
+        }
+        return count;
     }
 }
