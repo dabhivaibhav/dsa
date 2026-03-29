@@ -43,7 +43,23 @@ import java.util.PriorityQueue;
 public class MergeKSortedLists {
 
     public static void main(String[] args) {
+        // TEST 1: Brute Force
+        ListNode[] lists1 = createTestData();
+        System.out.println("Brute Force Result:");
+        printList(mergeKListsBruteForce(lists1));
+
+        // TEST 2: Min-Heap
+        ListNode[] lists2 = createTestData();
+        System.out.println("\nMin-Heap Result:");
+        printList(mergeKListsBetter(lists2));
+
+        // TEST 3: Optimal (Divide & Conquer)
+        ListNode[] lists3 = createTestData();
+        System.out.println("\nOptimal Result:");
+        printList(mergeKListsOptimal(lists3));
     }
+
+
 
     /**
      * mergeKListsBruteForce(ListNode[] lists)
@@ -303,6 +319,65 @@ public class MergeKSortedLists {
         return dummy.next;
     }
 
+    /**
+     * <h2>PROBLEM: Merge K Sorted Lists (Divide and Conquer)</h2>
+     *
+     * <h3>REAL-LIFE ANALOGY: The "Tournament Bracket"</h3>
+     * <hr>
+     * <ul>
+     * <li>Instead of merging lists one-by-one, we merge them in pairs.</li>
+     * <li>In each round, the number of lists is cut in <b>half</b>.</li>
+     * <li>This prevents the "intermediate" list from becoming a bottleneck too early.</li>
+     * </ul>
+     *
+     * <h3>ALGORITHM STEPS:</h3>
+     * <hr>
+     * <ol>
+     * <li>Initialize an <b>interval</b> to 1.</li>
+     * <li>While the interval is less than the total number of lists (K):</li>
+     * <ul>
+     * <li>Loop through the array, merging <b>lists[i]</b> and <b>lists[i + interval]</b>.</li>
+     * <li>Store the result back in <b>lists[i]</b>.</li>
+     * <li>Move the loop pointer by <b>interval * 2</b> to skip the list we just consumed.</li>
+     * </ul>
+     * <li>Double the interval (interval *= 2) and repeat.</li>
+     * </ol>
+     */
+    private static ListNode mergeKListsOptimal(ListNode[] lists) {
+        if (lists == null || lists.length == 0) return null;
+
+        int k = lists.length;
+        int interval = 1;
+
+        // The Tournament
+        while (interval < k) {
+            for (int i = 0; i + interval < k; i = i + interval * 2) {
+                lists[i] = mergeTwoLists(lists[i], lists[i + interval]);
+            }
+            interval *= 2;
+        }
+
+        return lists[0];
+    }
+
+    private static ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        ListNode dummy = new ListNode(0);
+        ListNode curr = dummy;
+
+        while (l1 != null && l2 != null) {
+            if (l1.val <= l2.val) {
+                curr.next = l1;
+                l1 = l1.next;
+            } else {
+                curr.next = l2;
+                l2 = l2.next;
+            }
+            curr = curr.next;
+        }
+        curr.next = (l1 != null) ? l1 : l2;
+        return dummy.next;
+    }
+
     public static class ListNode {
         int val;
         ListNode next;
@@ -318,5 +393,21 @@ public class MergeKSortedLists {
             this.val = val;
             this.next = next;
         }
+    }
+
+    private static void printList(ListNode node) {
+        while (node != null) {
+            System.out.print(node.val + (node.next != null ? "->" : ""));
+            node = node.next;
+        }
+        System.out.println();
+    }
+
+    private static ListNode[] createTestData() {
+        ListNode[] lists = new ListNode[3];
+        lists[0] = new ListNode(1, new ListNode(4, new ListNode(5)));
+        lists[1] = new ListNode(1, new ListNode(3, new ListNode(4)));
+        lists[2] = new ListNode(2, new ListNode(6));
+        return lists;
     }
 }
