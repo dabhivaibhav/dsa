@@ -38,6 +38,7 @@ Constraints:
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.PriorityQueue;
 
 public class MergeKSortedLists {
 
@@ -215,6 +216,89 @@ public class MergeKSortedLists {
         for (int value : nodes) {
             current.next = new ListNode(value);
             current = current.next;
+        }
+        return dummy.next;
+    }
+
+
+    /**
+     * <h2>PROBLEM: Merge K Sorted Lists</h2>
+     *
+     * <h3>REAL-LIFE ANALOGY: The "Bouncer and the Checkout Lanes"</h3>
+     * <hr>
+     * <ul>
+     * <li>Imagine a grocery store with <b>K checkout lanes</b>. In each lane,
+     * customers are already sorted by height (shortest in front).</li>
+     * <li>We hire a <b>"Bouncer" (Min-Heap)</b> to stand at the front.
+     * He can only see the person at the very front of each lane (K people).</li>
+     * <li>The Bouncer picks the shortest person of the K people and sends
+     * them to the "Master Line" (Result List).</li>
+     * <li><b>IMMEDIATELY</b>, the person who was behind the one we just picked
+     * steps forward to the front of their lane.</li>
+     * <li>The Bouncer now compares this new person with the other K-1
+     * people already waiting.</li>
+     * <li>This ensures the Bouncer only ever has to manage K people at a
+     * time, regardless of how many thousands of people are in the store.</li>
+     * </ul>
+     *
+     * <h3>ALGORITHM STEPS:</h3>
+     * <hr>
+     * <ol>
+     * <li>Initialize a {@code PriorityQueue} (Min-Heap) with a custom
+     * Comparator to compare {@code ListNode.val}.</li>
+     * <li>Add the <b>head</b> of every non-empty list to the PriorityQueue.</li>
+     * <li>Use a <b>'dummy'</b> node to simplify the construction of the result list.</li>
+     * <li>While the PriorityQueue is not empty:
+     * <ul>
+     * <li>Extract (poll) the smallest node.</li>
+     * <li>Attach it to the <b>'tail'</b> of the result list.</li>
+     * <li>If the extracted node has a <b>'.next'</b>, add that next node
+     * to the PriorityQueue to keep the heap size at K.</li>
+     * </ul>
+     * </li>
+     * <li>Return {@code dummy.next}.</li>
+     * </ol>
+     *
+     * <h3>COMPLEXITY:</h3>
+     * <hr>
+     * <ul>
+     * <li><b>Time:</b> {@code O(N log K)} &rarr; N total nodes, log K for each heap operation.</li>
+     * <li><b>Space:</b> {@code O(K)} &rarr; The heap only stores one node from each of the K lists.</li>
+     * </ul>
+     */
+    private static ListNode mergeKListsBetter(ListNode[] lists) {
+        // Check for empty input (The "No Lanes" edge case)
+        if (lists == null || lists.length == 0) return null;
+
+        // Initialize the Bouncer (Min-Heap)
+        // We provide a Comparator to tell it to compare the 'val' of nodes
+        PriorityQueue<ListNode> bouncer = new PriorityQueue<>((a, b) -> a.val - b.val);
+
+        // Fill the Waiting Room: Add the head of every non-empty lane
+        for (ListNode head : lists) {
+            if (head != null) {
+                bouncer.add(head);
+            }
+        }
+
+        // Create a "Dummy" node to start our Master Line
+        ListNode dummy = new ListNode(0);
+        ListNode tail = dummy;
+
+        // The Main Loop
+        while (!bouncer.isEmpty()) {
+            // Pick the shortest person currently at the front
+            ListNode shortest = bouncer.poll();
+
+            // Add them to our Master Line
+            tail.next = shortest;
+            tail = tail.next;
+
+            // "Magic Step": If the person we picked has someone behind them,
+            // bring that next person to the front (add to Heap)
+            if (shortest.next != null) {
+                bouncer.add(shortest.next);
+            }
         }
         return dummy.next;
     }
