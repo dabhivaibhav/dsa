@@ -2,6 +2,7 @@ package heap.medium_problem;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.PriorityQueue;
 
 /*
 Problem: Replace Elements by Their Rank
@@ -35,10 +36,11 @@ public class ReplaceElementsByTheirRank {
     public static void main(String[] args) {
         int[] arr = {20, 15, 26, 2, 98, 6};
         System.out.println(Arrays.toString(replaceWithRankBruteForce(arr)));
+        System.out.println(Arrays.toString(replaceWithRankOptimal(arr)));
 
         int[] arr1 = {1, 5, 8, 15, 8, 25, 9};
         System.out.println(Arrays.toString(replaceWithRankBruteForce(arr1)));
-
+        System.out.println(Arrays.toString(replaceWithRankOptimal(arr1)));
     }
 
     /**
@@ -113,6 +115,77 @@ public class ReplaceElementsByTheirRank {
         int[] result = new int[arr.length];
         for (int i = 0; i < arr.length; i++) {
             result[i] = rankMap.get(arr[i]);
+        }
+        return result;
+    }
+
+
+    /**
+     * <h2>THE "PRIORITY PODIUM" PATTERN (MIN-HEAP)</h2>
+     *
+     * <h3>THE PROBLEM:</h3>
+     * Assign ranks to elements where identical values share the same rank, 
+     * but we must place these ranks back into the <b>original</b> indices 
+     * of the input array.
+     *
+     * <h3>REAL-LIFE ANALOGY: The "Staggered Award Ceremony"</h3>
+     * Imagine a crowded room of athletes. You don't want to move everyone 
+     * to a separate line to sort them. Instead, you call them up to a 
+     * podium <b>one by one</b>. 
+     * <ol>
+     * <li>You look for the person with the fastest time (the Min-Heap 
+     * always keeps the winner at the top).</li>
+     * <li>When the winner comes up, you check if their time is the same 
+     * as the last person. If it is, they share the trophy. If they are 
+     * slower, they get the next rank.</li>
+     * <li>Crucially, each person tells you exactly where they were 
+     * originally sitting so you can send the trophy back to their 
+     * specific chair (Original Index).</li>
+     * </ol>
+     *
+     *
+     *
+     * <h3>COMPLEXITY:</h3>
+     * <ul>
+     * <li><b>Time: O(N log N)</b> - Every element is added to and
+     * removed from the Heap once. Each Heap operation takes log N.</li>
+     * <li><b>Space: O(N)</b> - We store N pairs (value and index) 
+     * inside the Priority Queue.</li>
+     * </ul>
+     *
+     * <h3>INTERVIEW TAKEAWAY:</h3>
+     * Using a Heap for ranking is a powerful alternative to Sorting + Maps. 
+     * It is particularly useful in <b>streaming data</b> scenarios where 
+     * you don't have all the numbers at once, or when you only care about 
+     * the "Top K" ranks. It demonstrates a deep understanding of how to 
+     * manage <b>metadata</b> (the original index) alongside the <b>data</b> 
+     * (the value).
+     */
+    private static int[] replaceWithRankOptimal(int[] arr) {
+
+        // Min-Heap stores pairs: {value, original_index}
+        PriorityQueue<int[]> minHeap = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+
+        for (int i = 0; i < arr.length; i++) {
+            minHeap.offer(new int[]{arr[i], i});
+        }
+
+        int[] result = new int[arr.length];
+        int rank = 0;
+        int lastVal = Integer.MIN_VALUE;
+
+        while (!minHeap.isEmpty()) {
+            int[] current = minHeap.poll();
+            int val = current[0];
+            int index = current[1];
+
+            // Only increase rank if the value is strictly greater than the last
+            if (val > lastVal || rank == 0) {
+                rank++;
+            }
+
+            result[index] = rank;
+            lastVal = val;
         }
         return result;
     }
