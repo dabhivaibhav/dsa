@@ -1,4 +1,4 @@
-package greedy;
+package greedy.easy_problems;
 
 /*
 Leetcode 2078: Two Furthest Houses with Different Colors
