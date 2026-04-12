@@ -95,8 +95,8 @@ public class JumpGameII {
      * | 2             | Goal!          | -               | 0              |
      *
      * COMPLEXITY:
-     * -> Time Complexity: $O(M^N)$ where N is length and M is max jump value.
-     * -> Space Complexity: $O(N)$ for the recursion stack.
+     * -> Time Complexity: O(M^N) where N is length and M is max jump value.
+     * -> Space Complexity: O(N) for the recursion stack.
      *
      * COMMON PITFALLS:
      * - Adding 1 to Integer.MAX_VALUE without checking (causes negative numbers).
@@ -181,8 +181,8 @@ public class JumpGameII {
      * | 3 | 1       | 4        | 4          | 2     | Update farthest (no change)  |
      *
      * COMPLEXITY:
-     * -> Time Complexity: $O(n)$ - One single pass through the array.
-     * -> Space Complexity: $O(1)$ - Only three integer variables used.
+     * -> Time Complexity: O(n) - One single pass through the array.
+     * -> Space Complexity: O(1) - Only three integer variables used.
      *
      * COMMON PITFALLS:
      * - Looping all the way to `nums.length - 1`. If the current index hits the

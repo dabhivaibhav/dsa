@@ -41,9 +41,10 @@ public class MinimumNumberOfPlatformForRailway {
         int[] arrivals = {900, 940, 950, 1100, 1500, 1800};
         int[] departures = {910, 1200, 1120, 1130, 1900, 2000};
         System.out.println(findPlatformBruteForce(arrivals, departures));
+        System.out.println(findPlatformBetter(arrivals, departures));
     }
 
-    /**
+    /*
     THE BRUTE FORCE SIMULATOR: PHYSICAL PLATFORM TRACKING
 
     THE INTUITION:
@@ -79,7 +80,7 @@ public class MinimumNumberOfPlatformForRailway {
      platform and only look at the "Arrival vs. Departure" events in chronological order.
 
      INTERVIEW TAKEAWAY:
-     While this works, interviewers will ask: "Can you do better than $O(N^2)$?" This is your cue to mention that by
+     While this works, interviewers will ask: "Can you do better than O(N^2)?" This is your cue to mention that by
      Sorting the events, you can find the Peak Concurrency (the most trains in the station at once) which is the true answer.
     */
     private static int findPlatformBruteForce(int[] arrivals, int[] departures) {
@@ -112,5 +113,60 @@ public class MinimumNumberOfPlatformForRailway {
         }
 
         return platforms.size();
+    }
+
+
+    /*
+    THE "CONFLICT COUNTER" PATTERN (O(1) SPACE BRUTE FORCE)
+
+    THE INTUITION:
+    Instead of acting like a Station Master who manages platforms (which requires a notebook/memory), we act like a
+    "Safety Auditor." We pick one train and count how many other trains are physically present in the station during
+    that train's arrival and departure window. If 5 trains are in the station at the same time as Train A, we know we
+    need at least 5 platforms.
+
+    HOW THE ALGORITHM WORKS (STEP-BY-STEP):
+    Create a variable maxPlatforms to store the highest conflict count we find.
+    Pick a "Reference Train" (i).
+    Reset a currentConflicts counter to 0.
+    Compare the Reference Train (i) against every single other train (j) in the schedule.
+    IF train 'j' arrives while train 'i' is still at the platform, it counts as a conflict.
+    After checking all trains for the current Reference Train, update maxPlatforms.
+    Repeat for every train in the list.
+
+    CODE EXPLANATION:
+    No Data Structures: We don't use a List, Map, or Heap. We only use two integer variables (maxPlatforms and
+    currentConflicts).
+    Nested Loops: We compare every train against every other train, resulting in O(N²) time.
+    The Condition: (arrivals[j] >= arrivals[i] && arrivals[j] <= departures[i]) checks if train j starts within the
+    window of train i.
+
+    COMPLEXITY:
+    Time: O(N²) - Because for every train, we scan the entire list again.
+    Space: O(1) - We use zero extra memory regardless of how many trains there are.
+
+    INTERVIEW TAKEAWAY:
+    This is a "Pure Logic" brute force. While it saves space, it is very slow. In an interview, if they ask to save space
+    on the brute force, this is the way. However, usually, they want you to move to the O(N log N) Two-Pointer solution,
+    which is both fast AND space-efficient.
+    */
+    private static int findPlatformBetter(int[] arrivals, int[] departures) {
+        int n = arrivals.length;
+        int maxPlatforms = 0;
+
+        for (int i = 0; i < n; i++) {
+            int currentConflicts = 0;
+
+            for (int j = 0; j < n; j++) {
+                // Check if train 'j' is present at the station
+                // during any moment of train 'i's stay
+                if (arrivals[j] >= arrivals[i] && arrivals[j] <= departures[i]) {
+                    currentConflicts++;
+                }
+            }
+            // The maximum number of simultaneous conflicts is the required platforms
+            maxPlatforms = Math.max(maxPlatforms, currentConflicts);
+        }
+        return maxPlatforms;
     }
 }
