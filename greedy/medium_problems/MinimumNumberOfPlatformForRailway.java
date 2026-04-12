@@ -1,6 +1,7 @@
 package greedy.medium_problems;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /*
@@ -206,5 +207,71 @@ public class MinimumNumberOfPlatformForRailway {
             maxPlatforms = Math.max(maxPlatforms, currentConflicts);
         }
         return maxPlatforms;
+    }
+
+    /*
+    THE "CHRONOLOGICAL EVENT" PATTERN (OPTIMAL)
+
+    What this method does:
+    Calculates the minimum platforms by tracking the peak number of trains present at the station simultaneously.
+
+    Core Idea:
+    Stop tracking "Platforms" and start tracking "Events." Every arrival is a +1 to demand, and every departure is a -1
+    to demand. By sorting arrival and departure times separately, we can simulate the passage of time.
+
+    INTUITION (VERY IMPORTANT):
+    Why can we sort them separately?
+    In the brute force, we kept Arrival[i] and Departure[i] together. But platforms are interchangeable. If you have 3
+    trains in the station, it doesn't matter which one leaves first; any departure frees up a space. By sorting
+    independently, we are essentially saying: "Show me the next thing that happens in this station, regardless of which
+    train it is."
+
+    How the Code Works:
+    Step 1: Sort Arrivals and Departures. This creates two timelines.
+    Step 2: Use two pointers (i, j) to compare the next arrival with the next departure.
+    Step 3: If the next arrival happens before (or at the same time as) the next departure, we must have another
+            platform ready.
+    Step 4: If a departure happens first, we "release" a platform to be used by future arrivals.
+    Step 5: Record the "Peak" value during this process.
+
+    Complexity:
+    → Time Complexity: O(N log N)
+    (Due to sorting. The while loop is O(N))
+    → Space Complexity: O(1)
+    (If we sort the input arrays directly, otherwise O(N) to copy them)
+
+    Interview Takeaway:
+    This is the "Sweep Line" algorithm in its simplest form. Whenever you need to find the maximum number of concurrent/
+    overlapping intervals, the most efficient way is to break the intervals into "Start" and "End" events and sort them.
+    */
+    public static int findPlatformOptimal(int[] arr, int[] dep) {
+        int n = arr.length;
+
+        // Sort both arrays independently
+        Arrays.sort(arr);
+        Arrays.sort(dep);
+
+        // Initialize pointers and counters
+        int plat_needed = 0;
+        int max_platforms = 0;
+        int i = 0; // Pointer for arrival
+        int j = 0; // Pointer for departure
+
+        // Walk through the timeline
+        while (i < n && j < n) {
+            // If a train is arriving (or arriving and departing at the same time)
+            if (arr[i] <= dep[j]) {
+                plat_needed++;
+                i++;
+            }
+            // If a train is departing
+            else {
+                plat_needed--;
+                j++;
+            }
+            // Update the peak concurrency
+            max_platforms = Math.max(max_platforms, plat_needed);
+        }
+        return max_platforms;
     }
 }
