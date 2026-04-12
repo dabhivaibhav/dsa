@@ -125,6 +125,44 @@ public class MinimumNumberOfPlatformForRailway {
     that train's arrival and departure window. If 5 trains are in the station at the same time as Train A, we know we
     need at least 5 platforms.
 
+    THE FOUR SCENARIOS OF TRAIN INTERACTION (INTERVAL OVERLAP LOGIC):
+    To calculate the minimum platforms without extra space, we must understand how any two
+    trains (Train A and Train B) can exist in the station relative to each other.
+    If Train A is our "Reference Train," we check if Train B conflicts with it.
+
+    SCENARIO 1: THE "OVERLAP START" (PARTIAL CONFLICT)
+    Logic: Train B arrives BEFORE Train A leaves, but stays LONGER than Train A.
+    Check: (Arrival B <= Departure A) AND (Departure B > Departure A)
+    Reality: While Train A is occupying a platform, Train B rolls in. They are
+    simultaneously present.
+
+    SCENARIO 2: THE "CONTAINED" (FULL CONFLICT)
+    Logic: Train B's entire stay happens WHILE Train A is at the station.
+    Check: (Arrival B >= Arrival A) AND (Departure B <= Departure A)
+    Reality: Train B pulls in after A and leaves before A. It completely
+    occupies a second platform during Train A's stay.
+
+    SCENARIO 3: THE "OVERLAP END" (PARTIAL CONFLICT)
+    Logic: Train B was ALREADY there when Train A arrived, then Train B leaves.
+    Check: (Arrival B < Arrival A) AND (Departure B >= Arrival A)
+    Reality: When Train A pulls into the station, it sees Train B already
+    sitting on a platform.
+
+    SCENARIO 4: THE "NON-OVERLAP" (NO CONFLICT)
+    Logic: Train B leaves before A arrives, OR Train B arrives after A leaves.
+    Check: (Departure B < Arrival A) OR (Arrival B > Departure A)
+    Reality: These two trains are like "ships passing in the night." They never
+    occupy the station at the same time. One platform can serve both.
+
+    THE "UNIVERSAL OVERLAP RULE" FOR CODE:
+    Instead of checking all 4 scenarios, we can simplify the math.
+    Two trains (A and B) CONFLICT if this single condition is true:
+
+    (Arrival B <= Departure A) AND (Departure B >= Arrival A)
+    If this is true, they overlap. In our O(1) space brute force, we pick one
+    train 'i' as the reference and count how many trains 'j' satisfy this rule.
+    The peak count is the minimum number of platforms required.
+
     HOW THE ALGORITHM WORKS (STEP-BY-STEP):
     Create a variable maxPlatforms to store the highest conflict count we find.
     Pick a "Reference Train" (i).
