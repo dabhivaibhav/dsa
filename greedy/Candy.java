@@ -137,5 +137,99 @@ public class Candy {
         return totalCandies;
     }
 
+    /*
+     * candyBetter(int[] ratings)
+     *
+     * WHAT THIS METHOD DOES:
+     * This method is an optimized version of the Two-Pass Greedy approach. It calculates 
+     * the minimum candies required to satisfy neighbor rules while combining the 
+     * summation step into the second pass to reduce the total number of iterations.
+     *
+     * MENTAL MODEL:
+     * "The Efficiency Expert." Imagine you are a teacher walking down a line of 
+     * children twice. On the way out (Left-to-Right), you fix one side of the problem. 
+     * On the way back (Right-to-Left), you fix the other side and simultaneously 
+     * drop the candies into a "Total" bucket. You finish the job as soon as you get 
+     * back to the start.
+     *
+     * CORE IDEA:
+     * We resolve the "higher than left neighbor" rule first. Then, during the 
+     * "higher than right neighbor" pass, we calculate the final candy count for 
+     * each child on the fly and add it to our running total.
+     *
+     * THOUGHT PROCESS:
+     * 1. "Let's give everyone 1 candy as a baseline."
+     * 2. "Walk forward: If a child's rating is higher than the one before, give them 
+     * more than that child."
+     * 3. "Walk backward: If a child's rating is higher than the one after, check if 
+     * they need an increase. While I'm deciding their final number, add it to the 
+     * total sum immediately."
+     *
+     * INTUITION (VERY IMPORTANT):
+     *
+     * The logic remains the same: a child's final candy count is the maximum * of what the left-neighbor requires and what the right-neighbor requires. 
+     * By waiting until the second pass to sum the values, we avoid a third loop, 
+     * making the code cleaner and slightly faster in practice.
+     *
+     * EDGE CASES & GUARDRAILS:
+     * - Pre-summing the last element: Since the second loop starts at `n-2`, 
+     * we must initialize `totalCandies` with the value of the very last child 
+     * (`candies[n-1]`) so they aren't left out of the total.
+     * - Array of Size 1: If the array has only one element, the loops don't run 
+     * and we correctly return the 1 candy initialized at the start.
+     *
+     * HOW THE CODE WORKS:
+     * -> Step 1: Initialize the `candies` array and fill with 1s.
+     * -> Step 2: Forward Pass: If `ratings[i] > ratings[i-1]`, update `candies[i]`.
+     * -> Step 3: Backward Pass & Sum: Initialize `totalCandies` with the last element's value.
+     * -> Step 4: Loop from `n-2` down to `0`. Update `candies[i]` using `Math.max()` 
+     * to satisfy the right-side neighbor.
+     * -> Step 5: Immediately add the (now finalized) `candies[i]` to `totalCandies`.
+     *
+     * EXAMPLE DRY RUN: ratings = [1, 2, 2]
+     * | Index | Ratings | Forward Pass | Backward Pass | totalCandies | Action |
+     * |-------|---------|--------------|---------------|--------------|--------|
+     * | -     | [1,2,2] | [1, 2, 1]    | -             | -            | L->R done |
+     * | 2     | 2       | 1            | 1             | 1            | Init total with last element |
+     * | 1     | 2       | 2            | max(2, 1+1)=2 | 1+2 = 3      | Right neighbor is not lower |
+     * | 0     | 1       | 1            | max(1, 2+0)=1 | 3+1 = 4      | Right neighbor is not lower |
+     *
+     * COMPLEXITY:
+     * -> Time Complexity: O(2n).
+     * (One pass for Forward, and one pass that combines Backward adjustment and Summation).
+     * -> Space Complexity: O(n). 
+     * (An auxiliary array is used to store the candy counts).
+     *
+     * COMMON PITFALLS:
+     * - Initialization Error: Forgetting to add `candies[n-1]` to the total before 
+     * starting the backward loop.
+     * - Over-optimization: Trying to do everything in one pass. It is impossible 
+     * to know a child's right-neighbor status while only walking forward!
+     *
+     * INTERVIEW TAKEAWAY:
+     * This is an Optimized Two-Pass pattern. When you realize you are 
+     * iterating over the same data twice (once to calculate and once to sum), 
+     * look for ways to "piggyback" the sum onto the final calculation pass.
+     */
+    private static int candyBetter(int[] ratings) {
+        int n = ratings.length;
+        int[] candies = new int[n];
 
+        Arrays.fill(candies, 1);
+
+        for (int i = 1; i < n; i++) {
+            if (ratings[i] > ratings[i - 1]) {
+                candies[i] = candies[i - 1] + 1;
+            }
+        }
+
+        int totalCandies = candies[n - 1];
+        for (int i = n - 2; i >= 0; i--) {
+            if (ratings[i] > ratings[i + 1]) {
+                candies[i] = Math.max(candies[i], candies[i + 1] + 1);
+            }
+            totalCandies += candies[i];
+        }
+        return totalCandies;
+    }
 }
