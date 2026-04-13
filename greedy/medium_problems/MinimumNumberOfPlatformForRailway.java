@@ -235,8 +235,8 @@ public class MinimumNumberOfPlatformForRailway {
     Step 5: Record the "Peak" value during this process.
 
     Complexity:
-    → Time Complexity: O(N log N)
-    (Due to sorting. The while loop is O(N))
+    → Time Complexity: O2(N log N + N)
+    (Due to sorting. The while loop is O(2N))
     → Space Complexity: O(1)
     (If we sort the input arrays directly, otherwise O(N) to copy them)
 
