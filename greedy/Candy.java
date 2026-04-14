@@ -141,48 +141,48 @@ public class Candy {
      * candyBetter(int[] ratings)
      *
      * WHAT THIS METHOD DOES:
-     * This method is an optimized version of the Two-Pass Greedy approach. It calculates 
-     * the minimum candies required to satisfy neighbor rules while combining the 
+     * This method is an optimized version of the Two-Pass Greedy approach. It calculates
+     * the minimum candies required to satisfy neighbor rules while combining the
      * summation step into the second pass to reduce the total number of iterations.
      *
      * MENTAL MODEL:
-     * "The Efficiency Expert." Imagine you are a teacher walking down a line of 
-     * children twice. On the way out (Left-to-Right), you fix one side of the problem. 
-     * On the way back (Right-to-Left), you fix the other side and simultaneously 
-     * drop the candies into a "Total" bucket. You finish the job as soon as you get 
+     * "The Efficiency Expert." Imagine you are a teacher walking down a line of
+     * children twice. On the way out (Left-to-Right), you fix one side of the problem.
+     * On the way back (Right-to-Left), you fix the other side and simultaneously
+     * drop the candies into a "Total" bucket. You finish the job as soon as you get
      * back to the start.
      *
      * CORE IDEA:
-     * We resolve the "higher than left neighbor" rule first. Then, during the 
-     * "higher than right neighbor" pass, we calculate the final candy count for 
+     * We resolve the "higher than left neighbor" rule first. Then, during the
+     * "higher than right neighbor" pass, we calculate the final candy count for
      * each child on the fly and add it to our running total.
      *
      * THOUGHT PROCESS:
      * 1. "Let's give everyone 1 candy as a baseline."
-     * 2. "Walk forward: If a child's rating is higher than the one before, give them 
+     * 2. "Walk forward: If a child's rating is higher than the one before, give them
      * more than that child."
-     * 3. "Walk backward: If a child's rating is higher than the one after, check if 
-     * they need an increase. While I'm deciding their final number, add it to the 
+     * 3. "Walk backward: If a child's rating is higher than the one after, check if
+     * they need an increase. While I'm deciding their final number, add it to the
      * total sum immediately."
      *
      * INTUITION (VERY IMPORTANT):
      *
-     * The logic remains the same: a child's final candy count is the maximum * of what the left-neighbor requires and what the right-neighbor requires. 
-     * By waiting until the second pass to sum the values, we avoid a third loop, 
+     * The logic remains the same: a child's final candy count is the maximum * of what the left-neighbor requires and what the right-neighbor requires.
+     * By waiting until the second pass to sum the values, we avoid a third loop,
      * making the code cleaner and slightly faster in practice.
      *
      * EDGE CASES & GUARDRAILS:
-     * - Pre-summing the last element: Since the second loop starts at `n-2`, 
-     * we must initialize `totalCandies` with the value of the very last child 
+     * - Pre-summing the last element: Since the second loop starts at `n-2`,
+     * we must initialize `totalCandies` with the value of the very last child
      * (`candies[n-1]`) so they aren't left out of the total.
-     * - Array of Size 1: If the array has only one element, the loops don't run 
+     * - Array of Size 1: If the array has only one element, the loops don't run
      * and we correctly return the 1 candy initialized at the start.
      *
      * HOW THE CODE WORKS:
      * -> Step 1: Initialize the `candies` array and fill with 1s.
      * -> Step 2: Forward Pass: If `ratings[i] > ratings[i-1]`, update `candies[i]`.
      * -> Step 3: Backward Pass & Sum: Initialize `totalCandies` with the last element's value.
-     * -> Step 4: Loop from `n-2` down to `0`. Update `candies[i]` using `Math.max()` 
+     * -> Step 4: Loop from `n-2` down to `0`. Update `candies[i]` using `Math.max()`
      * to satisfy the right-side neighbor.
      * -> Step 5: Immediately add the (now finalized) `candies[i]` to `totalCandies`.
      *
@@ -197,18 +197,18 @@ public class Candy {
      * COMPLEXITY:
      * -> Time Complexity: O(2n).
      * (One pass for Forward, and one pass that combines Backward adjustment and Summation).
-     * -> Space Complexity: O(n). 
+     * -> Space Complexity: O(n).
      * (An auxiliary array is used to store the candy counts).
      *
      * COMMON PITFALLS:
-     * - Initialization Error: Forgetting to add `candies[n-1]` to the total before 
+     * - Initialization Error: Forgetting to add `candies[n-1]` to the total before
      * starting the backward loop.
-     * - Over-optimization: Trying to do everything in one pass. It is impossible 
+     * - Over-optimization: Trying to do everything in one pass. It is impossible
      * to know a child's right-neighbor status while only walking forward!
      *
      * INTERVIEW TAKEAWAY:
-     * This is an Optimized Two-Pass pattern. When you realize you are 
-     * iterating over the same data twice (once to calculate and once to sum), 
+     * This is an Optimized Two-Pass pattern. When you realize you are
+     * iterating over the same data twice (once to calculate and once to sum),
      * look for ways to "piggyback" the sum onto the final calculation pass.
      */
     private static int candyBetter(int[] ratings) {
@@ -232,4 +232,135 @@ public class Candy {
         }
         return totalCandies;
     }
+
+    /*
+     * candyOptimal(int[] ratings)
+     *
+     * WHAT THIS METHOD DOES:
+     * This is the "Space-Optimized" approach to the Candy problem. It calculates 
+     * the total number of candies in a single pass without using an extra array. 
+     * It treats the ratings like a landscape of mountains (ups) and valleys (downs).
+     *
+     * MENTAL MODEL:
+     * "The Mountain Climber." Imagine you are walking across a mountain range. 
+     * Every time you go uphill, you need more energy (candies). Every time you go 
+     * downhill, the children also need specific amounts. The only tricky part is the 
+     * "Peak" of the mountain—it must be high enough to satisfy both the people 
+     * climbing up and the people sliding down.
+     *
+     * CORE IDEA:
+     * Instead of storing candy counts for every child, we track the lengths of 
+     * increasing slopes (up) and decreasing slopes (down). We use the property 
+     * of "Arithmetic Progressions" (1+2+3...) to calculate the total candies 
+     * needed for those slopes on the fly.
+     *
+     * THOUGHT PROCESS:
+     * 1. "Everyone gets at least 1 candy, so let's start my total at N."
+     * 2. "As I walk, am I going uphill? If yes, keep track of how high I go."
+     * 3. "Am I going downhill? If yes, keep track of how deep the valley is."
+     * 4. "The child at the very top (the Peak) needs to be higher than both 
+     * sides. I'll compare the 'Up' height and the 'Down' height and make sure 
+     * the peak matches the taller one."
+     *
+     * INTUITION (VERY IMPORTANT):
+     * When you have a slope of length k (e.g., 3 people in a row with increasing 
+     * ratings), the extra candies needed are 1 + 2 + ... + k. 
+     *
+     * If you have a mountain with an "uphill" of 3 people and a "downhill" of 5 
+     * people, the person at the peak must satisfy both. The "Peak" naturally 
+     * belongs to the longer slope. The `Math.min(peak, valley)` adjustment 
+     * ensures we don't double-count the peak incorrectly or make it too short.
+     *
+     * EDGE CASES & GUARDRAILS:
+     * - Equal Ratings: If `ratings[i] == ratings[i-1]`, the slope "resets." 
+     * The neighbor rule only applies to "higher" ratings, so equal ratings 
+     * allow us to start fresh with 1 candy.
+     * - Peak/Valley Overlap: The code handles the peak by adding it to both 
+     * counts and then subtracting the smaller overlap at the end.
+     *
+     * HOW THE CODE WORKS:
+     * -> Step 1: Initialize `candies = n` (the baseline of 1 per child).
+     * -> Step 2: Use a `while` loop to traverse the array from index 1.
+     * -> Step 3: Skip Equals: If ratings are the same, just move to the next child.
+     * -> Step 4: Uphill Pass: While ratings are increasing, increment `peak` 
+     * and add that count to `candies`.
+     * -> Step 5: Downhill Pass: While ratings are decreasing, increment `valley` 
+     * and add that count to `candies`.
+     * -> Step 6: The Adjustment: Subtract `Math.min(peak, valley)` from 
+     * the total to fix the peak height overlap.
+     *
+     * EXAMPLE DRY RUN: ratings = [1, 3, 5, 2, 1]
+     * | State | i | Rating | peak | valley | candies | Note |
+     * |-------|---|--------|------|--------|---------|------|
+     * | Start | 1 | 3      | 0    | 0      | 5       | Init candies = n |
+     * | Up    | 2 | 5      | 2    | 0      | 5+1+2=8 | 2 steps up |
+     * | Down  | 4 | 1      | 2    | 2      | 8+1+2=11| 2 steps down |
+     * | Adjust| - | -      | 2    | 2      | 11-2=9  | min(2,2)=2. Final: 9 |
+     *
+     * COMPLEXITY:
+     * -> Time Complexity: O(n). We need to consider all the possible TC and SC.
+     * (Even with nested while loops, the index `i` only moves forward from 0 to N).
+     * -> Space Complexity: O(1). We need to consider all the possible TC and SC.
+     * (No extra arrays; we only use a few integer variables).
+     *
+     * COMMON PITFALLS:
+     * - Arithmetic Logic: Forgetting that the "base" candy is already 
+     * accounted for in `candies = n`.
+     * - Peak Heights: If the downhill slope is longer than the uphill slope, 
+     * the peak must be "pulled up" to match the downhill length.
+     *
+     * INTERVIEW TAKEAWAY:
+     * This is a Slope/Pattern Recognition pattern. It's the "Gold Standard" 
+     * for the Candy problem. Whenever you see a problem involving "Neighbors" 
+     * and "Relative heights," ask yourself if you can calculate the result 
+     * based on the *shape* of the data rather than storing the state of 
+     * every individual element.
+     */
+    private static int candyOptimal(int[] ratings) {
+        // Get number of children
+        int n = ratings.length;
+
+        // Initially give 1 candy to each child
+        int candies = n;
+
+        // Start from second child
+        int i = 1;
+
+        while (i < n) {
+
+            // Skip equal ratings
+            if (ratings[i] == ratings[i - 1]) {
+                i++;
+                continue;
+            }
+
+            // Initialize increasing slope counter
+            int peak = 0;
+
+            // Traverse strictly increasing ratings
+            while (i < n && ratings[i] > ratings[i - 1]) {
+                peak++;
+                candies += peak;
+                i++;
+            }
+
+            // Initialize decreasing slope counter
+            int valley = 0;
+
+            // Traverse strictly decreasing ratings
+            while (i < n && ratings[i] < ratings[i - 1]) {
+                valley++;
+                candies += valley;
+                i++;
+            }
+
+            // Remove overlapping candy at the peak
+            candies -= Math.min(peak, valley);
+        }
+
+        // Return total candies required
+        return candies;
+    }
+
+
 }
