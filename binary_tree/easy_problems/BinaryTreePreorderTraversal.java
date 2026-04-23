@@ -2,6 +2,7 @@ package binary_tree.easy_problems;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /*
 Leetcode 144. Binary Tree Preorder Traversal
@@ -48,10 +49,19 @@ public class BinaryTreePreorderTraversal {
         root.right.right = new TreeNode(7);
         root.right.right.right = new TreeNode(8);
         root.right.right.right.right = new TreeNode(9);
-        System.out.println(preorderTraversal(root));
+        System.out.println(preorderTraversalRecursion(root));
     }
 
     /*
+    MY THOUGHT PROCESS:
+    Originally I intended to use indices logic but here we have Node based structure, so we can't use that.
+
+    Arrays vs. NodesYour current thought (2i+1): This is for Heaps or trees  stored in a flat array. You
+    have to calculate where the children are.
+
+    We have given a TreeNode object. You don't need math to find the children; they are already connected
+    via pointers. You just ask for node.left or node.right.
+    ---------------------------------------------
     THE "RECURSIVE BOOKMARK" PATTERN (PREORDER)
 
     What this method does:
@@ -76,7 +86,7 @@ public class BinaryTreePreorderTraversal {
     Recursion is the cleanest way to express tree traversals. Always start with this. If the interviewer asks "How can
     you do this without recursion?", they are asking you to manage those "bookmarks" yourself using a manual Stack data structure.
     */
-    private static List<Integer> preorderTraversal(TreeNode root) {
+    private static List<Integer> preorderTraversalRecursion(TreeNode root) {
         List<Integer> result = new ArrayList<>();
         explore(root, result);
         return result;
@@ -115,5 +125,58 @@ public class BinaryTreePreorderTraversal {
             this.left = left;
             this.right = right;
         }
+    }
+
+    /*
+    THE "MANUAL STACK" PATTERN (ITERATIVE PREORDER)
+
+    What this method does:
+    Simulates recursion using a Stack data structure to traverse the tree in Root-Left-Right order.
+
+    Core Idea:
+    Recursion is just a hidden stack. By using our own Stack<TreeNode>, we gain more control and
+    avoid crashing on extremely deep trees (where the system stack might run out of memory).
+
+    How the Code Works:
+    Step 1: Push the root onto the stack.
+    Step 2: While the stack isn't empty, POP the top node.
+    Step 3: Record its value (Root).
+    Step 4: Push the RIGHT child, then the LEFT child.
+    → Why? Because the Stack is LIFO. The last thing pushed (Left) will be the first thing popped in the next loop.
+
+    INTUITION (VERY IMPORTANT):
+    Think of the Stack as a "To-Do List." When you visit a node, you cross it off,
+    but you realize you now have two new tasks: "Visit Left Subtree" and "Visit Right Subtree."
+    You put them on the list, making sure the most urgent one (Left) stays at the top.
+
+    Complexity:
+    → Time Complexity: O(N) — Every node is pushed and popped exactly once.
+    → Space Complexity: O(H) — The stack stores at most the height of the tree.
+
+    Interview Takeaway:
+    Most interviewers consider the Iterative Stack approach the "Optimal" practical solution.
+    Morris Traversal is great to mention as a "bonus," but it is often discouraged in production
+    because it temporarily modifies the tree structure.
+    */
+    private static  List<Integer> preorderTraversalIterative(TreeNode root) {
+        List<Integer> result = new ArrayList<>();
+        if (root == null) return result;
+
+        Stack<TreeNode> stack = new Stack<>();
+        stack.push(root);
+
+        while (!stack.isEmpty()) {
+            TreeNode current = stack.pop();
+            result.add(current.val); // ROOT
+
+            // Push Right first, so Left is processed first!
+            if (current.right != null) {
+                stack.push(current.right);
+            }
+            if (current.left != null) {
+                stack.push(current.left);
+            }
+        }
+        return result;
     }
 }
