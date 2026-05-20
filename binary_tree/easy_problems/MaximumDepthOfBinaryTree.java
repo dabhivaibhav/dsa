@@ -23,7 +23,17 @@ Constraints:
 public class MaximumDepthOfBinaryTree {
 
     public static void main(String[] args) {
+        TreeNode root = new TreeNode(1);
+        root.left = new TreeNode(2);
+        root.right = new TreeNode(3);
+        root.left.left = new TreeNode(4);
+        root.left.right = new TreeNode(5);
+        root.right.left = new TreeNode(6);
+        root.right.right = new TreeNode(7);
+        root.right.right.right = new TreeNode(7);
+        root.right.right.right.right = new TreeNode(8);
 
+        System.out.println(isBalanced(root));
     }
 
 
@@ -53,9 +63,9 @@ public class MaximumDepthOfBinaryTree {
     STEP-BY-STEP LOGIC:
     Step 1: BASE CASE: If the current node is null, it means we've reached
     past a leaf. A non-existent node has a depth of 0.
-    Step 2: RECURSIVE STEP (LEFT): Call maxDepth on the left child to find
+    Step 2: RECURSIVE STEP (LEFT): Call heightOfATree on the left child to find
     the height of the left subtree.
-    Step 3: RECURSIVE STEP (RIGHT): Call maxDepth on the right child to
+    Step 3: RECURSIVE STEP (RIGHT): Call heightOfATree on the right child to
     find the height of the right subtree.
     Step 4: COMBINE: Take the maximum of those two heights and add 1 (for
     the current node).
@@ -67,11 +77,11 @@ public class MaximumDepthOfBinaryTree {
 
     EXAMPLE DRY RUN:
     Tree: [3, 9, 20, null, null, 15, 7]
-    maxDepth(15) returns 1.
-    maxDepth(7) returns 1.
-    maxDepth(20) takes max(1, 1) + 1 = 2.
-    maxDepth(9) returns 1.
-    maxDepth(3) takes max(1, 2) + 1 = 3.
+    heightOfATree(15) returns 1.
+    heightOfATree(7) returns 1.
+    heightOfATree(20) takes max(1, 1) + 1 = 2.
+    heightOfATree(9) returns 1.
+    heightOfATree(3) takes max(1, 2) + 1 = 3.
     Final Result: 3.
 
     COMPLEXITY ANALYSIS:
@@ -98,10 +108,23 @@ public class MaximumDepthOfBinaryTree {
     fundamental for more complex tree problems like "Balanced Binary Tree"
     or "Diameter of a Binary Tree."
     */
-    private static int maxDepth(TreeNode root) {
+
+    private static boolean isBalanced(TreeNode root) {
+        int answer = heightOfATree(root);
+        return answer != -1;
+    }
+
+    private static int heightOfATree(TreeNode root) {
         if (root == null) return 0;
-        int left = maxDepth(root.left);
-        int right = maxDepth(root.right);
+
+        int left = heightOfATree(root.left);
+        if (left == -1) return -1;
+
+        int right = heightOfATree(root.right);
+        if (right == -1) return -1;
+
+        if (Math.abs(left - right) > 1) return -1;
+
         return Math.max(left, right) + 1;
     }
 
