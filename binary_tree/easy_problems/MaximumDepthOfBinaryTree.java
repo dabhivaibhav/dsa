@@ -32,8 +32,7 @@ public class MaximumDepthOfBinaryTree {
         root.right.right = new TreeNode(7);
         root.right.right.right = new TreeNode(7);
         root.right.right.right.right = new TreeNode(8);
-
-        System.out.println(isBalanced(root));
+        System.out.println(maxDepth(root));
     }
 
 
@@ -109,22 +108,10 @@ public class MaximumDepthOfBinaryTree {
     or "Diameter of a Binary Tree."
     */
 
-    private static boolean isBalanced(TreeNode root) {
-        int answer = heightOfATree(root);
-        return answer != -1;
-    }
-
-    private static int heightOfATree(TreeNode root) {
+    public static int maxDepth(TreeNode root) {
         if (root == null) return 0;
-
-        int left = heightOfATree(root.left);
-        if (left == -1) return -1;
-
-        int right = heightOfATree(root.right);
-        if (right == -1) return -1;
-
-        if (Math.abs(left - right) > 1) return -1;
-
+        int left = maxDepth(root.left);
+        int right = maxDepth(root.right);
         return Math.max(left, right) + 1;
     }
 
