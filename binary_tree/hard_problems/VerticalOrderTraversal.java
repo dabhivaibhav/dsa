@@ -227,7 +227,7 @@ public class VerticalOrderTraversal {
             // Add node value to map
             nodes.putIfAbsent(x, new TreeMap<>());
             nodes.get(x).putIfAbsent(y, new PriorityQueue<>());
-            nodes.get(x).get(y).offer(temp.val);
+                nodes.get(x).get(y).offer(temp.val);
 
             // If left child exists, push to queue
             if (temp.left != null) {
