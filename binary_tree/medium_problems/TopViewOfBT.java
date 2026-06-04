@@ -185,9 +185,7 @@ public class TopViewOfBT {
         }
 
         // Collect final values in perfectly sorted left-to-right alignment
-        for (int value : topViewMap.values()) {
-            result.add(value);
-        }
+        result.addAll(topViewMap.values());
 
         return result;
     }
