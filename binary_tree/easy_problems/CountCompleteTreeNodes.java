@@ -38,6 +38,7 @@ public class CountCompleteTreeNodes {
         root.right = new TreeNode(3);
         root.left.left = new TreeNode(4);
         System.out.println(countNodesBruteForce(root));
+        System.out.println(countNodesOptimized(root));
     }
 
     /*
@@ -199,6 +200,180 @@ public class CountCompleteTreeNodes {
             if (node.right != null) queue.add(node.right);
         }
         return total;
+    }
+
+    /*
+     * WHAT THIS METHOD DOES:
+     * Counts the total number of nodes in a COMPLETE binary tree in better than
+     * linear time. The brute force (BFS or recursive 1 + left + right) visits every
+     * node and is O(N), but it throws away the one gift the problem hands you: the
+     * tree is complete. This solution exploits that to skip counting most of the tree.
+     *
+     * ---
+     *
+     * THE "PERFECT-SUBTREE SHORTCUT" PATTERN (COUNT NODES IN A COMPLETE TREE)
+     *
+     * Your Thought Process & Intuition:
+     * 1. THE CORE OBJECTIVE: Count nodes WITHOUT visiting all of them. A complete
+     *    tree fills left to right with no gaps, every level above the last is full,
+     *    and the last level holds between 1 and 2^h nodes. That regularity is the
+     *    thing to exploit. If a solution would work on ANY binary tree, it is ignoring
+     *    "complete" and is almost certainly O(N).
+     *
+     * 2. YOUR FIRST ATTACK & THE ROADBLOCK:
+     *    -> First instinct was BFS / recursive full traversal, counting every node.
+     *    -> WHY IT FALLS SHORT: It is correct but O(N). It never uses "complete," so
+     *       it does the maximum possible work. Correct is not the goal here, FAST is.
+     *
+     * 3. THE SPLIT INSIGHT (THE SEAM THE WHOLE TRICK RUNS ALONG):
+     *    -> Break the count into two parts: the FULL upper block (every level above
+     *       the last) plus the PARTIAL last level.
+     *    -> The upper block is FREE: a perfect block of L levels has exactly 2^L - 1
+     *       nodes, pure arithmetic, zero traversal. So the hard part shrinks to "how
+     *       many nodes sit in the bottom row," which you must NOT count one by one or
+     *       you are back to O(N).
+     *
+     * 4. THE RULER ROADBLOCK (A REAL TANGLE, WRITE IT DOWN):
+     *    -> Got confused whether "height" means EDGES or LEVELS. They differ by one,
+     *       and 2^h - 1 is only correct if h matches the ruler you measured with.
+     *    -> RESOLUTION: pick ONE ruler and make the formula agree. The spine helpers
+     *       below count NODES on the path (start at 0, +1 per node), so a single node
+     *       returns height 1, and 2^1 - 1 = 1. Consistent. If you ever count edges
+     *       instead, a single node gives 0 and you would need 2^(h+1) - 1. Derive the
+     *       exponent from how YOUR helper counts, never copy it blindly.
+     *
+     * 5. THE BREAKTHROUGH (DETECT PERFECTNESS WITHOUT LOOKING):
+     *    -> You cannot "look" for perfect subtrees, you must TEST for them cheaply.
+     *    -> The test: measure the LEFT spine and the RIGHT spine from the current node.
+     *       EQUAL  -> the whole subtree is PERFECT -> count it by 2^L - 1, instantly,
+     *                 no descending at all.
+     *       UNEQUAL-> there is a gap in the bottom row -> this subtree is NOT perfect,
+     *                 so count this node and RECURSE: 1 + count(left) + count(right).
+     *    -> KEY EFFICIENCY FACT: the recursion only keeps descending along the single
+     *       "imperfect" boundary path (root toward the gap). EVERYWHERE off that path
+     *       you hit a perfect subtree and stop with formula work. So you go deep on
+     *       exactly one root-to-leaf path; everything else terminates fast.
+     *
+     * ---
+     *
+     * CORE DESIGN CHOICES: THE "WHY" BEHIND THE MACHINERY
+     *
+     * 1. Left spine = the true height:
+     *    - Why? A complete tree fills from the left, so the leftmost path NEVER has a
+     *      gap and is always the longest possible path. Walking it gives the real height.
+     *
+     * 2. Right spine = the perfectness test:
+     *    - Why? Compared to the left spine, the right spine is either EQUAL (every
+     *      bottom slot full -> perfect) or exactly ONE shorter (gap in bottom row ->
+     *      not perfect). It can never be longer. That invariant is what makes the
+     *      shortcut valid.
+     *
+     * 3. Bit shift for the power of two (1 << h):
+     *    - Why? It computes 2^h as a clean integer. Do NOT use Math.pow (returns a
+     *      double, drags in casting and precision bugs).
+     *
+     * 4. Return-and-combine recursion (1 + left + right):
+     *    - Why? The count travels UP through return values. No global counter, no
+     *      passed-in accumulator. Each call returns its own subtree's count and the
+     *      parent sums the pieces. (Your earlier fear "won't a local counter reset?"
+     *      is answered here: recursion COMBINES via returns, it does not SHARE a var.)
+     *
+     * ---
+     *
+     * MISTAKES I ACTUALLY MADE (REREAD THESE BEFORE ANY TREE PROBLEM):
+     * - `2 ^ leftHeight` IS NOT A POWER. In Java `^` is bitwise XOR. `2 ^ 3` is 1,
+     *   not 8, so `(2 ^ 3) - 1` returns 0 and SILENTLY gives the wrong count, no crash.
+     *   The fix is `(1 << leftHeight) - 1`.
+     * - SPINE STARTED ONE NODE TOO LOW. Measuring from root.left / root.right instead
+     *   of root drops the root's own level, an off-by-one. A single-node tree then
+     *   returned 0 instead of 1. Seed the walk from the NODE ITSELF.
+     * - THE EDGE-vs-LEVEL RULER TANGLE (see roadblock 4). Always make the formula
+     *   match how the helper counts.
+     * - THE META-MISTAKE: skimming toward the solution instead of holding the reason
+     *   for each step. Reasons are what let you rebuild it cold. No reason held = can't
+     *   reconstruct = "I recognized it" masquerading as "I learned it."
+     *
+     * ---
+     *
+     * ALGORITHM STEPS:
+     * Step 1: If root is null, return 0 (empty tree).
+     * Step 2: leftHeight  = walk the LEFT spine from root, counting nodes.
+     * Step 3: rightHeight = walk the RIGHT spine from root, counting nodes.
+     * Step 4: If leftHeight == rightHeight: subtree is perfect ->
+     *         return (1 << leftHeight) - 1. STOP, no traversal.
+     * Step 5: Else: return 1 + countNodes(root.left) + countNodes(root.right).
+     *
+     * ---
+     *
+     * STEP-BY-STEP "GOTCHA" EXPLANATION:
+     * - (1 << leftHeight) - 1, never (2 ^ leftHeight) - 1.  (XOR trap)
+     * - spine helpers seeded at root, never root.left.       (off-by-one trap)
+     * - only the LEFT spine is treated as "the height," because in a complete tree the
+     *   leftmost path is always the longest and gap-free.
+     *
+     * ---
+     *
+     * DETAILED COMPLEXITY ANALYSIS:
+     *
+     * -> Time Complexity: O(log^2 N) -- this is TWO costs multiplied, not one.
+     *    FACTOR 1 (recursion depth): you descend only along the single "imperfect"
+     *      boundary path from root toward the gap in the bottom row. That path is the
+     *      height of the tree, ~log N levels deep. (This is the part I first saw.)
+     *    FACTOR 2 (work per level): at EACH node on that descent you call both spine
+     *      helpers, and each spine walks from that node down to a leaf, ~log N steps.
+     *      So every node on the path costs O(log N) just for the two measurements.
+     *      (This is the factor I first dropped, the mistake to remember: count the
+     *      work done AT each level, not only how many levels there are.)
+     *    MULTIPLY them: O(log N) levels x O(log N) per level = O(log N * log N) = O(log^2 N).
+     *    WHY IT BEATS O(N): for N = 1,000,000 nodes, log N ~ 20, so log^2 N ~ 400.
+     *      Four hundred units of work instead of a million. That gap is the entire
+     *      reason for splitting the tree and spine-checking instead of visiting nodes.
+     *
+     * -> Space Complexity: O(H) where H is the height of the tree, which is ~O(log N)
+     *    for a complete tree. This is the recursion call stack: the deepest the call
+     *    chain ever gets is one root-to-leaf path. No extra data structures, no queue,
+     *    no visited set. Just the stack frames along the descent.
+     *
+     * ---
+     *
+     * INTERVIEW TAKEAWAY:
+     * The entire value of this problem is using "complete" to AVOID traversing.
+     * - Split into a full upper block (count by 2^L - 1) plus a partial last level.
+     * - Detect a perfect subtree by LEFT spine == RIGHT spine, count it by formula,
+     *   and recurse only when they differ. You descend just one imperfect path.
+     * - Two silent killers live here: `^` is XOR not power (use `1 << h`), and the
+     *   spine must start at the node itself (off-by-one).
+     * - If a tree solution would work on ANY binary tree, suspect you are ignoring a
+     *   structural gift and leaving speed on the table.
+     */
+    private static int countNodesOptimized(TreeNode root) {
+        if (root == null) return 0;
+
+        int leftHeight = countLeftHeight(root);    // was root.left
+        int rightHeight = countRightHeight(root);   // was root.right
+
+        if (leftHeight == rightHeight)
+            return (1 << leftHeight) - 1;           // was (2 ^ leftHeight) - 1
+        else
+            return 1 + countNodesOptimized(root.left) + countNodesOptimized(root.right);
+    }
+
+    private static int countLeftHeight(TreeNode root) {
+        int height = 0;
+        while (root != null) {
+            height++;
+            root = root.left;
+        }
+        return height;
+    }
+
+    private static int countRightHeight(TreeNode root) {
+        int height = 0;
+        while (root != null) {
+            height++;
+            root = root.right;
+        }
+        return height;
     }
 
     static class TreeNode {
