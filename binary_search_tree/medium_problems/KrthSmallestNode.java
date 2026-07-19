@@ -29,6 +29,9 @@ import java.util.List;
 
 public class KrthSmallestNode {
 
+    private static int count = 0;
+    private static int answer = -1;
+
     public static void main(String[] args) {
         TreeNode root = new TreeNode(1);
         root.left = new TreeNode(2);
@@ -38,6 +41,152 @@ public class KrthSmallestNode {
         root.right.left = new TreeNode(6);
         root.right.right = new TreeNode(7);
         System.out.println(kthSmallestBruteForce(root, 3));
+    }
+
+    /*
+     * WHAT THIS METHOD DOES:
+     * Finds the kth smallest value in a BST by running an inorder traversal with a COUNTER
+     * instead of a list. The kth node visited in inorder order IS the kth smallest, so we
+     * count visits and capture the value on the kth one, then let the recursion drain
+     * early. O(H + k) time, O(H) space, no list, no sorting.
+     *
+     * THE SENTENCE: inorder of a BST is sorted, so the kth inorder visit IS the kth smallest.
+     *
+     * ---
+     *
+     * THE "COUNT THE INORDER VISITS" PATTERN (KTH SMALLEST, OPTIMAL)
+     *
+     * Your Thought Process & Intuition:
+     * 1. THE UPGRADE FROM BRUTE FORCE IS STORAGE, NOT ALGORITHM: the brute force stored
+     *    every value and picked index k-1. This version stores NOTHING: same traversal,
+     *    same visit order, but a counter replaces the list. The traversal was always the
+     *    solution; the list was just scaffolding.
+     *
+     * 2. WHERE THE COUNT HAPPENS (the bug I wrote three times): the visit is BETWEEN the
+     *    two recursive calls. Left subtree completely, THEN me, THEN right subtree
+     *    completely, at every node. NOT "go to the bottom and count on the way back up",
+     *    that model counts in the wrong order and only agrees with inorder for k=1 (the
+     *    leftmost node happens to be both "the bottom" and the first visit). k=2 exposes
+     *    it: after counting a node, the code walks into that node's RIGHT subtree before
+     *    returning to the parent. A node's right child can be the very next count; the
+     *    parent is not.
+     *
+     * 3. HOW A RECURSION "STOPS HALFWAY": it does not. There is no stop button. When the
+     *    kth visit fires, a stack of unfinished ancestor calls still exists, each intending
+     *    its own visit and right-subtree walk. The answer survives because of two things:
+     *    - the ANSWER lives in a shared field, so it cannot be lost when calls unwind
+     *    - the capture condition is count == k EXACTLY, which is SELF-SEALING: once count
+     *      passes k it can never equal k again, so later visits cannot overwrite the answer
+     *    The guard then makes the drain fast: every FRESH call bails on its first line.
+     *
+     * ---
+     *
+     * CORE DESIGN CHOICES: THE "WHY" BEHIND THE MACHINERY
+     *
+     * 1. Shared fields count and answer, reset in the public method:
+     *    - Why shared? A local resets in every call (the countNodes lesson). Same family as
+     *      postIndex in LC 106 and sb in serialize: state that must survive across calls
+     *      lives in a field, and the public method resets it so a second run does not
+     *      inherit the first run's values (sb.setLength(0), postIndex = length-1, same move,
+     *      third appearance).
+     *
+     * 2. The helper is void:
+     *    - Why? The answer travels through the FIELD, not through return values. The bail
+     *      is a bare `return;`, not `return null` (that reflex belongs to tree-BUILDING
+     *      helpers, where the return carries a subtree; here it carries nothing).
+     *
+     * 3. ONE guard (count >= k at the top), not two:
+     *    - The pseudo-code had a second guard before the visit, to stop RESUMING parents
+     *      from incrementing past k. I dropped it, and the drop is safe: correctness is
+     *      protected by the self-sealing == k check, and speed is unchanged, each resuming
+     *      ancestor does one increment, one failed comparison, and one child call that dies
+     *      at guard 1. O(1) per ancestor either way. What guard 2 buys is only that count
+     *      ends the run at exactly k instead of overshooting, which matters only if later
+     *      code reads count. Nothing here does. One load-bearing guard beats two.
+     *
+     * ---
+     *
+     * MISTAKES I ACTUALLY MADE:
+     * - FIRST ATTEMPT WAS A BOUNDED QUEUE WITH NESTED LOOPS AND SHAPE CASE-ANALYSIS:
+     *   invented machinery because I skipped the ritual. Question 1 (what does the
+     *   structure guarantee?) finishes this problem before code exists, and the fact was
+     *   already written in my own LC 700 notes with this problem's number next to it. The
+     *   library only pays if consulting it is STEP ONE.
+     * - THE BOTTOM-THEN-BACK-UP MODEL, three times: postorder-instead-of-inorder in the
+     *   brute force, "count on the way back" in the first counter plan, then predicting
+     *   k=2 returns 3 when it returns 2. Same wrong model, three costumes. The k=2 hand
+     *   trace is what killed it: node 2 (right child of node 1) is counted BEFORE the
+     *   parent 3, because inorder enters the right subtree after each visit.
+     * - CLAIMED O(H) SPACE WHILE THE CODE HELD AN O(N) LIST: stated the complexity of the
+     *   version I had not written yet. Rule: to state space, list EVERY allocation
+     *   (collections, stack, maps), then take the biggest. Never quote the stack alone
+     *   while a data structure sits in the code.
+     * - "RETURN NULL ON EACH CALL" for the bail-out: type confusion, the helper is void.
+     *
+     * ---
+     *
+     * ALGORITHM STEPS:
+     * Step 1: Reset count = 0, answer = -1. Call the helper. Return answer.
+     * Step 2 (helper): if node is null, return. If count >= k, return (drain guard).
+     * Step 3: Recurse left.
+     * Step 4: THE VISIT: count++. If count == k, answer = node.val, return.
+     * Step 5: Recurse right.
+     *
+     * ---
+     *
+     * STEP-BY-STEP "GOTCHA" EXPLANATION:
+     * - The visit sits BETWEEN the recursive calls. Moving it is changing the traversal.
+     * - count == k is self-sealing; the answer can be set exactly once.
+     * - The guard makes fresh calls die instantly after the find; resuming ancestors cost
+     *   O(1) each regardless.
+     * - Fields need the reset in the public method or run two inherits run one's count.
+     *
+     * ---
+     *
+     * DETAILED COMPLEXITY ANALYSIS:
+     * -> Time Complexity: O(H + k). Walking down to the smallest element costs O(H); then
+     *    at most k visits happen before the answer is set; then the drain costs O(1) per
+     *    ancestor on the stack, at most O(H). Worst case (k = n) this is O(N), same as any
+     *    full inorder, but for small k it stops early.
+     * -> Space Complexity: O(H), the recursion stack only. No list this time, so O(H) is
+     *    finally the honest answer. (O(log N) balanced, O(N) skewed.)
+     * -> THE O(1)-SPACE FLOURISH: swap this counter into Morris inorder (increment at both
+     *    record sites, stop at k). Same time, O(1) auxiliary space. Worth one sentence in
+     *    an interview; every piece of it is already in my Morris notes.
+     *
+     * ---
+     *
+     * INTERVIEW TAKEAWAY:
+     * - Open with the sentence: "inorder of a BST is sorted, so the kth inorder visit is
+     *   the kth smallest." The sentence is the solution; the code is transcription.
+     * - Know why the early exit is safe without a stop button: shared answer field plus a
+     *   self-sealing == k check; the guard is a speed optimization, not correctness.
+     * - Offer the ladder unprompted: O(N)-space list version, O(H)-space counter version,
+     *   O(1)-space Morris version.
+     * - The follow-up (frequent inserts/deletes, frequent kth queries) is answered by
+     *   AUGMENTING the tree, storing something extra per node, so the query becomes an
+     *   O(H) descent with no counting. Same count-by-structure idea as LC 222.
+     */
+    private static int kthSmallestBetter(TreeNode root, int k) {
+        count = 0;
+        answer = -1;
+        inOrderHelper(root, k);
+        return answer;
+    }
+
+    private static void inOrderHelper(TreeNode root, int k) {
+        if (root == null) return;
+
+        if (count >= k) return;
+
+        inOrderHelper(root.left, k);
+
+        count++;
+        if (count == k) {
+            answer = root.val;
+            return;
+        }
+        inOrderHelper(root.right, k);
     }
 
     /*
