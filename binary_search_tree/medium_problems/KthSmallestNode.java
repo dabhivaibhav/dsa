@@ -41,6 +41,161 @@ public class KrthSmallestNode {
         root.right.left = new TreeNode(6);
         root.right.right = new TreeNode(7);
         System.out.println(kthSmallestBruteForce(root, 3));
+        System.out.println(kthSmallestBetter(root, 3));
+        System.out.println(kthSmallestMorris(root, 3));
+    }
+
+
+    /*
+     * WHAT THIS METHOD DOES:
+     * Finds the kth smallest value in a BST in O(1) AUXILIARY SPACE using Morris inorder
+     * traversal with a counter. Same threading machinery as my Morris inorder; the only
+     * change is what happens at the two record sites: instead of adding to a list, count
+     * the visit and capture the value on the kth one. The loop always runs to completion,
+     * no break, so every planted thread is removed and the tree is restored.
+     *
+     * THE SENTENCE: Morris inorder with the visit pair (count++, capture at k) at both
+     * record sites, run to completion so the threads come down.
+     *
+     * ---
+     *
+     * THE "MORRIS WITH A COUNTER" PATTERN (KTH SMALLEST, O(1) SPACE)
+     *
+     * Your Thought Process & Intuition:
+     * 1. THE TRANSFORMATION IS THE SAME ONE AS THE RECURSIVE UPGRADE: list -> counter.
+     *    The record sites are fixed by the traversal (my own Morris preorder note: WHERE
+     *    you record is the traversal, WHAT you do there is the problem). Morris inorder
+     *    has exactly two record sites: case A (no left child) and case B2 (thread exists,
+     *    left subtree done). The visit pair goes into BOTH, identically. B1 records
+     *    nothing; it only plants the thread.
+     *
+     * 2. THE VISIT PAIR: count++; if (count == k) answer = current.val;
+     *    No return, no break. The == k check is SELF-SEALING (once count passes k it can
+     *    never equal k again), so the later visits during the rest of the traversal
+     *    cannot overwrite the answer.
+     *
+     * 3. WHY THERE IS NO EARLY EXIT (the whole interview content of this problem):
+     *    At the capture moment, the tree is CORRUPTED. The completed subtrees are
+     *    restored, their threads came down at their own B2 moments, but every OPEN
+     *    ANCESTOR (each node whose left subtree we are currently inside) still has a
+     *    planted thread waiting: up to O(H) of them. Smallest counterexample: tree
+     *    2 with left child 1, k=1. At capture (count=1 at node 1), 1.right is a thread
+     *    pointing at 2. Break here and you hand back a corrupted tree.
+     *    THE CONTINUATION IS THE CLEANUP: each open ancestor's B2 fires as the traversal
+     *    rides the threads back up, removing them one by one. The rest of the loop after
+     *    the capture is not waste; it is the restoration mechanism.
+     *
+     * 4. LOCAL VARIABLES, NO FIELDS: one loop, no recursion, so nothing must survive
+     *    across calls. No reset dance, no reentrancy debt (unlike the recursive version's
+     *    shared count/answer fields). The one way Morris is CLEANER than recursion here.
+     *
+     * ---
+     *
+     * CORE DESIGN CHOICES: THE "WHY" BEHIND THE MACHINERY
+     *
+     * 1. Run to completion, no break:
+     *    - Why? Restoring the tree. Morris only BORROWS the null right-pointers; B2 puts
+     *      every one back, but only if every B2 is reached. Breaking early skips the
+     *      pending B2s and leaves threads planted. (My own Morris traps section: not
+     *      removing the thread leaves the tree mutated/corrupted.)
+     *
+     * 2. The capture is a bare assignment, not a return:
+     *    - Why? Nothing needs to escape. The answer sits in a local; the loop's natural
+     *      end is the exit. The self-sealing check does the protecting.
+     *
+     * 3. Identical visit pair at both sites:
+     *    - Why? Both sites ARE the inorder visit; a node is emitted at exactly one of
+     *      them depending on whether it had a left subtree. Different actions at the two
+     *      sites would mean two different traversals.
+     *
+     * ---
+     *
+     * MISTAKES I ACTUALLY MADE:
+     * - CLAIMED THE TRAVERSED PART WAS ALREADY CLEAN: argued "the value is in the left
+     *   part, I haven't touched the right subtree, so no pointers are set there." Right
+     *   DECISION (no break), wrong REASON. The threads live exactly IN the traversed-
+     *   so-far region, on the open-ancestor spine, the opposite of my claim. The 2/1
+     *   tree kills it: at capture, node 1 (the left part) is the node carrying the
+     *   thread. In an interview the follow-up attacks the reason, not the decision.
+     * - DODGED THE BREAK QUESTION THREE MESSAGES RUNNING while asking for confirmation
+     *   of the easy half (list -> counter). The transcription was never the problem;
+     *   the exit decision was, and it was the part I kept routing around. The skim
+     *   wears a polite mask: "just confirm this bit" while the hard blank stays blank.
+     *
+     * ---
+     *
+     * ALGORITHM STEPS:
+     * Step 1: count = 0, answer = -1, current = root.
+     * Step 2: While current != null:
+     *   - If current.left == null: VISIT (count++, capture if count==k); go right.
+     *   - Else: find predecessor (walk right from current.left, stopping at null or at
+     *     current):
+     *       - predecessor.right == null: plant thread (= current); go left. No visit.
+     *       - predecessor.right == current: remove thread (= null); VISIT; go right.
+     * Step 3: Loop ends naturally; return answer. Tree is fully restored.
+     *
+     * ---
+     *
+     * STEP-BY-STEP "GOTCHA" EXPLANATION:
+     * - The visit pair appears TWICE, sites A and B2, never B1.
+     * - No break anywhere: the post-capture iterations are the thread-removal pass.
+     * - count == k is self-sealing; the drain's visits cannot touch the answer.
+     * - The inner loop keeps both stop conditions (!= null && != current) exactly as in
+     *   plain Morris; nothing about the counter changes the threading.
+     *
+     * ---
+     *
+     * DETAILED COMPLEXITY ANALYSIS:
+     * -> Time Complexity: O(N), ALWAYS. No early exit exists in this design: even if k=1,
+     *    the loop must finish to unwind the threads. Each edge is traversed a constant
+     *    number of times, so linear total.
+     * -> Space Complexity: O(1) auxiliary. Two ints and two pointers. No stack, no list.
+     *
+     * THE LADDER (say it unprompted):
+     *    1. List + get(k-1):        O(N) time,   O(N) space
+     *    2. Recursive counter:      O(H+k) time, O(H) space  (early exit)
+     *    3. Morris counter:         O(N) time,   O(1) space  (no early exit)
+     *    Morris is NOT a strict win: it TRADES the early exit for the space. Naming that
+     *    trade out loud is what shows you understood Morris rather than memorized it.
+     *
+     * ---
+     *
+     * INTERVIEW TAKEAWAY:
+     * - The record sites are fixed by the traversal; the problem only changes what runs
+     *   at them. List, counter, whatever, same two sites.
+     * - Breaking out of Morris mid-run corrupts the tree: open ancestors hold planted
+     *   threads at exactly the moment of capture. Run to completion; the continuation IS
+     *   the cleanup. If you ever DO break early, you must say so and either unwind the
+     *   threads manually or explicitly accept a mutated tree.
+     * - Offer the three-rung ladder with the trade named. O(1) space costs the early exit.
+     */
+    private static int kthSmallestMorris(TreeNode root, int k) {
+        int count = 0;
+        int answer = -1;
+        TreeNode current = root;
+
+        while (current != null) {
+            if (current.left == null) {
+                count++;
+                if (count == k) answer = current.val;
+                current = current.right;
+            } else {
+                TreeNode temp = current.left;
+                while (temp.right != null && temp.right != current) {
+                    temp = temp.right;
+                }
+                if (temp.right == null) {
+                    temp.right = current;
+                    current = current.left;
+                } else {
+                    temp.right = null;
+                    count++;
+                    if (count == k) answer = current.val;
+                    current = current.right;
+                }
+            }
+        }
+        return answer;
     }
 
     /*
