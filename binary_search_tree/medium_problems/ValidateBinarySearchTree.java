@@ -29,11 +29,14 @@ Constraints:
  */
 public class ValidateBinarySearchTree {
 
+    static Integer prev;
+
     public static void main(String[] args) {
         TreeNode root = new TreeNode(2);
         root.left = new TreeNode(1);
         root.right = new TreeNode(3);
         System.out.println(isValidBSTBruteForce(root));
+        System.out.println(isValidBSTBetter(root));
 
         TreeNode root1 = new TreeNode(5);
         root1.left = new TreeNode(1);
@@ -41,9 +44,153 @@ public class ValidateBinarySearchTree {
         root1.right.left = new TreeNode(3);
         root1.right.right = new TreeNode(6);
         System.out.println(isValidBSTBruteForce(root1));
-
+        System.out.println(isValidBSTBetter(root1));
 
     }
+
+    /*
+     * WHAT THIS METHOD DOES:
+     * OPTIMAL BST validation: one inorder traversal carrying a single `prev` value instead
+     * of a list. At each visit, the current value must be STRICTLY greater than prev, or
+     * the whole tree is invalid and false drains up through the return chain immediately.
+     * O(N) time worst case, early exit on the first violation, O(H) space.
+     *
+     * THE SENTENCE: valid BST iff inorder is strictly increasing, so carry only the
+     * previous value and fail the moment the climb breaks.
+     *
+     * ---
+     *
+     * THE "PREV-ONLY INORDER CHECK" PATTERN (VALIDATE BST, OPTIMAL)
+     *
+     * Your Thought Process & Intuition:
+     * 1. SAME UPGRADE AS 230: list -> single variable. The scan only ever compared
+     *    neighbors, so the whole list was scaffolding; keep just the last-certified value.
+     *    The check sits exactly where list.add sat: BETWEEN the recursive calls.
+     *
+     * 2. DIRECTION DISAPPEARS: my first plan had two conditions ("coming from the left,
+     *    check prev greater; from the right, check prev lower"). Wrong frame. Inorder
+     *    flattens the tree into ONE sequence; there is no "which side am I coming from,"
+     *    only "does the sequence still climb." One check, identical at every visit. The
+     *    moment I want to know my direction, I have slid into the min/max-bounds solution
+     *    (a real alternative: pass allowed (low, high) down the recursion) and am mixing
+     *    frames.
+     *
+     * 3. HOW THE RIGHT SUBTREE GETS POLICED (my own question, answered by trace): prev is
+     *    one continuous stream across the WHOLE tree. When the traversal visits a node, it
+     *    sets prev = node.val, and the right subtree's smallest element (its leftmost,
+     *    visited first) is immediately compared against that. In [5,1,4,null,null,3,6],
+     *    node 3 fails against prev = 5, an ancestor two levels up, with no explicit
+     *    ancestor check anywhere. The sequence closes the subtree-vs-child trap by itself.
+     *
+     * 4. THE VERDICT TRAVELS BY RETURN, prev BY FIELD, and the split is principled:
+     *    validity is something every level must react to (false must stop ancestors from
+     *    working), so it rides the returns; prev is cross-call state no level reacts to,
+     *    so it lives in a field. Contrast 230: void helper, answer in a field, because a
+     *    self-sealing one-time capture needs no reaction. When levels must combine and act
+     *    on a result, return it; when it is a one-way capture, a field suffices.
+     *
+     * ---
+     *
+     * CORE DESIGN CHOICES: THE "WHY" BEHIND THE MACHINERY
+     *
+     * 1. `Integer prev`, starting null (NOT an int sentinel):
+     *    - Why? Node values span the ENTIRE int range, so every int is some tree's legal
+     *      first value; there is no safe int sentinel. prev = 0 fails on a single node
+     *      holding -5; prev = Integer.MIN_VALUE fails on a node holding MIN_VALUE itself.
+     *      null means "nothing seen yet", a state no value can collide with. The guard
+     *      `prev != null &&` IS the first-visit skip, folded into the comparison.
+     *      (Alternative escape: widen the type, long prev = Long.MIN_VALUE.)
+     *
+     * 2. Reset prev in the public method:
+     *    - Third appearance of the same debt (sb, count/answer): static state survives
+     *      between runs; run two must not inherit run one's prev.
+     *
+     * 3. `if (!inOrder(root.left)) return false;` as the first line:
+     *    - The drain. A deep false returns; each ancestor's first line sees it and returns
+     *      false without visiting or going right. O(1) per ancestor, stack empties fast.
+     *
+     * 4. Strict check (`root.val <= prev` fails):
+     *    - "Strictly" in the problem statement is load-bearing; duplicates are invalid.
+     *
+     * ---
+     *
+     * MISTAKES I ACTUALLY MADE:
+     * - PROPOSED prev = 0: killed by a one-node tree holding -5 (0 >= -5 -> false on a
+     *   valid tree). The general lesson: when values span the whole type, NO in-band
+     *   sentinel exists; escape via null (out-of-band state) or a wider type.
+     * - PROPOSED A BOOLEAN PARAMETER to force early exits: Java passes parameters BY
+     *   VALUE; a deep call flipping its copy moves nobody else's. Information cannot
+     *   travel up or sideways through parameters, only through RETURNS (the countNodes
+     *   lesson, mirror image). The drain I wanted falls out of short-circuiting returns
+     *   for free.
+     * - `Prev` vs `prev`: declared the field capitalized, used it lowercase. Java is
+     *   case-sensitive; two unrelated names; the entire "why is it not working" was a
+     *   compile error. Convention: variables start lowercase.
+     * - DUPLICATE inOrder(root.left) LEFT BEHIND after editing: traversed the left subtree
+     *   twice with the second verdict ignored. ACCIDENTALLY HARMLESS here (the second
+     *   pass's first visit fails against the subtree's max already in prev, and the false
+     *   is swallowed at the ignored call site, so prev survives uncorrupted), which is
+     *   WORSE than obviously broken: it passes tests today and detonates on the next edit.
+     *   After editing, re-read the whole method, not just the changed line.
+     * - THE TWO-CONDITIONS PLAN (see intuition 2): direction-aware checks are the wrong
+     *   frame for a sequence-based solution.
+     *
+     * ---
+     *
+     * ALGORITHM STEPS:
+     * Step 1: prev = null. Call the helper; its verdict is the answer.
+     * Step 2 (helper): null node -> true.
+     * Step 3: If the left subtree is invalid, return false (drain).
+     * Step 4: VISIT: if prev != null and node.val <= prev, return false. Else prev = node.val.
+     * Step 5: Return the right subtree's verdict.
+     *
+     * ---
+     *
+     * STEP-BY-STEP "GOTCHA" EXPLANATION:
+     * - The null guard is the sentinel escape AND the first-visit skip in one expression.
+     * - prev crosses subtree boundaries; that is how deep violators get caught with no
+     *   ancestor bookkeeping.
+     * - False travels the return chain; nothing else is needed for the early exit.
+     *
+     * ---
+     *
+     * DETAILED COMPLEXITY ANALYSIS:
+     * -> Time Complexity: O(N) worst case (a valid tree must be fully verified, every node
+     *    visited once). Invalid trees exit early: nothing after the first violation is
+     *    visited, and the drain costs O(1) per ancestor.
+     * -> Space Complexity: O(H) recursion stack (O(log N) balanced, O(N) skewed) plus O(1)
+     *    for the field. No list this time, so O(H) is the honest total.
+     * -> THE LADDER: list version O(N)/O(N); this version O(N)/O(H) with early exit;
+     *    Morris inorder with the same prev check gives O(N)/O(1), no early exit (threads
+     *    must unwind), same trade as 230's Morris rung.
+     *
+     * ---
+     *
+     * INTERVIEW TAKEAWAY:
+     * - Open with the sentence; the code is transcription.
+     * - THE probe on this problem is the sentinel: "what do you initialize prev to?" Know
+     *   why int sentinels are impossible here and name both escapes (null / wider type).
+     * - Know the alternative solution: min/max bounds passed down the recursion, same
+     *   complexity; be able to say both exist and that mixing the frames causes the
+     *   "which side am I coming from" confusion.
+     * - Verdicts combine by return; cross-call context rides a field. Say why each piece
+     *   went where it did.
+     */
+    private static boolean isValidBSTBetter(TreeNode root) {
+        prev = null;
+        return inOrder(root);
+
+    }
+
+    private static boolean inOrder(TreeNode root) {
+        if (root == null) return true;
+
+        if (!inOrder(root.left)) return false;
+        if (prev != null && root.val <= prev) return false;
+        prev = root.val;
+        return inOrder(root.right);
+    }
+
 
     /*
      * WHAT THIS METHOD DOES:

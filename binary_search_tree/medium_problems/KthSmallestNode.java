@@ -27,7 +27,7 @@ and you need to find the kth smallest frequently, how would you optimize?
 import java.util.LinkedList;
 import java.util.List;
 
-public class KrthSmallestNode {
+public class KthSmallestNode {
 
     private static int count = 0;
     private static int answer = -1;
