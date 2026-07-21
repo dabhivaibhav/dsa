@@ -48,6 +48,7 @@ public class ValidateBinarySearchTree {
 
     }
 
+
     /*
      * WHAT THIS METHOD DOES:
      * OPTIMAL BST validation: one inorder traversal carrying a single `prev` value instead
