@@ -1,7 +1,6 @@
 package binary_search_tree.easy_problems;
 
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -215,25 +214,33 @@ public class FloorCeilInBST {
      * - -1 initialization makes "does not exist" fall out for free.
      * - Same O(H) shape as BST search, insert, and delete: compare, discard one side, descend.
      */
-    private static List<Integer> floorCeilOfBST(TreeNode root, int val) {
+    private static List<Integer> floorCeilOfBST(TreeNode root, int key) {
+        int predecessor = -1;
+        int successor = -1;
+
+        // SUCCESSOR walk: greater -> record, step left. Otherwise step right.
         TreeNode cur = root;
-        int currentCeil = -1;
-        int currentFloor = -1;
-        List<Integer> result = new ArrayList<>();
         while (cur != null) {
-            if (cur.val == val) {
-                return Arrays.asList(val, val);
-            }
-            if (cur.val < val) {
-                currentFloor = cur.val;
+            if (cur.val > key) {
+                successor = cur.val;   // record BEFORE stepping — the node I'm ON is the candidate
+                cur = cur.left;
+            } else {
+                cur = cur.right;       // less than OR EQUAL: equality falls here and routes right,
+            }                          // which is exactly where a present key's successor lives
+        }
+
+        // PREDECESSOR walk: less -> record, step right. Otherwise step left.
+        cur = root;
+        while (cur != null) {
+            if (cur.val < key) {
+                predecessor = cur.val;
                 cur = cur.right;
             } else {
-                currentCeil = cur.val;
-                cur = cur.left;
+                cur = cur.left;        // equality routes left, toward the predecessor
             }
         }
 
-        return Arrays.asList(currentFloor, currentCeil);
+        return Arrays.asList(predecessor, successor);
     }
 
 
