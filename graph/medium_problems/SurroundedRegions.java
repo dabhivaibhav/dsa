@@ -34,7 +34,7 @@ Constraints:
             1 <= m, n <= 200
             board[i][j] is 'X' or 'O'.
  */
-public class SurrounndedRegions {
+public class SurroundedRegions {
     public static void main(String[] args) {
 
         char[][] grid = {{'X', 'X', 'X', 'X'}, {'X', 'O', 'O', 'X'}, {'X', 'X', 'O', 'X'}, {'X', 'O', 'X', 'X'}};
