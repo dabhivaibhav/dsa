@@ -233,7 +233,6 @@ public class ContainWithMostWater {
                 right--;
             }
         }
-
         return maxArea;
     }
 }
